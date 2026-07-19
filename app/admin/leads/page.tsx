@@ -79,7 +79,7 @@ export default function Leads() {
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
                 <p className="truncate font-sora font-semibold">{r.name}</p>
-                <span className="shrink-0 rounded-full bg-surface-container px-2 py-0.5 font-geist text-[10px] text-on-surface/60">{r.studentClass}</span>
+                <span className="shrink-0 rounded-full glassy px-2 py-0.5 font-geist text-[10px] text-on-surface/60">{r.studentClass}</span>
               </div>
               <p className="truncate font-hanken text-body-sm text-on-surface/50">
                 {r.message || "No message"} · {r.createdAt ? r.createdAt.toDate().toLocaleString("en-IN", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" }) : "…"}

@@ -24,6 +24,7 @@ export default function Login() {
     setBusy(true);
     try {
       await loginWithGoogle();
+      document.cookie = "skcti_session=true; path=/; max-age=86400";
     } catch (e) {
       setErr(e instanceof Error ? e.message : "Sign-in failed. Try again.");
       setBusy(false);

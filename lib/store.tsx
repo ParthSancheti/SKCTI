@@ -179,6 +179,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     await signInWithPopup(fbAuth(), googleProvider());
   };
   const logout = async () => {
+    document.cookie = "skcti_session=; path=/; max-age=0";
     await signOut(fbAuth());
   };
 

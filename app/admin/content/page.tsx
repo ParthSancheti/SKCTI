@@ -55,6 +55,7 @@ export default function ContentHub() {
   const [mode, setMode] = useState<Mode>("pdf");
   const [url, setUrl] = useState("");
   const [title, setTitle] = useState("");
+  const [topic, setTopic] = useState("");
   const [streams, setStreams] = useState<Stream[]>([]);
   const [subject, setSubject] = useState("");
   const [type, setType] = useState("Notes PDF");
@@ -75,7 +76,8 @@ export default function ContentHub() {
 
   const openNew = () => {
     setMode(tab);
-    setUrl(""); setTitle(""); setStreams([]); setSubject("");
+    setUrl(""); setTitle("");
+      setTopic(""); setStreams([]); setSubject("");
     setType("Notes PDF"); setWeight("High"); setKind("Chapter"); setDuration("30");
     setMsg(""); setEditorOpen("new"); vibrate(10);
   };
@@ -105,7 +107,7 @@ export default function ContentHub() {
     if (!canSave || busy) return;
     setBusy(true); setMsg("");
     try {
-      const base = { title: title.trim(), streams, subject };
+      const base = { title: title.trim(), topic: topic.trim(), streams, subject };
       if (editing) {
         if (mode === "pdf") await updateContent(editing.id, { ...base, driveUrl: url.trim(), driveId: driveId!, type, weightage: weight });
         else if (mode === "video") await updateVideo(editing.id, { ...base, youtubeUrl: url.trim(), youtubeId: ytId! });
@@ -197,20 +199,17 @@ export default function ContentHub() {
           <GlassCard key={d.id} className={`flex items-center gap-3 p-5 ${d.published ? "" : "opacity-50"}`}>
             <div className="min-w-0 flex-1">
               <p className="truncate font-sora font-semibold">{d.title}</p>
+              <p className="font-geist text-label-sm text-on-surface/80">{d.topic}</p>
               <p className="font-geist text-label-sm text-on-surface/40">
                 {d.subject} · {d.streams.join("+")}
                 {"weightage" in d ? ` · ${(d as ContentDoc).weightage} · ${(d as ContentDoc).type}` : "kind" in d ? ` · ${(d as TestDoc).kind} · ${(d as TestDoc).durationMin} min` : " · Video"}
                 {!d.published && " · Hidden"}
               </p>
             </div>
-            <button onClick={() => { vibrate(10); setViewing(d); }} aria-label="View" className="glassy grid h-10 w-10 shrink-0 place-items-center rounded-full">
-              <Eye size={15} className="text-on-surface/70" />
-            </button>
-            <button onClick={() => openEdit(d)} aria-label="Edit" className="glassy grid h-10 w-10 shrink-0 place-items-center rounded-full">
-              <Pencil size={14} className="text-primary" />
-            </button>
-            <button onClick={() => void togglePub(d)} aria-label="Toggle publish" className="glassy grid h-10 w-10 shrink-0 place-items-center rounded-full">
-              {d.published ? <Eye size={15} className="text-primary" /> : <EyeOff size={15} className="text-on-surface/40" />}
+            <button onClick={() => { vibrate(10); setViewing(d); }} className="glassy px-3 py-1.5 shrink-0 rounded-full font-geist text-label-sm">View</button>
+            <button onClick={() => openEdit(d)} className="glassy px-3 py-1.5 shrink-0 rounded-full font-geist text-label-sm text-primary">Edit</button>
+            <button onClick={() => void togglePub(d)} className="glassy px-3 py-1.5 shrink-0 rounded-full font-geist text-label-sm">
+              {d.published ? "Draft" : "Publish"}
             </button>
             <button onClick={() => void remove(d)} aria-label="Delete" className="glassy grid h-10 w-10 shrink-0 place-items-center rounded-full">
               <Trash2 size={15} className="text-error" />
@@ -268,6 +267,12 @@ export default function ContentHub() {
                   <p className="mb-2 font-geist text-label-sm uppercase text-on-surface-variant">Title <span className="text-error">*</span></p>
                   <input value={title} onChange={(e) => setTitle(e.target.value)}
                     placeholder={mode === "pdf" ? "Rotational Motion — Complete Notes" : mode === "video" ? "Electrostatics — One Shot" : "Thermodynamics — Chapter Test"}
+                    className="skcti-input h-12 w-full px-4" />
+                </div>
+                <div>
+                  <p className="mb-2 font-geist text-label-sm uppercase text-on-surface-variant">Topic / Chapter <span className="text-error">*</span></p>
+                  <input value={topic} onChange={(e) => setTopic(e.target.value)}
+                    placeholder="e.g. Rotational Motion"
                     className="skcti-input h-12 w-full px-4" />
                 </div>
                 <div>
@@ -339,7 +344,7 @@ export default function ContentHub() {
                 <p className="truncate font-sora font-semibold">{viewing.title}</p>
                 <button onClick={() => setViewing(null)} className="glassy grid h-9 w-9 shrink-0 place-items-center rounded-full"><X size={16} /></button>
               </div>
-              <iframe src={previewSrc(viewing)} className="w-full flex-1 bg-white/5" allow="autoplay; encrypted-media" allowFullScreen title={viewing.title} />
+              <iframe src={previewSrc(viewing)} className="w-full flex-1 glassy" allow="autoplay; encrypted-media" allowFullScreen title={viewing.title} />
             </motion.div>
           </motion.div>
         )}

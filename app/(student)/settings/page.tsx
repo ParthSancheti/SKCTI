@@ -84,9 +84,9 @@ export default function Settings() {
               onClick={toggleTheme}
               role="switch"
               aria-checked={isDark}
-              className={`w-12 h-7 rounded-full p-1 transition-colors ${isDark ? "bg-primary-container" : "bg-surface-container-highest"}`}
+              className={`w-12 h-7 rounded-full p-1 transition-colors ${isDark ? "bg-primary-container" : "glassy-strong"}`}
             >
-              <motion.span layout transition={{ type: "spring", stiffness: 500, damping: 30 }} className={`block w-5 h-5 rounded-full bg-white shadow ${isDark ? "ml-auto" : ""}`} />
+              <motion.span layout transition={{ type: "spring", stiffness: 500, damping: 30 }} className={`block w-5 h-5 rounded-full glassy shadow ${isDark ? "ml-auto" : ""}`} />
             </motion.button>
           </div>
           <p className="font-sora font-semibold">Theme</p>

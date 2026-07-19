@@ -15,7 +15,7 @@ export default function MeshBackground() {
 
     const vsSrc = `attribute vec2 a_position; varying vec2 v_texCoord;
       void main() { v_texCoord = a_position * 0.5 + 0.5; gl_Position = vec4(a_position, 0.0, 1.0); }`;
-    const fsSrc = `precision highp float; varying vec2 v_texCoord; uniform float u_time; uniform float u_bg; uniform float u_aspect;
+    const fsSrc = `precision highp float; varying vec2 v_texCoord; uniform float u_time; uniform float u_bg; uniform float u_aspect; uniform vec3 u_primary; uniform vec3 u_secondary; uniform vec3 u_tertiary;
 
       float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
       float noise(vec2 p) {
@@ -46,9 +46,9 @@ export default function MeshBackground() {
         float band = smoothstep(0.15, 0.85, 1.0 - abs(uv.y - (0.35 + 0.25 * wave)) * 1.6);
 
         vec3 base = vec3(u_bg);
-        vec3 crimson = vec3(0.36, 0.07, 0.09);
-        vec3 orange  = vec3(0.92, 0.35, 0.05);
-        vec3 amber   = vec3(1.0, 0.62, 0.18);
+        vec3 crimson = u_secondary;
+        vec3 orange  = u_primary;
+        vec3 amber   = u_tertiary;
 
         vec3 col = base;
         col = mix(col, crimson, smoothstep(0.25, 0.75, f) * 0.55);
@@ -89,6 +89,34 @@ export default function MeshBackground() {
     const uTime = gl.getUniformLocation(prog, "u_time");
     const uBg = gl.getUniformLocation(prog, "u_bg");
     const uAspect = gl.getUniformLocation(prog, "u_aspect");
+    const uPrimary = gl.getUniformLocation(prog, "u_primary");
+    const uSecondary = gl.getUniformLocation(prog, "u_secondary");
+    const uTertiary = gl.getUniformLocation(prog, "u_tertiary");
+
+    const parseColor = (cssVar: string) => {
+      const val = getComputedStyle(document.documentElement).getPropertyValue(cssVar).trim();
+      const parts = val.split(/[ ,]+/).filter(Boolean).map(Number);
+      if (parts.length >= 3 && !parts.some(isNaN)) {
+        return [parts[0] / 255, parts[1] / 255, parts[2] / 255];
+      }
+      return [0, 0, 0];
+    };
+
+    let p = [0, 0, 0];
+    let s = [0, 0, 0];
+    let t = [0, 0, 0];
+    let bg = 0.04;
+
+    const updateVariables = () => {
+      p = parseColor("--mesh-c1");
+      s = parseColor("--mesh-c2");
+      t = parseColor("--mesh-c3");
+      bg = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--mesh-bg")) || 0.04;
+    };
+    updateVariables();
+
+    const observer = new MutationObserver(updateVariables);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class", "style"] });
 
     const resize = () => {
       canvas.width = window.innerWidth;
@@ -102,11 +130,12 @@ export default function MeshBackground() {
     let raf = 0;
     const start = performance.now();
     const frame = () => {
-      const bg = parseFloat(
-        getComputedStyle(document.documentElement).getPropertyValue("--mesh-bg")
-      ) || 0.04;
       gl.uniform1f(uTime, (performance.now() - start) / 1000);
       gl.uniform1f(uBg, bg);
+
+      gl.uniform3f(uPrimary, p[0], p[1], p[2]);
+      gl.uniform3f(uSecondary, s[0], s[1], s[2]);
+      gl.uniform3f(uTertiary, t[0], t[1], t[2]);
       gl.drawArrays(gl.TRIANGLES, 0, 6);
       raf = requestAnimationFrame(frame);
     };
@@ -115,6 +144,7 @@ export default function MeshBackground() {
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener("resize", resize);
+      observer.disconnect();
     };
   }, []);
 
