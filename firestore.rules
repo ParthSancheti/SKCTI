@@ -1,0 +1,69 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return signedIn() &&
+        request.auth.token.email in
+          get(/databases/$(database)/documents/config/app).data.adminEmails;
+    }
+
+    // App config — public read (the landing page needs app name + links
+    // before login). First-ever write (bootstrap via the Initialize button)
+    // is allowed for any signed-in user; after that, only admins.
+    match /config/app {
+      allow read: if true;
+      allow create: if signedIn();
+      allow update: if isAdmin();
+      allow delete: if false;
+    }
+
+    // Content, tests, banners — students read, admins write.
+    match /content/{id} {
+      allow read: if signedIn();
+      allow write: if isAdmin();
+    }
+    match /tests/{id} {
+      allow read: if signedIn();
+      allow write: if isAdmin();
+    }
+    match /banners/{id} {
+      allow read: if signedIn();
+      allow write: if isAdmin();
+    }
+    match /videos/{id} {
+      allow read: if signedIn();
+      allow write: if isAdmin();
+    }
+    match /announcements/{id} {
+      allow read: if signedIn();
+      allow write: if isAdmin();
+    }
+
+    // Counseling leads — anyone (even logged out) can submit from the
+    // landing page; only admins can see or manage them.
+    match /inquiries/{id} {
+      allow create: if request.resource.data.keys().hasOnly(
+        ['name', 'phone', 'studentClass', 'message', 'status', 'createdAt']
+      );
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Users — own doc is yours; everyone signed-in can read (leaderboard).
+    match /users/{uid} {
+      allow read: if signedIn();
+      allow create, update: if signedIn() && request.auth.uid == uid;
+      allow delete: if isAdmin();
+    }
+
+    // Audit log — admins only.
+    match /audit/{id} {
+      allow read, create: if isAdmin();
+      allow update, delete: if false;
+    }
+  }
+}

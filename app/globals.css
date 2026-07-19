@@ -1,0 +1,390 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ————— SKCTI Core palettes (RGB triplets so Tailwind alpha works) ————— */
+/* Light scheme: tonal counterparts of the DESIGN.md dark palette. */
+:root {
+  --font-sora: "Sora";
+  --font-hanken: "Hanken Grotesk";
+  --font-geist: "Geist";
+  --surface: 255 248 246;
+  --surface-dim: 231 214 209;
+  --surface-bright: 255 248 246;
+  --surface-container-lowest: 255 255 255;
+  --surface-container-low: 255 241 236;
+  --surface-container: 252 234 229;
+  --surface-container-high: 247 229 223;
+  --surface-container-highest: 241 223 217;
+  --on-surface: 34 25 22;
+  --on-surface-variant: 90 65 56;
+  --inverse-surface: 56 46 42;
+  --inverse-on-surface: 255 237 230;
+  --outline: 133 115 108;
+  --outline-variant: 216 194 187;
+  --surface-tint: 167 58 0;
+  --primary: 167 58 0;
+  --on-primary: 255 255 255;
+  --primary-container: 246 96 24;
+  --on-primary-container: 79 23 0;
+  --inverse-primary: 255 181 153;
+  --secondary: 165 46 46;
+  --on-secondary: 255 255 255;
+  --secondary-container: 255 158 151;
+  --on-secondary-container: 101 8 13;
+  --tertiary: 0 92 172;
+  --on-tertiary: 255 255 255;
+  --tertiary-container: 33 146 253;
+  --on-tertiary-container: 0 42 82;
+  --error: 186 26 26;
+  --on-error: 255 255 255;
+  --error-container: 255 218 214;
+  --on-error-container: 65 0 2;
+  --primary-fixed: 255 219 206;
+  --primary-fixed-dim: 255 181 153;
+  --on-primary-fixed: 55 14 0;
+  --on-primary-fixed-variant: 127 43 0;
+  --secondary-fixed: 255 218 215;
+  --secondary-fixed-dim: 255 179 173;
+  --on-secondary-fixed: 65 0 4;
+  --on-secondary-fixed-variant: 133 34 33;
+  --tertiary-fixed: 212 227 255;
+  --tertiary-fixed-dim: 164 201 255;
+  --on-tertiary-fixed: 0 28 57;
+  --on-tertiary-fixed-variant: 0 72 131;
+  --background: 255 248 246;
+  --on-background: 34 25 22;
+  --surface-variant: 241 223 217;
+  /* glass: dark ink over light canvas */
+  --glass: 20 10 5;
+  --glass-strong: 20 10 5;
+  --glass-border: 20 10 5;
+  --glass-border-strong: 20 10 5;
+  --glass-fill: rgba(20, 10, 5, 0.05);
+  --glass-fill-strong: rgba(20, 10, 5, 0.08);
+  --glass-stroke: rgba(20, 10, 5, 0.1);
+  --glass-stroke-strong: rgba(20, 10, 5, 0.18);
+  --lg-fill-hi: rgba(255, 255, 255, 0.72);
+  --lg-fill: rgba(255, 255, 255, 0.5);
+  --lg-fill-strong: rgba(255, 255, 255, 0.62);
+  --lg-fill-lo: rgba(255, 255, 255, 0.38);
+  --lg-stroke: rgba(255, 255, 255, 0.75);
+  --lg-stroke-strong: rgba(255, 255, 255, 0.9);
+  --lg-specular: rgba(255, 255, 255, 0.95);
+  --lg-specular-strong: rgba(255, 255, 255, 1);
+  --lg-shadow: rgba(120, 60, 20, 0.25);
+  --mesh-bg: 0.96;
+  --portal-color: #ffb599;
+}
+
+/* Dark scheme — exact DESIGN.md values */
+.dark {
+  --surface: 19 19 19;
+  --surface-dim: 19 19 19;
+  --surface-bright: 58 57 57;
+  --surface-container-lowest: 14 14 14;
+  --surface-container-low: 28 27 27;
+  --surface-container: 32 31 31;
+  --surface-container-high: 42 42 42;
+  --surface-container-highest: 53 53 52;
+  --on-surface: 229 226 225;
+  --on-surface-variant: 226 191 178;
+  --inverse-surface: 229 226 225;
+  --inverse-on-surface: 49 48 48;
+  --outline: 169 138 126;
+  --outline-variant: 90 65 56;
+  --surface-tint: 255 181 153;
+  --primary: 255 181 153;
+  --on-primary: 90 28 0;
+  --primary-container: 246 96 24;
+  --on-primary-container: 79 23 0;
+  --inverse-primary: 167 58 0;
+  --secondary: 255 179 173;
+  --on-secondary: 101 8 13;
+  --secondary-container: 136 36 35;
+  --on-secondary-container: 255 158 151;
+  --tertiary: 164 201 255;
+  --on-tertiary: 0 49 93;
+  --tertiary-container: 33 146 253;
+  --on-tertiary-container: 0 42 82;
+  --error: 255 180 171;
+  --on-error: 105 0 5;
+  --error-container: 147 0 10;
+  --on-error-container: 255 218 214;
+  --primary-fixed: 255 219 206;
+  --primary-fixed-dim: 255 181 153;
+  --on-primary-fixed: 55 14 0;
+  --on-primary-fixed-variant: 127 43 0;
+  --secondary-fixed: 255 218 215;
+  --secondary-fixed-dim: 255 179 173;
+  --on-secondary-fixed: 65 0 4;
+  --on-secondary-fixed-variant: 133 34 33;
+  --tertiary-fixed: 212 227 255;
+  --tertiary-fixed-dim: 164 201 255;
+  --on-tertiary-fixed: 0 28 57;
+  --on-tertiary-fixed-variant: 0 72 131;
+  --background: 19 19 19;
+  --on-background: 229 226 225;
+  --surface-variant: 53 53 52;
+  --glass: 255 255 255;
+  --glass-strong: 255 255 255;
+  --glass-border: 255 255 255;
+  --glass-border-strong: 255 255 255;
+  --glass-fill: rgba(255, 255, 255, 0.07);
+  --glass-fill-strong: rgba(255, 255, 255, 0.12);
+  --glass-stroke: rgba(255, 255, 255, 0.1);
+  --glass-stroke-strong: rgba(255, 255, 255, 0.2);
+  --lg-fill-hi: rgba(255, 255, 255, 0.14);
+  --lg-fill: rgba(255, 255, 255, 0.07);
+  --lg-fill-strong: rgba(255, 255, 255, 0.11);
+  --lg-fill-lo: rgba(255, 255, 255, 0.03);
+  --lg-stroke: rgba(255, 255, 255, 0.16);
+  --lg-stroke-strong: rgba(255, 255, 255, 0.26);
+  --lg-specular: rgba(255, 255, 255, 0.28);
+  --lg-specular-strong: rgba(255, 255, 255, 0.4);
+  --lg-shadow: rgba(0, 0, 0, 0.55);
+  --mesh-bg: 0.04;
+}
+
+html,
+body {
+  @apply bg-background text-on-background;
+  font-family: var(--font-hanken), sans-serif;
+  min-height: 100%;
+}
+
+/* ————— Liquid Glass (Apple-style): refraction + specular edge + depth ————— */
+.glassy {
+  background: linear-gradient(
+    155deg,
+    var(--lg-fill-hi) 0%,
+    var(--lg-fill) 45%,
+    var(--lg-fill-lo) 100%
+  );
+  backdrop-filter: blur(28px) saturate(1.8);
+  -webkit-backdrop-filter: blur(28px) saturate(1.8);
+  border: 1px solid var(--lg-stroke);
+  box-shadow:
+    inset 0 1px 0 var(--lg-specular),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.04),
+    inset 1px 0 0 rgba(255, 255, 255, 0.05),
+    0 10px 30px -12px var(--lg-shadow);
+}
+.glassy-strong {
+  background: linear-gradient(
+    155deg,
+    var(--lg-fill-hi) 0%,
+    var(--lg-fill-strong) 45%,
+    var(--lg-fill-lo) 100%
+  );
+  backdrop-filter: blur(32px) saturate(1.9);
+  -webkit-backdrop-filter: blur(32px) saturate(1.9);
+  border: 1px solid var(--lg-stroke-strong);
+  box-shadow:
+    inset 0 1px 0 var(--lg-specular-strong),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.05),
+    0 16px 40px -14px var(--lg-shadow);
+}
+/* Elite/featured: top-down gradient border white/20 → transparent */
+.glassy-elite {
+  position: relative;
+  background: linear-gradient(
+    155deg,
+    var(--lg-fill-hi) 0%,
+    var(--lg-fill-strong) 45%,
+    var(--lg-fill-lo) 100%
+  );
+  backdrop-filter: blur(32px) saturate(1.9);
+  -webkit-backdrop-filter: blur(32px) saturate(1.9);
+  box-shadow:
+    inset 0 1px 0 var(--lg-specular-strong),
+    0 18px 44px -16px var(--lg-shadow);
+}
+.glassy-elite::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(to bottom, var(--glass-stroke-strong), transparent);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* ————— R7: hide scrollbars on horizontal rows ————— */
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ————— R7: gradient-blur mask under sticky headers ————— */
+.header-blur-mask {
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+}
+
+/* ————— R2: Telegram-style theme swap overlay ————— */
+#theme-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  background: #ffffff;
+  clip-path: circle(0% at 85% 10%);
+  transition: clip-path 0.5s ease-in-out;
+}
+.dark #theme-overlay { background: #131313; }
+#theme-overlay.expanding { clip-path: circle(150% at 85% 10%); }
+#theme-overlay.no-transition { transition: none; }
+
+/* ————— R3: Portal effect ————— */
+.portal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  pointer-events: none;
+  overflow: hidden;
+}
+.portal-circle {
+  position: fixed;
+  width: 100px;
+  height: 100px;
+  margin-left: -50px;
+  margin-top: -50px;
+  border-radius: 9999px;
+  background: var(--portal-color, #ffb599);
+  transform: scale(0);
+  opacity: 0.9;
+  transition: transform 0.8s cubic-bezier(0.7, 0, 0.3, 1), opacity 0.8s ease-out;
+}
+.portal-circle.active { transform: scale(40); opacity: 0; }
+.portal-emoji {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  font-size: 100px;
+  line-height: 1;
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease-out;
+  opacity: 0;
+  filter: drop-shadow(0 0 24px rgba(246, 96, 24, 0.5));
+}
+.portal-emoji.active { transform: translate(-50%, -50%) scale(1.5); opacity: 1; }
+
+/* ————— R4: Coin system ————— */
+@keyframes coin-pulse {
+  0%, 100% { filter: drop-shadow(0 0 2px rgba(246, 96, 24, 0.2)); transform: scale(1); }
+  50% { filter: drop-shadow(0 0 8px rgba(246, 96, 24, 0.6)); transform: scale(1.08); }
+}
+.animate-coin-pulse { animation: coin-pulse 2s infinite ease-in-out; display: inline-block; }
+
+@keyframes massive-coin-pulse {
+  0%, 100% { filter: drop-shadow(0 0 12px rgba(246, 96, 24, 0.3)); transform: scale(1); }
+  50% { filter: drop-shadow(0 0 40px rgba(246, 96, 24, 0.8)); transform: scale(1.06); }
+}
+.animate-massive-coin { animation: massive-coin-pulse 3s infinite ease-in-out; }
+
+@keyframes coin-pop {
+  0% { transform: translate(-50%, -50%) scale(0); }
+  60% { transform: translate(-50%, -50%) scale(1.4); }
+  100% { transform: translate(-50%, -50%) scale(1); }
+}
+@keyframes coin-fly-to-target {
+  0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  100% {
+    transform: translate(calc(-50% + var(--tx, 0px)), calc(-50% + var(--ty, 0px))) scale(0.4);
+    opacity: 0;
+  }
+}
+.coin-emoji-element {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  font-size: 80px;
+  line-height: 1;
+  z-index: 210;
+  pointer-events: none;
+  animation: coin-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  filter: drop-shadow(0 0 16px rgba(246, 96, 24, 0.6));
+}
+.coin-emoji-element.flying {
+  animation: coin-fly-to-target 0.8s cubic-bezier(0.7, 0, 0.3, 1) forwards;
+}
+@keyframes pill-flash {
+  0% { background-color: rgba(246, 96, 24, 0); transform: scale(1); }
+  40% { background-color: rgba(246, 96, 24, 0.3); transform: scale(1.25); }
+  100% { background-color: rgba(246, 96, 24, 0); transform: scale(1); }
+}
+.coin-pill-flash { animation: pill-flash 0.6s ease-out; }
+
+/* ————— R5: stretching nav pill labels ————— */
+.nav-label {
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.nav-label.open { max-width: 100px; opacity: 1; }
+
+/* ————— Inputs ————— */
+.skcti-input {
+  background: rgb(var(--surface-container-lowest) / 0.7);
+  border: 1px solid var(--glass-stroke);
+  border-radius: 12px;
+  font-family: var(--font-geist), monospace;
+  color: rgb(var(--on-surface));
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  outline: none;
+}
+.skcti-input:focus {
+  border-color: #ea580c;
+  box-shadow: inset 0 0 12px rgba(234, 88, 12, 0.25);
+}
+.skcti-input::placeholder { color: rgb(var(--on-surface) / 0.35); }
+
+/* ————— Misc ————— */
+@keyframes skeleton-shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, var(--glass-fill) 25%, var(--glass-fill-strong) 50%, var(--glass-fill) 75%);
+  background-size: 800px 100%;
+  animation: skeleton-shimmer 1.4s infinite linear;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+
+/* ————— Liquid shine sweep for hero elements ————— */
+.liquid-shine { position: relative; overflow: hidden; }
+.liquid-shine::after {
+  content: "";
+  position: absolute;
+  inset: -60%;
+  background: linear-gradient(
+    115deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.14) 50%,
+    transparent 60%
+  );
+  transform: translateX(-70%) rotate(0.001deg);
+  animation: shine-sweep 5.5s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes shine-sweep {
+  0%, 55% { transform: translateX(-70%); }
+  85%, 100% { transform: translateX(70%); }
+}
+
+/* 3D perspective helpers for the landing */
+.persp { perspective: 1200px; }
+.preserve-3d { transform-style: preserve-3d; }
