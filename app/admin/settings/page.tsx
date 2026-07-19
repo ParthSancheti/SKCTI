@@ -34,7 +34,7 @@ function Toggle({ on, onClick }: { on: boolean; onClick: () => void }) {
       <motion.span
         layout
         transition={{ type: "spring", stiffness: 500, damping: 32 }}
-        className={`absolute top-1 h-6 w-6 rounded-full bg-white shadow-md ${on ? "left-7" : "left-1"}`}
+        className={`absolute top-1 h-6 w-6 rounded-full glassy shadow-md ${on ? "left-7" : "left-1"}`}
       />
     </button>
   );
@@ -123,7 +123,7 @@ export default function MissionControl() {
             <input
               value={name}
               onChange={(e) => { setName(e.target.value); setNameDirty(true); }}
-              className="w-full rounded-2xl border border-outline/30 bg-surface-container/60 px-4 py-3 font-geist text-body-md text-on-surface outline-none focus:border-primary"
+              className="w-full rounded-2xl border border-outline/30 glassy px-4 py-3 font-geist text-body-md text-on-surface outline-none focus:border-primary"
               placeholder="SKCTI"
             />
             <AnimatePresence>
@@ -153,7 +153,7 @@ export default function MissionControl() {
           </p>
           <div className="space-y-2">
             {FEATURES.map(({ key, Icon, title, sub }) => (
-              <div key={key} className="flex items-center gap-4 rounded-2xl bg-surface-container/50 p-4">
+              <div key={key} className="flex items-center gap-4 rounded-2xl glassy p-4">
                 <div className={`grid h-10 w-10 place-items-center rounded-xl ${config.features[key] ? "bg-primary-container/20 text-primary" : "bg-on-surface/10 text-on-surface/40"}`}>
                   <Icon size={19} />
                 </div>
@@ -179,7 +179,7 @@ export default function MissionControl() {
               onChange={(e) => setEmail(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && addAdmin()}
               placeholder="teammate@gmail.com"
-              className="w-full rounded-2xl border border-outline/30 bg-surface-container/60 px-4 py-3 font-geist text-body-md text-on-surface outline-none focus:border-primary"
+              className="w-full rounded-2xl border border-outline/30 glassy px-4 py-3 font-geist text-body-md text-on-surface outline-none focus:border-primary"
             />
             <button onClick={addAdmin} className="grid w-12 shrink-0 place-items-center rounded-2xl bg-primary-container text-white shadow-glow-primary">
               <Plus size={20} />
@@ -192,7 +192,7 @@ export default function MissionControl() {
               </p>
             )}
             {config.adminEmails.map((e) => (
-              <div key={e} className="flex items-center justify-between rounded-2xl bg-surface-container/50 px-4 py-3">
+              <div key={e} className="flex items-center justify-between rounded-2xl glassy px-4 py-3">
                 <span className="truncate font-geist text-body-md text-on-surface">{e}</span>
                 {config.adminEmails.length > 1 && (
                   <button onClick={() => removeAdmin(e)} className="text-error/70 hover:text-error">
@@ -217,31 +217,31 @@ export default function MissionControl() {
             <div>
               <label className="font-geist text-label-sm text-on-surface/50">Headline</label>
               <input value={land.tagline} onChange={(e) => setL({ tagline: e.target.value })}
-                className="mt-1 w-full rounded-2xl border border-outline/30 bg-surface-container/60 px-4 py-3 font-geist text-body-md text-on-surface outline-none focus:border-primary" />
+                className="mt-1 w-full rounded-2xl border border-outline/30 glassy px-4 py-3 font-geist text-body-md text-on-surface outline-none focus:border-primary" />
             </div>
             <div>
               <label className="font-geist text-label-sm text-on-surface/50">Sub-headline</label>
               <textarea value={land.sub} onChange={(e) => setL({ sub: e.target.value })} rows={2}
-                className="mt-1 w-full resize-none rounded-2xl border border-outline/30 bg-surface-container/60 px-4 py-3 font-geist text-body-md text-on-surface outline-none focus:border-primary" />
+                className="mt-1 w-full resize-none rounded-2xl border border-outline/30 glassy px-4 py-3 font-geist text-body-md text-on-surface outline-none focus:border-primary" />
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               <div>
                 <label className="font-geist text-label-sm text-on-surface/50">WhatsApp (with country code)</label>
                 <input value={land.whatsapp} onChange={(e) => setL({ whatsapp: e.target.value })} placeholder="919876543210"
-                  className="mt-1 w-full rounded-2xl border border-outline/30 bg-surface-container/60 px-4 py-3 font-geist text-body-md text-on-surface outline-none focus:border-primary" />
+                  className="mt-1 w-full rounded-2xl border border-outline/30 glassy px-4 py-3 font-geist text-body-md text-on-surface outline-none focus:border-primary" />
               </div>
               <div>
                 <label className="font-geist text-label-sm text-on-surface/50">YouTube channel URL</label>
                 <input value={land.youtube} onChange={(e) => setL({ youtube: e.target.value })} placeholder="https://youtube.com/@…"
-                  className="mt-1 w-full rounded-2xl border border-outline/30 bg-surface-container/60 px-4 py-3 font-geist text-body-md text-on-surface outline-none focus:border-primary" />
+                  className="mt-1 w-full rounded-2xl border border-outline/30 glassy px-4 py-3 font-geist text-body-md text-on-surface outline-none focus:border-primary" />
               </div>
             </div>
             <div>
               <label className="font-geist text-label-sm text-on-surface/50">Instagram URL</label>
               <input value={land.instagram} onChange={(e) => setL({ instagram: e.target.value })} placeholder="https://instagram.com/…"
-                className="mt-1 w-full rounded-2xl border border-outline/30 bg-surface-container/60 px-4 py-3 font-geist text-body-md text-on-surface outline-none focus:border-primary" />
+                className="mt-1 w-full rounded-2xl border border-outline/30 glassy px-4 py-3 font-geist text-body-md text-on-surface outline-none focus:border-primary" />
             </div>
-            <div className="flex items-center justify-between rounded-2xl bg-surface-container/50 p-4">
+            <div className="flex items-center justify-between rounded-2xl glassy p-4">
               <div>
                 <p className="font-geist text-body-md font-semibold text-on-surface">&quot;Talk to us&quot; form</p>
                 <p className="font-geist text-body-sm text-on-surface/50">Counseling callback requests → Leads inbox</p>
@@ -286,7 +286,7 @@ export default function MissionControl() {
             { Icon: CreditCard, title: "Stripe / Razorpay", sub: "Payment rails wired, held behind a launch flag" },
             { Icon: Lock, title: "Pro tier", sub: "Premium content gating for paid batches" },
           ].map(({ Icon, title, sub }) => (
-            <div key={title} className="flex items-center gap-4 rounded-2xl bg-surface-container/40 p-4 first:mb-2">
+            <div key={title} className="flex items-center gap-4 rounded-2xl glassy p-4 first:mb-2">
               <div className="grid h-10 w-10 place-items-center rounded-xl bg-on-surface/10 text-on-surface/40"><Icon size={18} /></div>
               <div className="flex-1">
                 <p className="font-geist text-body-md font-semibold text-on-surface/60">{title}</p>
@@ -312,24 +312,24 @@ export default function MissionControl() {
                   <p className="font-space text-sm font-bold text-on-surface">{config.appName}</p>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  {config.features.streak && <span className="rounded-full bg-surface-container px-2 py-1 text-[10px]">🔥 4</span>}
-                  {config.features.coins && <span className="rounded-full bg-surface-container px-2 py-1 text-[10px]">🪙 120</span>}
+                  {config.features.streak && <span className="rounded-full glassy px-2 py-1 text-[10px]">🔥 4</span>}
+                  {config.features.coins && <span className="rounded-full glassy px-2 py-1 text-[10px]">🪙 120</span>}
                 </div>
               </div>
               {config.features.planner && (
                 <div className="rounded-2xl bg-primary-container/15 p-3">
                   <p className="font-geist text-[10px] font-semibold text-primary">TODAY'S FOCUS</p>
                   <div className="mt-2 space-y-1.5">
-                    {[1, 2].map((i) => <div key={i} className="h-6 rounded-lg bg-surface-container/80" />)}
+                    {[1, 2].map((i) => <div key={i} className="h-6 rounded-lg glassy" />)}
                   </div>
                 </div>
               )}
               <div className="grid grid-cols-3 gap-2">
                 {["PHY", "CHE", "MAT"].map((s) => (
-                  <div key={s} className="grid h-14 place-items-center rounded-xl bg-surface-container/70 font-geist text-[10px] text-on-surface/60">{s}</div>
+                  <div key={s} className="grid h-14 place-items-center rounded-xl glassy font-geist text-[10px] text-on-surface/60">{s}</div>
                 ))}
               </div>
-              <div className="flex justify-around rounded-full bg-surface-container/80 px-2 py-2">
+              <div className="flex justify-around rounded-full glassy px-2 py-2">
                 {["Home", "Learn", ...(config.features.tests ? ["Tests"] : []), ...(config.features.rank ? ["Rank"] : []), ...(config.features.ai ? ["AI"] : [])].map((t) => (
                   <span key={t} className="font-geist text-[9px] text-on-surface/60">{t}</span>
                 ))}

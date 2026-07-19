@@ -16,7 +16,7 @@
   --surface-container: 252 234 229;
   --surface-container-high: 247 229 223;
   --surface-container-highest: 241 223 217;
-  --on-surface: 34 25 22;
+  --on-surface: 23 23 23;
   --on-surface-variant: 90 65 56;
   --inverse-surface: 56 46 42;
   --inverse-on-surface: 255 237 230;
@@ -53,27 +53,30 @@
   --on-tertiary-fixed: 0 28 57;
   --on-tertiary-fixed-variant: 0 72 131;
   --background: 255 248 246;
-  --on-background: 34 25 22;
+  --on-background: 23 23 23;
   --surface-variant: 241 223 217;
   /* glass: dark ink over light canvas */
-  --glass: 20 10 5;
-  --glass-strong: 20 10 5;
-  --glass-border: 20 10 5;
-  --glass-border-strong: 20 10 5;
+  --glass: 20, 10, 5;
+  --glass-strong: 20, 10, 5;
+  --glass-border: 20, 10, 5;
+  --glass-border-strong: 20, 10, 5;
   --glass-fill: rgba(20, 10, 5, 0.05);
   --glass-fill-strong: rgba(20, 10, 5, 0.08);
   --glass-stroke: rgba(20, 10, 5, 0.1);
   --glass-stroke-strong: rgba(20, 10, 5, 0.18);
-  --lg-fill-hi: rgba(255, 255, 255, 0.72);
-  --lg-fill: rgba(255, 255, 255, 0.5);
-  --lg-fill-strong: rgba(255, 255, 255, 0.62);
-  --lg-fill-lo: rgba(255, 255, 255, 0.38);
-  --lg-stroke: rgba(255, 255, 255, 0.75);
-  --lg-stroke-strong: rgba(255, 255, 255, 0.9);
-  --lg-specular: rgba(255, 255, 255, 0.95);
-  --lg-specular-strong: rgba(255, 255, 255, 1);
+  --lg-fill-hi: rgba(var(--glass), 0.72);
+  --lg-fill: rgba(var(--glass), 0.5);
+  --lg-fill-strong: rgba(var(--glass), 0.62);
+  --lg-fill-lo: rgba(var(--glass), 0.38);
+  --lg-stroke: rgba(var(--glass), 0.75);
+  --lg-stroke-strong: rgba(var(--glass), 0.9);
+  --lg-specular: rgba(var(--glass), 0.95);
+  --lg-specular-strong: rgba(var(--glass), 1);
   --lg-shadow: rgba(120, 60, 20, 0.25);
   --mesh-bg: 0.96;
+  --mesh-c1: 230, 230, 250; /* lavender */
+  --mesh-c2: 255, 218, 185; /* soft peach */
+  --mesh-c3: 173, 216, 230; /* light blue */
   --portal-color: #ffb599;
 }
 
@@ -87,7 +90,7 @@
   --surface-container: 32 31 31;
   --surface-container-high: 42 42 42;
   --surface-container-highest: 53 53 52;
-  --on-surface: 229 226 225;
+  --on-surface: 255 255 255;
   --on-surface-variant: 226 191 178;
   --inverse-surface: 229 226 225;
   --inverse-on-surface: 49 48 48;
@@ -124,94 +127,63 @@
   --on-tertiary-fixed: 0 28 57;
   --on-tertiary-fixed-variant: 0 72 131;
   --background: 19 19 19;
-  --on-background: 229 226 225;
+  --on-background: 255 255 255;
   --surface-variant: 53 53 52;
-  --glass: 255 255 255;
-  --glass-strong: 255 255 255;
-  --glass-border: 255 255 255;
-  --glass-border-strong: 255 255 255;
+  --glass: 255, 255, 255;
+  --glass-strong: 255, 255, 255;
+  --glass-border: 255, 255, 255;
+  --glass-border-strong: 255, 255, 255;
   --glass-fill: rgba(255, 255, 255, 0.07);
   --glass-fill-strong: rgba(255, 255, 255, 0.12);
   --glass-stroke: rgba(255, 255, 255, 0.1);
   --glass-stroke-strong: rgba(255, 255, 255, 0.2);
-  --lg-fill-hi: rgba(255, 255, 255, 0.14);
-  --lg-fill: rgba(255, 255, 255, 0.07);
-  --lg-fill-strong: rgba(255, 255, 255, 0.11);
-  --lg-fill-lo: rgba(255, 255, 255, 0.03);
-  --lg-stroke: rgba(255, 255, 255, 0.16);
-  --lg-stroke-strong: rgba(255, 255, 255, 0.26);
-  --lg-specular: rgba(255, 255, 255, 0.28);
-  --lg-specular-strong: rgba(255, 255, 255, 0.4);
+  --lg-fill-hi: rgba(var(--glass), 0.14);
+  --lg-fill: rgba(var(--glass), 0.07);
+  --lg-fill-strong: rgba(var(--glass), 0.11);
+  --lg-fill-lo: rgba(var(--glass), 0.03);
+  --lg-stroke: rgba(var(--glass), 0.16);
+  --lg-stroke-strong: rgba(var(--glass), 0.26);
+  --lg-specular: rgba(var(--glass), 0.28);
+  --lg-specular-strong: rgba(var(--glass), 0.4);
   --lg-shadow: rgba(0, 0, 0, 0.55);
   --mesh-bg: 0.04;
+  --mesh-c1: 255, 140, 0; /* deep orange */
+  --mesh-c2: 128, 0, 128; /* purple */
+  --mesh-c3: 100, 0, 100; /* dark purple */
 }
 
 html,
 body {
-  @apply bg-background text-on-background;
+  @apply text-on-background bg-transparent;
   font-family: var(--font-hanken), sans-serif;
   min-height: 100%;
 }
 
 /* ————— Liquid Glass (Apple-style): refraction + specular edge + depth ————— */
 .glassy {
-  background: linear-gradient(
-    155deg,
-    var(--lg-fill-hi) 0%,
-    var(--lg-fill) 45%,
-    var(--lg-fill-lo) 100%
-  );
-  backdrop-filter: blur(28px) saturate(1.8);
-  -webkit-backdrop-filter: blur(28px) saturate(1.8);
-  border: 1px solid var(--lg-stroke);
-  box-shadow:
-    inset 0 1px 0 var(--lg-specular),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.04),
-    inset 1px 0 0 rgba(255, 255, 255, 0.05),
-    0 10px 30px -12px var(--lg-shadow);
+  @apply bg-white/40 backdrop-blur-2xl border border-white/50 shadow-xl text-neutral-900;
+  transition: all 0.2s ease-out;
+}
+.dark .glassy {
+  @apply bg-black/40 backdrop-blur-2xl border border-white/10 shadow-2xl text-white;
 }
 .glassy-strong {
-  background: linear-gradient(
-    155deg,
-    var(--lg-fill-hi) 0%,
-    var(--lg-fill-strong) 45%,
-    var(--lg-fill-lo) 100%
-  );
-  backdrop-filter: blur(32px) saturate(1.9);
-  -webkit-backdrop-filter: blur(32px) saturate(1.9);
-  border: 1px solid var(--lg-stroke-strong);
-  box-shadow:
-    inset 0 1px 0 var(--lg-specular-strong),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.05),
-    0 16px 40px -14px var(--lg-shadow);
+  @apply bg-white/50 backdrop-blur-2xl border border-white/50 shadow-xl text-neutral-900;
+  transition: all 0.2s ease-out;
+}
+.dark .glassy-strong {
+  @apply bg-black/50 backdrop-blur-2xl border border-white/10 shadow-2xl text-white;
 }
 /* Elite/featured: top-down gradient border white/20 → transparent */
 .glassy-elite {
   position: relative;
-  background: linear-gradient(
-    155deg,
-    var(--lg-fill-hi) 0%,
-    var(--lg-fill-strong) 45%,
-    var(--lg-fill-lo) 100%
-  );
-  backdrop-filter: blur(32px) saturate(1.9);
-  -webkit-backdrop-filter: blur(32px) saturate(1.9);
-  box-shadow:
-    inset 0 1px 0 var(--lg-specular-strong),
-    0 18px 44px -16px var(--lg-shadow);
+  @apply bg-white/60 backdrop-blur-3xl border border-white/60 shadow-2xl text-neutral-900;
+  transition: all 0.2s ease-out;
 }
-.glassy-elite::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding: 1px;
-  background: linear-gradient(to bottom, var(--glass-stroke-strong), transparent);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  pointer-events: none;
+.dark .glassy-elite {
+  @apply bg-black/60 backdrop-blur-3xl border border-white/20 shadow-2xl text-white;
 }
+
 
 /* ————— R7: hide scrollbars on horizontal rows ————— */
 .hide-scrollbar::-webkit-scrollbar { display: none; }

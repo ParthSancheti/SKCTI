@@ -20,7 +20,7 @@ import { DEFAULT_CONFIG } from "@/lib/types";
 function PhoneMock({ appName }: { appName: string }) {
   return (
     <div className="glassy-elite liquid-shine w-[290px] rounded-[3rem] p-2.5 md:w-[320px]">
-      <div className="relative overflow-hidden rounded-[2.4rem] bg-surface-container-lowest/95 pb-5">
+      <div className="relative overflow-hidden rounded-[2.4rem] glassy pb-5">
         {/* notch */}
         <div className="mx-auto mt-2.5 h-6 w-24 rounded-full bg-black/80" />
         {/* header */}

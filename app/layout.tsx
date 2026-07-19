@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AppProvider } from "@/lib/store";
+import MeshBackground from "@/components/MeshBackground";
 
 export const metadata: Metadata = {
   title: "SKCTI — Elite Command Center",
@@ -31,7 +32,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           rel="stylesheet"
         />
       </head>
-      <body className="antialiased min-h-screen overflow-x-hidden">
+      <body className="antialiased min-h-screen overflow-x-hidden bg-transparent">
+        <MeshBackground />
         <AppProvider>{children}</AppProvider>
       </body>
     </html>

@@ -7,13 +7,13 @@ import type { ReactNode } from "react";
 export default function PhonePreviewFrame({ children }: { children: ReactNode }) {
   return (
     <div className="mx-auto w-[300px] shrink-0">
-      <div className="rounded-[44px] border-4 border-surface-container-highest bg-surface-container-lowest overflow-hidden shadow-2xl shadow-black/40">
+      <div className="rounded-[44px] border-4 border-surface-container-highest glassy overflow-hidden shadow-2xl shadow-black/40">
         <div className="h-8 flex items-center justify-center">
-          <div className="w-24 h-5 rounded-full bg-surface-container-highest" />
+          <div className="w-24 h-5 rounded-full glassy-strong" />
         </div>
         <div className="h-[560px] overflow-y-auto hide-scrollbar p-4 space-y-4">{children}</div>
         <div className="h-6 flex items-center justify-center">
-          <div className="w-28 h-1.5 rounded-full bg-surface-container-highest" />
+          <div className="w-28 h-1.5 rounded-full glassy-strong" />
         </div>
       </div>
     </div>
