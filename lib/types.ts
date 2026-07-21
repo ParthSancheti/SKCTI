@@ -74,6 +74,7 @@ export interface ContentDoc {
   type: string; // Notes PDF / DPP / Formula Sheet...
   weightage: Weightage;
   published: boolean;
+  rewardCoins?: number;
   createdAt?: Timestamp;
 }
 
@@ -87,6 +88,7 @@ export interface TestDoc {
   durationMin: number;
   marks?: number;
   published: boolean;
+  rewardCoins?: number;
   createdAt?: Timestamp;
 }
 
@@ -206,7 +208,7 @@ export function extractDriveId(url: string | undefined | null): string | null {
 }
 
 export const drivePreviewUrl = (driveId: string) =>
-  `https://drive.google.com/file/d/${driveId}/preview`;
+  `https://drive.google.com/file/d/${driveId}/preview?rm=minimal`;
 
 /** Normalize a Google Form link into embeddable form. */
 export function formEmbedUrl(url: string): string {

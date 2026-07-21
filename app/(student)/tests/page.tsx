@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { onSnapshot, query, where } from "firebase/firestore";
-import { CheckCircle2, ClipboardList, Clock, X } from "lucide-react";
+import { CheckCircle2, ClipboardList, Clock, PlayCircle, X, ChevronLeft } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { TestSkeleton } from "@/components/SkeletonLoader";
 import { col, snapTo } from "@/lib/db";
@@ -44,7 +44,7 @@ export default function Tests() {
             <button key={t} onClick={() => { vibrate(10); setTab(t); }} className={`px-5 py-2 rounded-full font-geist text-label-sm font-semibold transition-all ${
               tab === t 
                 ? "bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg" 
-                : "bg-white/10 text-neutral-700 dark:text-white hover:bg-white/20"
+                : "glassy hover:brightness-110 text-black dark:text-white"
             }`}>
               {t}
             </button>
@@ -55,34 +55,42 @@ export default function Tests() {
       <div className="space-y-4 mx-6">
         {tests === null && [0, 1].map((i) => <TestSkeleton key={i} />)}
         {tests !== null && shown.length === 0 && (
-          <div className="bg-white/5 dark:bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-10 text-center shadow-xl">
+          <div className="glassy-strong rounded-3xl p-10 text-center">
             <ClipboardList size={22} className="mx-auto text-purple-500 mb-2" />
-            <p className="font-sora font-semibold text-neutral-900 dark:text-white">No tests yet</p>
+            <p className="font-sora font-semibold text-black dark:text-white">No tests yet</p>
             <p className="font-geist text-label-sm text-black dark:text-neutral-400 mt-1">Quizzes published for {profile.stream} land here live.</p>
           </div>
         )}
         {shown.map((t) => {
           const done = profile.attempted.includes(t.id);
           return (
-            <motion.button
+            <motion.div
               key={t.id}
               layout
-              whileTap={{ scale: 0.985 }}
-              onClick={() => { vibrate(10); setOpen(t); }}
-              className="w-full bg-white/5 dark:bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 text-left hover:bg-white/10 transition-all shadow-xl"
+              className="w-full glassy rounded-[1.5rem] p-6 text-left hover:brightness-110 transition-all flex flex-col gap-4"
             >
               <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <h3 className="font-sora font-semibold text-lg leading-snug text-neutral-900 dark:text-white">{t.title}</h3>
-                  <p className="font-geist text-label-sm text-black dark:text-neutral-400 mt-1">{t.subject} · {t.kind} test</p>
+                <div className="min-w-0 flex-1">
+                  <h3 className="font-sora font-semibold text-lg leading-snug text-black dark:text-white">{t.title}</h3>
+                  <p className="font-geist text-label-sm text-black/60 dark:text-white/60 mt-1">{t.subject} · {t.kind} test</p>
                 </div>
                 {done ? (
                   <span className="shrink-0 rounded-full bg-purple-600/20 text-purple-600 dark:text-purple-400 px-3 py-1 font-geist text-label-sm flex items-center gap-1"><CheckCircle2 size={12} /> Done</span>
                 ) : (
-                  <span className="shrink-0 bg-white/10 rounded-full px-3 py-1 font-geist text-label-sm flex items-center gap-1 text-neutral-700 dark:text-white"><Clock size={12} /> {t.durationMin}m</span>
+                  <span className="shrink-0 glassy rounded-full px-3 py-1 font-geist text-label-sm flex items-center gap-1 text-black dark:text-white"><Clock size={12} /> {t.durationMin}m</span>
                 )}
               </div>
-            </motion.button>
+              
+              <div className="pt-4 border-t border-black/10 dark:border-white/10 flex justify-end">
+                <button
+                  onClick={() => { vibrate(10); setOpen(t); }}
+                  className="glassy-strong px-5 py-2.5 rounded-xl font-geist text-sm font-semibold flex items-center gap-2 hover:brightness-110 active:scale-95 transition-all text-black dark:text-white"
+                >
+                  <PlayCircle size={16} />
+                  Start Test
+                </button>
+              </div>
+            </motion.div>
           );
         })}
       </div>
@@ -90,24 +98,49 @@ export default function Tests() {
       {/* ————— embedded Google Form ————— */}
       <AnimatePresence>
         {open && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[90] flex flex-col" style={{ background: "rgb(var(--surface))" }}>
-            <div className="bg-white/5 dark:bg-white/5 backdrop-blur-3xl border-b border-white/10 flex items-center gap-3 px-4 py-3 m-3 rounded-2xl shadow-xl">
-              <button onClick={() => { vibrate(10); setOpen(null); }} aria-label="Close" className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 transition-all flex items-center justify-center shrink-0 text-neutral-900 dark:text-white"><X size={18} /></button>
-              <div className="flex-1 min-w-0">
-                <p className="font-sora font-semibold truncate text-neutral-900 dark:text-white">{open.title}</p>
-                <p className="font-geist text-label-sm text-black dark:text-neutral-400">{open.durationMin} min · submit inside the form</p>
-              </div>
-              {!profile.attempted.includes(open.id) && (
-                <motion.button
-                  whileTap={{ scale: 0.92 }}
-                  onClick={() => { vibrate(20); void markAttempted(open.id); }}
-                  className="rounded-full bg-gradient-to-r from-purple-600 to-blue-600 text-white px-5 py-2.5 font-geist font-bold text-label-sm shrink-0 shadow-lg hover:scale-[1.02] active:scale-[0.97] transition-all"
+          <motion.div 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            exit={{ opacity: 0 }} 
+            className="fixed inset-0 z-[100] bg-black lg:relative lg:inset-auto lg:z-auto lg:bg-transparent"
+          >
+            {/* Floating UI */}
+            <div className="absolute inset-0 pointer-events-none z-50">
+              {/* Top Left: Back Button */}
+              <div className="absolute top-4 left-4 pointer-events-auto">
+                <button 
+                  onClick={() => { vibrate(10); setOpen(null); }}
+                  className="flex items-center justify-center w-12 h-12 rounded-full glassy hover:brightness-110 transition-all text-white lg:text-black lg:dark:text-white"
                 >
-                  Mark done +25 🪙
-                </motion.button>
+                  <ChevronLeft size={24} />
+                </button>
+              </div>
+
+              {/* Bottom Right: Mark Done Button */}
+              {!profile.attempted.includes(open.id) && (
+                <div className="absolute bottom-6 right-6 pointer-events-auto">
+                  <button 
+                    onClick={() => { vibrate(20); void markAttempted(open.id, open.rewardCoins ?? 25); setOpen(null); }}
+                    className="flex items-center gap-2 px-5 py-3 rounded-full border border-purple-500/50 bg-black/40 backdrop-blur-md text-purple-400 hover:bg-black/60 transition-all font-geist text-sm font-bold shadow-[0_0_20px_rgba(168,85,247,0.3)]"
+                  >
+                    <CheckCircle2 size={16} className="text-purple-300" />
+                    <span className="text-white drop-shadow-md">Mark done +{open.rewardCoins ?? 25} 🪙</span>
+                  </button>
+                </div>
               )}
             </div>
-            <iframe src={formEmbedUrl(open.formUrl)} className="flex-1 w-full" style={{ border: 0 }} title={open.title} />
+
+            {/* Test Iframe Container */}
+            <div className="w-full h-full lg:h-[calc(100vh-80px)] p-0 lg:p-4">
+              <iframe 
+                src={formEmbedUrl(open.formUrl)} 
+                className="w-full h-full border-none rounded-none lg:rounded-2xl bg-white pointer-events-auto"
+                allow="autoplay; encrypted-media" 
+                allowFullScreen 
+                onContextMenu={(e) => e.preventDefault()}
+                title={open.title}
+              />
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

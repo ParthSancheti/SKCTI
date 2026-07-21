@@ -54,7 +54,8 @@ interface Store {
   addCoins: (n: number) => Promise<void>;
   markTaskDone: (taskId: string) => Promise<void>;
   markDownloaded: (contentId: string) => Promise<void>;
-  markAttempted: (testId: string) => Promise<void>;
+  markAttempted: (testId: string, rewardCoins?: number) => Promise<void>;
+  markViewed: (contentId: string, rewardCoins?: number) => Promise<void>;
 }
 
 const Ctx = createContext<Store | null>(null);
@@ -280,11 +281,19 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (profile && !profile.downloads.includes(contentId))
       await updateUser(profile.uid, { downloads: [...profile.downloads, contentId] });
   };
-  const markAttempted = async (testId: string) => {
+  const markAttempted = async (testId: string, rewardCoins: number = 25) => {
     if (profile && !profile.attempted.includes(testId))
       await updateUser(profile.uid, {
         attempted: [...profile.attempted, testId],
-        coins: increment(25) as never,
+        coins: increment(rewardCoins) as never,
+      });
+  };
+
+  const markViewed = async (contentId: string, rewardCoins: number = 10) => {
+    if (profile && !profile.downloads.includes(contentId))
+      await updateUser(profile.uid, {
+        downloads: [...profile.downloads, contentId],
+        coins: increment(rewardCoins) as never,
       });
   };
 
@@ -296,7 +305,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       value={{
         ready, fbUser, profile, profileLoaded, todos, chatHistory, config, configLoaded, isAdmin,
         isDark, themePref, toggleTheme, loginWithGoogle, logout, completeOnboarding,
-        setStream, upgradeGrade, dismissUpgrade, addCoins, markTaskDone, markDownloaded, markAttempted,
+        setStream, upgradeGrade, dismissUpgrade, addCoins, markTaskDone, markDownloaded, markAttempted, markViewed,
       }}
     >
       {children}

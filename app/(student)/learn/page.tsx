@@ -3,7 +3,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { onSnapshot, query, where } from "firebase/firestore";
 import {
-  Atom, Bookmark, Calculator, ChevronLeft, ChevronRight, Dna, FlaskConical,
+  Atom, Bookmark, Calculator, ChevronDown, ChevronLeft, ChevronRight, Dna, Filter, FlaskConical,
   PlayCircle, Search, X,
 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
@@ -70,6 +70,11 @@ function LearnInner() {
   const [mode, setMode] = useState<"notes" | "videos" | "saved">("notes");
   const [subject, setSubject] = useState<string | null>(params.get("subject"));
   const [typeFilter, setTypeFilter] = useState<string | null>(null);
+  
+  // Local Subject Search & Filter
+  const [subjectSearch, setSubjectSearch] = useState("");
+  const [subjectFilter, setSubjectFilter] = useState<"All" | "High" | "Medium" | "Low">("All");
+
   const { navigate } = useHapticRouter();
 
   useEffect(() => {
@@ -107,8 +112,13 @@ function LearnInner() {
   const subjectItems = useMemo(() => {
     let list = (items ?? []).filter((i) => i.subject === subject);
     if (typeFilter) list = list.filter((i) => i.type === typeFilter);
+    if (subjectFilter !== "All") list = list.filter((i) => i.weightage === subjectFilter);
+    if (subjectSearch.trim()) {
+      const qs = subjectSearch.trim().toLowerCase();
+      list = list.filter((i) => i.title.toLowerCase().includes(qs));
+    }
     return list;
-  }, [items, subject, typeFilter]);
+  }, [items, subject, typeFilter, subjectFilter, subjectSearch]);
 
   const subjectTypes = useMemo(
     () => Array.from(new Set((items ?? []).filter((i) => i.subject === subject).map((i) => i.type))),
@@ -145,14 +155,14 @@ function LearnInner() {
       {!subject && (
         <div className="mx-6 mt-6 mb-8 flex flex-col gap-6">
           <div>
-            <h1 className="font-sora text-6xl font-black tracking-tight text-neutral-900 dark:text-white mb-2">Learn OS</h1>
+            <h1 className="font-sora text-6xl font-black tracking-tight text-black dark:text-white mb-2">Learn OS</h1>
           <p className="font-geist text-body-lg text-neutral-600 dark:text-neutral-400">
             {profile.stream} · {profile.grade} — {(items?.length ?? 0) + (videos?.length ?? 0)} resources live
           </p>
         </div>
         
         {/* Massive Search Bar (identical to Home style) */}
-        <div className="w-full flex items-center gap-3 bg-white/5 dark:bg-white/5 backdrop-blur-3xl border border-white/10 rounded-full px-6 py-4 shadow-xl transition-all focus-within:bg-white/10 focus-within:border-white/30">
+        <div className="w-full flex items-center gap-3 glassy rounded-full px-6 py-4 transition-all focus-within:brightness-110">
           <Search size={22} className="shrink-0 text-purple-500" />
           <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search chapters, topics..."
             className="w-full bg-transparent font-hanken text-body-lg outline-none text-black dark:text-white placeholder:text-neutral-500 dark:placeholder:text-neutral-400" />
@@ -168,7 +178,7 @@ function LearnInner() {
               className={`flex items-center gap-2 rounded-full px-5 py-2 font-geist text-label-sm font-semibold transition-all ${
                 mode === m
                   ? "bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg"
-                  : "bg-white/10 text-neutral-700 dark:text-white hover:bg-white/20"
+                  : "glassy hover:brightness-110 text-black dark:text-white"
               }`}>
               {m === "saved" && <Bookmark size={14} />}
               {m === "videos" && <PlayCircle size={14} />}
@@ -181,7 +191,7 @@ function LearnInner() {
       {/* ————— global search results ————— */}
       {searching ? (
         <div className="space-y-4">
-          <p className="font-geist text-label-sm text-on-surface/50">{searchResults.length + shownVideos.length} results</p>
+          <p className="font-geist text-label-sm text-black/50 dark:text-white/50">{searchResults.length + shownVideos.length} results</p>
           {searchResults.map((c) => <ChapterCard key={c.id} chapter={c} onOpen={() => setOpen(c)} />)}
           {config.features.videos && shownVideos.length > 0 && (
             <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
@@ -192,8 +202,8 @@ function LearnInner() {
           )}
           {searchResults.length + shownVideos.length === 0 && (
             <div className="glassy rounded-glass p-10 text-center">
-              <p className="font-sora font-semibold">No matches</p>
-              <p className="mt-1 font-hanken text-body-md text-on-surface/50">Try a chapter name like &quot;Thermodynamics&quot;.</p>
+              <p className="font-sora font-semibold text-black dark:text-white">No matches</p>
+              <p className="mt-1 font-hanken text-body-md text-black/50 dark:text-white/50">Try a chapter name like &quot;Thermodynamics&quot;.</p>
             </div>
           )}
         </div>
@@ -210,12 +220,45 @@ function LearnInner() {
             /* ————— level 2: topic-wise ————— */
             <motion.div key={subject} initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 24 }} className="space-y-4 pt-6">
               <div className="flex items-center gap-3 mx-6">
-                <button onClick={(e) => { vibrate(10); navigate("/learn", e); }} className="bg-white/10 dark:bg-white/5 backdrop-blur-xl border border-white/10 w-10 h-10 flex items-center justify-center rounded-full text-neutral-900 dark:text-white hover:bg-white/20 transition-all shadow-md">
+                <button onClick={(e) => { vibrate(10); navigate("/learn", e); }} className="glassy w-10 h-10 flex items-center justify-center rounded-full text-black dark:text-white hover:brightness-110 transition-all">
                   <ChevronLeft size={17} />
                 </button>
                 <div>
-                  <h2 className="font-sora text-headline-lg font-black tracking-tight text-neutral-900 dark:text-white">{subject}</h2>
+                  <h2 className="font-sora text-headline-lg font-black tracking-tight text-black dark:text-white">{subject}</h2>
                   <p className="font-geist text-label-sm text-black dark:text-neutral-400">{subjectItems.length} topics</p>
+                </div>
+              </div>
+
+              {/* Local Subject Search & Filter Row */}
+              <div className="mx-6 flex items-center gap-3">
+                <div className="flex-1 flex items-center gap-3 glassy rounded-xl px-4 py-3 transition-all focus-within:brightness-110">
+                  <Search size={18} className="shrink-0 text-black/50 dark:text-white/50" />
+                  <input 
+                    value={subjectSearch} 
+                    onChange={(e) => setSubjectSearch(e.target.value)} 
+                    placeholder="Search in this subject..."
+                    className="w-full bg-transparent font-geist text-sm outline-none text-black dark:text-white placeholder:text-black/50 dark:placeholder:text-white/50" 
+                  />
+                  {subjectSearch && <button onClick={() => setSubjectSearch("")} className="shrink-0 text-black dark:text-white"><X size={16} /></button>}
+                </div>
+                <div className="relative">
+                  <select 
+                    value={subjectFilter}
+                    onChange={(e) => {
+                      vibrate(10);
+                      setSubjectFilter(e.target.value as any);
+                    }}
+                    className={`appearance-none glassy rounded-xl pl-10 pr-8 py-3 font-geist text-sm font-semibold outline-none transition-all cursor-pointer ${
+                      subjectFilter !== "All" ? "text-purple-600 dark:text-purple-400" : "text-black dark:text-white"
+                    }`}
+                  >
+                    <option value="All" className="text-black bg-white dark:bg-neutral-900 dark:text-white">All Weights</option>
+                    <option value="High" className="text-black bg-white dark:bg-neutral-900 dark:text-white">High</option>
+                    <option value="Medium" className="text-black bg-white dark:bg-neutral-900 dark:text-white">Medium</option>
+                    <option value="Low" className="text-black bg-white dark:bg-neutral-900 dark:text-white">Low</option>
+                  </select>
+                  <Filter size={16} className={`absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none ${subjectFilter !== "All" ? "text-purple-600 dark:text-purple-400" : "text-black/70 dark:text-white/70"}`} />
+                  <ChevronDown size={16} className={`absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none ${subjectFilter !== "All" ? "text-purple-600 dark:text-purple-400" : "text-black/70 dark:text-white/70"}`} />
                 </div>
               </div>
               {subjectTypes.length > 1 && (
@@ -227,7 +270,7 @@ function LearnInner() {
                         className={`shrink-0 rounded-full px-5 py-2 font-geist text-label-sm font-semibold transition-all ${
                           active 
                             ? "bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg" 
-                            : "bg-white/10 text-neutral-700 dark:text-white hover:bg-white/20"
+                            : "glassy hover:brightness-110 text-black dark:text-white"
                         }`}>
                         {t}
                       </button>
@@ -238,8 +281,8 @@ function LearnInner() {
               <div className="mx-6 space-y-4">
                 {items === null && [0, 1, 2].map((i) => <ChapterSkeleton key={i} />)}
                 {items !== null && subjectItems.length === 0 && (
-                  <div className="bg-white/5 dark:bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-10 text-center shadow-xl">
-                    <p className="font-sora font-semibold text-neutral-900 dark:text-white">Nothing in {subject} yet</p>
+                  <div className="glassy-strong rounded-3xl p-10 text-center">
+                    <p className="font-sora font-semibold text-black dark:text-white">Nothing in {subject} yet</p>
                     <p className="mt-1 font-geist text-label-sm text-black dark:text-neutral-400">Notes published from the admin panel appear here instantly.</p>
                   </div>
                 )}
@@ -248,7 +291,7 @@ function LearnInner() {
 
               {config.features.videos && videoCountFor(subject) > 0 && (
                 <div className="mx-6 pt-4">
-                  <h3 className="font-sora text-headline-lg font-black tracking-tight text-neutral-900 dark:text-white mb-4">Lectures</h3>
+                  <h3 className="font-sora text-headline-lg font-black tracking-tight text-black dark:text-white mb-4">Lectures</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {(videos ?? []).filter((v) => v.subject === subject).map((v) => (
                       <VideoTile key={v.id} v={v} onOpen={() => setOpenVideo(v)} />
@@ -262,10 +305,10 @@ function LearnInner() {
         </AnimatePresence>
       ) : mode === "videos" ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mx-6">
-          {videos === null && [0, 1, 2, 3].map((i) => <div key={i} className="bg-white/10 animate-pulse border border-white/5 aspect-video rounded-3xl" />)}
+          {videos === null && [0, 1, 2, 3].map((i) => <div key={i} className="glassy animate-pulse aspect-video rounded-3xl" />)}
           {videos !== null && shownVideos.length === 0 && (
-            <div className="bg-white/5 dark:bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-10 text-center shadow-xl col-span-full">
-              <p className="font-sora font-semibold text-neutral-900 dark:text-white">No videos yet</p>
+            <div className="glassy-strong rounded-3xl p-10 text-center col-span-full">
+              <p className="font-sora font-semibold text-black dark:text-white">No videos yet</p>
               <p className="mt-1 font-geist text-label-sm text-black dark:text-neutral-400">Lectures published from the admin panel appear here instantly.</p>
             </div>
           )}
@@ -276,9 +319,9 @@ function LearnInner() {
         <div className="space-y-4">
           {savedItems.length === 0 ? (
             <div className="glassy rounded-glass p-10 text-center">
-              <Bookmark size={28} className="mx-auto text-on-surface/30" />
-              <p className="mt-3 font-sora font-semibold">No saved notes yet</p>
-              <p className="mt-1 font-hanken text-body-md text-on-surface/50">Tap Save on any note and it lives here for instant access.</p>
+              <Bookmark size={28} className="mx-auto text-black/30 dark:text-white/30" />
+              <p className="mt-3 font-sora font-semibold text-black dark:text-white">No saved notes yet</p>
+              <p className="mt-1 font-hanken text-body-md text-black/50 dark:text-white/50">Tap Save on any note and it lives here for instant access.</p>
             </div>
           ) : (
             savedItems.map((c) => <ChapterCard key={c.id} chapter={c} onOpen={() => setOpen(c)} />)
@@ -293,8 +336,8 @@ function LearnInner() {
 
 function VideoTile({ v, onOpen }: { v: VideoDoc; onOpen: () => void }) {
   return (
-    <motion.button whileTap={{ scale: 0.96 }} onClick={() => { vibrate(10); onOpen(); }} className="bg-white/5 dark:bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl hover:bg-white/10 transition-all shadow-xl overflow-hidden text-left flex flex-col">
-      <div className="relative aspect-video w-full bg-black/30">
+    <motion.button whileTap={{ scale: 0.96 }} onClick={() => { vibrate(10); onOpen(); }} className="glassy rounded-3xl hover:brightness-110 transition-all overflow-hidden text-left flex flex-col">
+      <div className="relative aspect-video w-full bg-black/10 dark:bg-black/30">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={youtubeThumb(v.youtubeId)} alt={v.title} className="h-full w-full object-cover" />
         <span className="absolute inset-0 grid place-items-center bg-black/20 hover:bg-black/10 transition-colors">
@@ -303,7 +346,7 @@ function VideoTile({ v, onOpen }: { v: VideoDoc; onOpen: () => void }) {
       </div>
       <div className="p-4 flex-1">
         <p className="font-geist text-[10px] font-bold uppercase tracking-widest text-purple-500">{v.subject}</p>
-        <p className="mt-1 line-clamp-2 font-sora text-sm font-semibold leading-snug text-neutral-900 dark:text-white">{v.title}</p>
+        <p className="mt-1 line-clamp-2 font-sora text-sm font-semibold leading-snug text-black dark:text-white">{v.title}</p>
       </div>
     </motion.button>
   );

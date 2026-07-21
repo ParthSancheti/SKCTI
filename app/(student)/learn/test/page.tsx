@@ -3,20 +3,18 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { doc, getDoc } from "firebase/firestore";
-import { ChevronLeft, Download, Sparkles, CheckCircle2 } from "lucide-react";
+import { ChevronLeft, CheckCircle2 } from "lucide-react";
 import { fbDb } from "@/lib/firebase";
-import { drivePreviewUrl, type ContentDoc } from "@/lib/types";
+import { formEmbedUrl, type ContentDoc } from "@/lib/types";
 import { useStore, vibrate } from "@/lib/store";
-import { useHapticRouter } from "@/components/HapticRouter";
 
-export default function PdfReaderPage() {
+export default function TestViewerPage() {
   const params = useSearchParams();
   const id = params.get("id");
+  const { profile, markAttempted } = useStore();
   const [content, setContent] = useState<ContentDoc | null>(null);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-  const { profile, markViewed } = useStore();
-  const { navigate } = useHapticRouter();
 
   useEffect(() => {
     if (!id) {
@@ -64,10 +62,25 @@ export default function PdfReaderPage() {
     );
   }
 
+  if (!content.testLink) {
+    return (
+      <div className="flex min-h-screen items-center justify-center p-6 text-center">
+        <div className="glassy-strong rounded-[2rem] p-8 max-w-sm border border-white/10 bg-white/5 backdrop-blur-2xl">
+          <p className="font-sora text-lg font-bold text-red-500 mb-2">No Test Found</p>
+          <p className="font-geist text-sm text-neutral-400 mb-6">This chapter does not have an associated test link.</p>
+          <button 
+            onClick={() => router.back()}
+            className="w-full bg-white/10 hover:bg-white/20 text-white rounded-full py-3 font-geist text-sm font-bold transition-all"
+          >
+            Go Back
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="fixed inset-0 z-[100] bg-black lg:relative lg:inset-auto lg:z-auto lg:bg-transparent">
-      {/* Mobile: Hide global nav (implicitly covered by fixed inset-0 on mobile) */}
-      
       {/* Floating UI */}
       <div className="absolute inset-0 pointer-events-none z-50">
         {/* Top Left: Back Button */}
@@ -80,37 +93,29 @@ export default function PdfReaderPage() {
           </button>
         </div>
 
-        {/* Bottom Right Floating Buttons */}
-        <div className="absolute bottom-6 right-6 pointer-events-auto flex items-center gap-3 flex-wrap justify-end">
-          {profile && !profile.downloads.includes(content.id) && (
+        {/* Bottom Right: Mark Done Button */}
+        {profile && !profile.attempted.includes(content.id) && (
+          <div className="absolute bottom-6 right-6 pointer-events-auto">
             <button 
-              onClick={() => { vibrate(20); void markViewed(content.id, content.rewardCoins ?? 10); }}
+              onClick={() => { vibrate(20); void markAttempted(content.id, content.rewardCoins ?? 25); router.back(); }}
               className="flex items-center gap-2 px-5 py-3 rounded-full border border-purple-500/50 bg-black/40 backdrop-blur-md text-purple-400 hover:bg-black/60 transition-all font-geist text-sm font-bold shadow-[0_0_20px_rgba(168,85,247,0.3)]"
             >
               <CheckCircle2 size={16} className="text-purple-300" />
-              <span className="text-white drop-shadow-md">Mark done +{content.rewardCoins ?? 10} 🪙</span>
+              <span className="text-white drop-shadow-md">Mark done +{content.rewardCoins ?? 25} 🪙</span>
             </button>
-          )}
-
-          <button 
-            onClick={() => vibrate(10)} 
-            className="flex items-center gap-2 px-5 py-3 rounded-full border border-purple-500/50 bg-black/40 backdrop-blur-md text-purple-400 hover:bg-black/60 transition-all font-geist text-sm font-bold shadow-[0_0_20px_rgba(168,85,247,0.3)]"
-          >
-            <Sparkles size={16} className="text-purple-300" />
-            <span className="text-white drop-shadow-md">Ask AI</span>
-          </button>
-        </div>
+          </div>
+        )}
       </div>
 
-      {/* PDF Iframe Container */}
+      {/* Test Iframe Container */}
       <div className="w-full h-full lg:h-[calc(100vh-80px)] p-0 lg:p-4">
         <iframe 
-          src={drivePreviewUrl(content.driveId)} 
+          src={formEmbedUrl(content.testLink)} 
           className="w-full h-full border-none rounded-none lg:rounded-2xl bg-white pointer-events-auto"
           allow="autoplay; encrypted-media" 
           allowFullScreen 
           onContextMenu={(e) => e.preventDefault()}
-          title={content.title}
+          title={`Test for ${content.title}`}
         />
       </div>
     </div>

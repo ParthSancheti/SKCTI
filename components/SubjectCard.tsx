@@ -21,7 +21,7 @@ export default function SubjectCard({ subject, count }: { subject: string; count
       <motion.div 
         layoutId={`subject-${subject}`}
         whileTap={{ scale: 0.95 }} 
-        className="bg-white/5 dark:bg-white/5 backdrop-blur-3xl border border-white/10 shadow-xl rounded-3xl overflow-hidden relative p-6 flex flex-col justify-center h-36 hover:shadow-2xl transition-all group"
+        className="glassy-strong rounded-3xl overflow-hidden relative p-6 flex flex-col justify-center h-36 hover:brightness-110 transition-all group"
       >
         {/* Edge-to-Edge Image with Gradient Mask */}
         <div className="absolute inset-y-0 right-0 w-[60%] md:w-[55%] pointer-events-none z-0">

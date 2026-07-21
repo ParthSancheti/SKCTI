@@ -54,6 +54,7 @@ export default function ContentEditPage() {
   const [weight, setWeight] = useState<Weightage>("High");
   const [testLink, setTestLink] = useState("");
   const [youtubeUrl, setYoutubeUrl] = useState("");
+  const [rewardCoins, setRewardCoins] = useState<number>(25);
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const [mobileTab, setMobileTab] = useState<"editor" | "preview">("editor");
@@ -78,10 +79,12 @@ export default function ContentEditPage() {
             setWeight(d.weightage || "High");
             setTestLink(d.testLink || "");
             setYoutubeUrl(d.youtubeUrl || "");
+            setRewardCoins(d.rewardCoins ?? 25);
           } else if (initMode === "video") {
             setUrl((data as VideoDoc).youtubeUrl || "");
           } else if (initMode === "test") {
             setUrl((data as TestDoc).formUrl || "");
+            setRewardCoins((data as TestDoc).rewardCoins ?? 25);
           }
         }
       } catch (err) {
@@ -107,7 +110,7 @@ export default function ContentEditPage() {
         await updateContent(id, {
           title, topic, streams, subject, type: type || "Notes PDF", weightage: weight,
           driveId: extractDriveId(url)!, driveUrl: url,
-          testLink: testLink || null, youtubeUrl: youtubeUrl || null
+          testLink: testLink || null, youtubeUrl: youtubeUrl || null, rewardCoins
         } as any);
       } else if (mode === "video") {
         await updateVideo(id, {
@@ -115,7 +118,7 @@ export default function ContentEditPage() {
         } as any);
       } else {
         await updateTest(id, {
-          title, topic, streams, subject, formUrl: url,
+          title, topic, streams, subject, formUrl: url, rewardCoins
         } as any);
       }
       vibrate(50);
@@ -245,6 +248,18 @@ export default function ContentEditPage() {
                   <div className="flex flex-wrap gap-2">{WEIGHTS.map((w) => <Chip key={w} label={w} active={weight === w} onClick={() => setWeight(w)} />)}</div>
                 </div>
               </>
+            )}
+
+            {mode !== "video" && (
+              <div>
+                <p className="mb-2 font-geist text-xs font-bold uppercase tracking-widest text-neutral-500">Reward Coins (on Completion)</p>
+                <input 
+                  type="number" 
+                  value={rewardCoins} 
+                  onChange={(e) => setRewardCoins(parseInt(e.target.value) || 0)} 
+                  className="w-full max-w-[150px] bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 font-geist text-sm outline-none focus:border-purple-500 transition-colors backdrop-blur-md text-neutral-900 dark:text-white" 
+                />
+              </div>
             )}
           </GlassCard>
 
