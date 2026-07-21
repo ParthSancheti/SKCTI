@@ -6,7 +6,7 @@ import {
 } from "firebase/firestore";
 import { fbDb } from "./firebase";
 import type {
-  AnnouncementDoc, AppConfig, AuditEntry, BannerDoc, ContentDoc, InquiryDoc, TestDoc, UserDoc, VideoDoc,
+  AnnouncementDoc, AppConfig, AuditEntry, BannerDoc, ContentDoc, InquiryDoc, TestDoc, UserDoc, VideoDoc, AiChatDoc
 } from "./types";
 import { DEFAULT_CONFIG } from "./types";
 
@@ -19,6 +19,8 @@ export const col = {
   videos: () => collection(fbDb(), "videos"),
   announcements: () => collection(fbDb(), "announcements"),
   inquiries: () => collection(fbDb(), "inquiries"),
+  todos: (uid: string) => collection(fbDb(), "users", uid, "todos"),
+  aiChats: (uid: string) => collection(fbDb(), "users", uid, "aiChats"),
 };
 
 export const configRef = () => doc(fbDb(), "config", "app");
@@ -86,3 +88,8 @@ export const createInquiry = (d: Omit<InquiryDoc, "id" | "createdAt" | "status">
 export const updateInquiry = (id: string, patch: Partial<InquiryDoc>) =>
   updateDoc(doc(fbDb(), "inquiries", id), patch);
 export const deleteInquiry = (id: string) => deleteDoc(doc(fbDb(), "inquiries", id));
+
+export const createAiChat = (uid: string, d: Omit<AiChatDoc, "id">) =>
+  addDoc(col.aiChats(uid), d);
+export const updateAiChat = (uid: string, id: string, patch: Partial<AiChatDoc>) =>
+  updateDoc(doc(fbDb(), "users", uid, "aiChats", id), patch);

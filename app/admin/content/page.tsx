@@ -3,9 +3,10 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { onSnapshot, orderBy, query } from "firebase/firestore";
 import {
-  ClipboardList, Eye, EyeOff, FileText, Link2, Pencil, PlayCircle, Plus, Trash2, X,
+  ClipboardList, Eye, EyeOff, FileText, Filter, Pencil, PlayCircle, Plus, Search, Trash2, X,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import GlassCard from "@/components/GlassCard";
 import { LiveChapterCard } from "@/components/PhonePreviewFrame";
 import {
@@ -29,7 +30,7 @@ function Chip({ label, active, onClick }: { label: string; active: boolean; onCl
     <motion.button
       whileTap={{ scale: 0.94 }}
       onClick={() => { vibrate(10); onClick(); }}
-      className={`rounded-full px-4 py-2 font-geist text-label-sm transition-all ${active ? "bg-primary-container text-white shadow-glow-primary" : "glassy text-on-surface/70"}`}
+      className={`rounded-full px-4 py-2 font-geist text-label-sm transition-all border ${active ? "bg-purple-600 dark:bg-white text-white dark:text-black border-transparent shadow-lg" : "bg-black/5 dark:bg-white/5 border-black/10 dark:border-white/10 text-neutral-600 dark:text-neutral-400 hover:bg-black/10 dark:hover:bg-white/10 hover:text-neutral-900 dark:hover:text-white"}`}
     >
       {label}
     </motion.button>
@@ -39,7 +40,8 @@ function Chip({ label, active, onClick }: { label: string; active: boolean; onCl
 const modeOf = (d: AnyDoc): Mode => ("driveId" in d ? "pdf" : "youtubeId" in d ? "video" : "test");
 
 export default function ContentHub() {
-  const { fbUser } = useStore();
+  const { fbUser, configLoaded, isAdmin } = useStore();
+  const router = useRouter();
   const me = fbUser?.email ?? "admin";
 
   const [tab, setTab] = useState<Mode>("pdf");
@@ -47,86 +49,27 @@ export default function ContentHub() {
   const [tests, setTests] = useState<TestDoc[]>([]);
   const [vids, setVids] = useState<VideoDoc[]>([]);
 
-  /* modal state — null closed, "new" adding, doc = editing */
-  const [editorOpen, setEditorOpen] = useState<null | "new" | AnyDoc>(null);
   const [viewing, setViewing] = useState<AnyDoc | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
-  /* form */
-  const [mode, setMode] = useState<Mode>("pdf");
-  const [url, setUrl] = useState("");
-  const [title, setTitle] = useState("");
-  const [streams, setStreams] = useState<Stream[]>([]);
-  const [subject, setSubject] = useState("");
-  const [type, setType] = useState("Notes PDF");
-  const [weight, setWeight] = useState<Weightage>("High");
-  const [kind, setKind] = useState<"Chapter" | "Mock">("Chapter");
-  const [duration, setDuration] = useState("30");
-  const [msg, setMsg] = useState("");
-  const [busy, setBusy] = useState(false);
+  /* Advanced Filters State */
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [filterSubject, setFilterSubject] = useState<string>("All");
+  const [filterSort, setFilterSort] = useState<"Newest" | "Oldest">("Newest");
+  const [filterType, setFilterType] = useState<string>("All");
 
   useEffect(() => {
-    const u1 = onSnapshot(query(col.content(), orderBy("createdAt", "desc")), (s) => setPdfs(s.docs.map((d) => snapTo<ContentDoc>(d))), () => {});
-    const u2 = onSnapshot(query(col.tests(), orderBy("createdAt", "desc")), (s) => setTests(s.docs.map((d) => snapTo<TestDoc>(d))), () => {});
-    const u3 = onSnapshot(query(col.videos(), orderBy("createdAt", "desc")), (s) => setVids(s.docs.map((d) => snapTo<VideoDoc>(d))), () => {});
+    if (!configLoaded || !isAdmin) return;
+    const u1 = onSnapshot(query(col.content(), orderBy("createdAt", "desc")), (s) => setPdfs(s.docs.map((d) => snapTo<ContentDoc>(d))), (e) => console.warn(e));
+    const u2 = onSnapshot(query(col.tests(), orderBy("createdAt", "desc")), (s) => setTests(s.docs.map((d) => snapTo<TestDoc>(d))), (e) => console.warn(e));
+    const u3 = onSnapshot(query(col.videos(), orderBy("createdAt", "desc")), (s) => setVids(s.docs.map((d) => snapTo<VideoDoc>(d))), (e) => console.warn(e));
     return () => { u1(); u2(); u3(); };
-  }, []);
-
-  const editing = editorOpen !== null && editorOpen !== "new" ? editorOpen : null;
-
-  const openNew = () => {
-    setMode(tab);
-    setUrl(""); setTitle(""); setStreams([]); setSubject("");
-    setType("Notes PDF"); setWeight("High"); setKind("Chapter"); setDuration("30");
-    setMsg(""); setEditorOpen("new"); vibrate(10);
-  };
+  }, [configLoaded, isAdmin]);
 
   const openEdit = (d: AnyDoc) => {
-    const m = modeOf(d);
-    setMode(m);
-    setTitle(d.title); setStreams(d.streams); setSubject(d.subject); setMsg("");
-    if (m === "pdf") {
-      const c = d as ContentDoc;
-      setUrl(c.driveUrl); setType(c.type); setWeight(c.weightage);
-    } else if (m === "video") {
-      setUrl((d as VideoDoc).youtubeUrl);
-    } else {
-      const t = d as TestDoc;
-      setUrl(t.formUrl); setKind(t.kind); setDuration(String(t.durationMin));
-    }
-    setEditorOpen(d); vibrate(10);
+    vibrate(10);
+    router.push(`/admin/content/edit?id=${d.id}&mode=${modeOf(d)}`);
   };
-
-  const driveId = extractDriveId(url);
-  const ytId = extractYouTubeId(url);
-  const urlOk = mode === "pdf" ? !!driveId : mode === "video" ? !!ytId : /docs\.google\.com\/forms/.test(url);
-  const canSave = urlOk && !!title.trim() && streams.length > 0 && !!subject && (mode !== "pdf" || !!type);
-
-  const save = async () => {
-    if (!canSave || busy) return;
-    setBusy(true); setMsg("");
-    try {
-      const base = { title: title.trim(), streams, subject };
-      if (editing) {
-        if (mode === "pdf") await updateContent(editing.id, { ...base, driveUrl: url.trim(), driveId: driveId!, type, weightage: weight });
-        else if (mode === "video") await updateVideo(editing.id, { ...base, youtubeUrl: url.trim(), youtubeId: ytId! });
-        else await updateTest(editing.id, { ...base, formUrl: url.trim(), kind, durationMin: Math.max(5, Number(duration) || 30) });
-        await logAudit(me, `Edited "${title.trim()}"`);
-      } else {
-        if (mode === "pdf") await createContent({ ...base, driveUrl: url.trim(), driveId: driveId!, type, weightage: weight, published: true });
-        else if (mode === "video") await createVideo({ ...base, youtubeUrl: url.trim(), youtubeId: ytId!, published: true });
-        else await createTest({ ...base, formUrl: url.trim(), kind, durationMin: Math.max(5, Number(duration) || 30), published: true });
-        await logAudit(me, `Published ${mode} "${title.trim()}"`);
-      }
-      vibrate(20);
-      setEditorOpen(null);
-      setTab(mode);
-    } catch (e) {
-      setMsg(e instanceof Error ? e.message : "Save failed — check Firestore rules & Initialize on the dashboard.");
-    } finally {
-      setBusy(false);
-    }
-  };
-
   const togglePub = async (d: AnyDoc) => {
     vibrate(10);
     try {
@@ -149,7 +92,25 @@ export default function ContentHub() {
     } catch { /* noop */ }
   };
 
-  const list: AnyDoc[] = tab === "pdf" ? pdfs : tab === "video" ? vids : tests;
+  const list: AnyDoc[] = useMemo(() => {
+    let raw = [...pdfs, ...vids, ...tests];
+    if (filterSubject !== "All") raw = raw.filter(d => d.subject === filterSubject);
+    if (filterType !== "All") raw = raw.filter(d => {
+      if (filterType === "Video") return modeOf(d) === "video";
+      if (filterType === "Test") return modeOf(d) === "test";
+      return modeOf(d) === "pdf" && (d as ContentDoc).type === filterType;
+    });
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      raw = raw.filter(d => d.title.toLowerCase().includes(q) || d.subject.toLowerCase().includes(q));
+    }
+    
+    return raw.sort((a, b) => {
+      const ta = a.createdAt?.toMillis() ?? 0;
+      const tb = b.createdAt?.toMillis() ?? 0;
+      return filterSort === "Newest" ? tb - ta : ta - tb;
+    });
+  }, [pdfs, vids, tests, filterSubject, filterType, filterSort, searchQuery]);
 
   const previewSrc = (d: AnyDoc) => {
     const m = modeOf(d);
@@ -160,30 +121,87 @@ export default function ContentHub() {
 
   return (
     <div className="max-w-container space-y-7">
-      <div className="flex flex-wrap items-end justify-between gap-4">
+      {/* Page Title */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <h1 className="font-sora text-headline-xl">Content Hub</h1>
-          <p className="mt-1 font-hanken text-body-md text-on-surface/60">Your Drive, Forms & YouTube — organised, tagged, live.</p>
+          <p className="mt-1 font-hanken text-body-md text-neutral-900/60 dark:text-white/60">Your Drive, Forms & YouTube — organised, tagged, live.</p>
         </div>
+        
+        {/* Add Content Button */}
         <motion.button
           whileTap={{ scale: 0.95 }}
-          onClick={openNew}
-          className="liquid-shine flex items-center gap-2 rounded-full bg-primary-container px-6 py-3.5 font-geist text-label-md font-bold text-white shadow-glow-primary"
+          onClick={() => { vibrate(10); router.push("/admin/content/add"); }}
+          className="w-full md:w-auto flex items-center justify-center gap-2 rounded-full bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 border border-black/10 dark:border-white/10 px-6 py-3 font-geist text-sm font-bold text-neutral-900 dark:text-white transition-all shadow-lg"
         >
           <Plus size={17} /> Add content
         </motion.button>
       </div>
 
-      {/* library tabs */}
-      <div className="glassy flex w-full max-w-md rounded-full p-1.5">
-        {([["pdf", `PDFs · ${pdfs.length}`, FileText], ["test", `Tests · ${tests.length}`, ClipboardList], ["video", `Videos · ${vids.length}`, PlayCircle]] as const).map(([m, label, Icon]) => (
-          <button key={m} onClick={() => { vibrate(10); setTab(m); }} className="relative flex flex-1 items-center justify-center gap-1.5 rounded-full py-2.5 font-geist text-label-sm">
-            {tab === m && <motion.span layoutId="hub-tab" transition={{ type: "spring", stiffness: 400, damping: 32 }} className="absolute inset-0 rounded-full bg-primary-container" />}
-            <Icon size={13} className={`relative z-10 ${tab === m ? "text-white" : "text-on-surface/50"}`} />
-            <span className={`relative z-10 ${tab === m ? "text-white" : "text-on-surface/60"}`}>{label}</span>
-          </button>
-        ))}
+      {/* Search & Filter Row */}
+      <div className="flex w-full items-center gap-3">
+        <div className="flex-1 flex items-center gap-3 bg-black/5 dark:bg-white/5 backdrop-blur-2xl border border-black/10 dark:border-white/10 rounded-full px-5 py-3 transition-all focus-within:bg-black/10 dark:focus-within:bg-white/10 focus-within:border-purple-500 dark:focus-within:border-purple-400">
+          <Search size={18} className="text-neutral-900/50 dark:text-white/50" />
+          <input 
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            placeholder="Search content..."
+            className="bg-transparent border-none outline-none font-geist text-sm text-neutral-900 dark:text-white w-full placeholder:text-neutral-900/40 dark:placeholder:text-white/40"
+          />
+        </div>
+        
+        <motion.button 
+          whileTap={{ scale: 0.95 }}
+          onClick={() => { vibrate(10); setFiltersOpen(!filtersOpen); }}
+          className={`flex items-center justify-center h-[48px] w-[48px] md:w-auto md:px-5 gap-2 rounded-full font-geist text-xs font-bold transition-all border shrink-0 ${
+            filtersOpen 
+              ? "bg-gradient-to-r from-purple-600 to-blue-600 border-transparent text-white shadow-lg" 
+              : "bg-black/5 dark:bg-white/5 border-black/10 dark:border-white/10 text-neutral-900 dark:text-white hover:bg-black/10 dark:hover:bg-white/10"
+          }`}
+        >
+          <Filter size={16} /> <span className="hidden md:inline">Advanced Filters</span>
+        </motion.button>
       </div>
+
+      <AnimatePresence>
+        {filtersOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="overflow-hidden"
+          >
+            <div className="bg-black/5 dark:bg-white/5 backdrop-blur-2xl border border-black/10 dark:border-white/10 rounded-[2rem] p-6 grid grid-cols-1 md:grid-cols-3 gap-6 shadow-xl mb-4">
+              <div>
+                <p className="mb-2 font-geist text-xs font-bold uppercase tracking-widest text-neutral-500">Subject</p>
+                <div className="flex flex-wrap gap-2">
+                  {["All", ...SUBJECTS].map(s => (
+                    <Chip key={s} label={s} active={filterSubject === s} onClick={() => setFilterSubject(s)} />
+                  ))}
+                </div>
+              </div>
+              
+              <div>
+                <p className="mb-2 font-geist text-xs font-bold uppercase tracking-widest text-neutral-500">Sort by Date</p>
+                <div className="flex flex-wrap gap-2">
+                  {["Newest", "Oldest"].map(s => (
+                    <Chip key={s} label={s} active={filterSort === s} onClick={() => setFilterSort(s as any)} />
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <p className="mb-2 font-geist text-xs font-bold uppercase tracking-widest text-neutral-500">Content Type</p>
+                <div className="flex flex-wrap gap-2">
+                  {["All", "Video", "Test", ...TYPES].map(t => (
+                    <Chip key={t} label={t} active={filterType === t} onClick={() => setFilterType(t)} />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* library */}
       <div className="space-y-3">
@@ -194,133 +212,27 @@ export default function ContentHub() {
           </GlassCard>
         )}
         {list.map((d) => (
-          <GlassCard key={d.id} className={`flex items-center gap-3 p-5 ${d.published ? "" : "opacity-50"}`}>
+          <GlassCard key={d.id} className={`flex items-center gap-3 p-5 bg-white/5 dark:bg-white/5 backdrop-blur-2xl border border-black/5 dark:border-white/10 ${d.published ? "" : "opacity-50"}`}>
             <div className="min-w-0 flex-1">
-              <p className="truncate font-sora font-semibold">{d.title}</p>
-              <p className="font-geist text-label-sm text-on-surface/40">
+              <p className="truncate font-sora font-semibold text-neutral-900 dark:text-white">{d.title}</p>
+              <p className="font-geist text-label-sm text-neutral-900/40 dark:text-white/40">
                 {d.subject} · {d.streams.join("+")}
                 {"weightage" in d ? ` · ${(d as ContentDoc).weightage} · ${(d as ContentDoc).type}` : "kind" in d ? ` · ${(d as TestDoc).kind} · ${(d as TestDoc).durationMin} min` : " · Video"}
                 {!d.published && " · Hidden"}
               </p>
             </div>
-            <button onClick={() => { vibrate(10); setViewing(d); }} aria-label="View" className="glassy grid h-10 w-10 shrink-0 place-items-center rounded-full">
-              <Eye size={15} className="text-on-surface/70" />
-            </button>
-            <button onClick={() => openEdit(d)} aria-label="Edit" className="glassy grid h-10 w-10 shrink-0 place-items-center rounded-full">
-              <Pencil size={14} className="text-primary" />
-            </button>
-            <button onClick={() => void togglePub(d)} aria-label="Toggle publish" className="glassy grid h-10 w-10 shrink-0 place-items-center rounded-full">
-              {d.published ? <Eye size={15} className="text-primary" /> : <EyeOff size={15} className="text-on-surface/40" />}
-            </button>
-            <button onClick={() => void remove(d)} aria-label="Delete" className="glassy grid h-10 w-10 shrink-0 place-items-center rounded-full">
-              <Trash2 size={15} className="text-error" />
-            </button>
+            <motion.button whileTap={{ scale: 0.95 }} onClick={() => { vibrate(10); setViewing(d); }} className="bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/10 dark:border-white/10 px-4 py-2 shrink-0 rounded-xl font-geist text-xs font-bold text-neutral-900 dark:text-white transition-colors">View</motion.button>
+            <motion.button whileTap={{ scale: 0.95 }} onClick={() => openEdit(d)} className="bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/10 dark:border-white/10 px-4 py-2 shrink-0 rounded-xl font-geist text-xs font-bold text-neutral-900 dark:text-white transition-colors">Edit</motion.button>
+            <motion.button whileTap={{ scale: 0.95 }} onClick={() => void togglePub(d)} className="bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/10 dark:border-white/10 px-4 py-2 shrink-0 rounded-xl font-geist text-xs font-bold text-neutral-900 dark:text-white transition-colors">
+              {d.published ? "Draft" : "Publish"}
+            </motion.button>
+            <motion.button whileTap={{ scale: 0.95 }} onClick={() => void remove(d)} aria-label="Delete" className="bg-black/5 dark:bg-white/5 hover:bg-red-500/20 border border-black/10 dark:border-white/10 grid h-10 w-10 shrink-0 place-items-center rounded-xl transition-colors">
+              <Trash2 size={16} className="text-neutral-900 dark:text-white hover:text-red-600 dark:hover:text-red-400 transition-colors" />
+            </motion.button>
           </GlassCard>
         ))}
       </div>
 
-      {/* ————— editor modal ————— */}
-      <AnimatePresence>
-        {editorOpen !== null && (
-          <motion.div
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[70] flex items-end justify-center bg-black/60 backdrop-blur-sm md:items-center md:p-6"
-            onClick={() => setEditorOpen(null)}
-          >
-            <motion.div
-              initial={{ y: 80, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 80, opacity: 0 }}
-              transition={{ type: "spring", stiffness: 320, damping: 30 }}
-              onClick={(e) => e.stopPropagation()}
-              className="glassy-strong max-h-[92vh] w-full max-w-xl overflow-y-auto rounded-t-[2rem] p-6 md:rounded-[2rem]"
-            >
-              <div className="mb-5 flex items-center justify-between">
-                <h2 className="font-sora text-headline-lg">{editing ? "Edit content" : "Add content"}</h2>
-                <button onClick={() => setEditorOpen(null)} className="glassy grid h-9 w-9 place-items-center rounded-full"><X size={16} /></button>
-              </div>
-
-              {!editing && (
-                <div className="glassy mb-5 flex rounded-full p-1">
-                  {([["pdf", "PDF", FileText], ["test", "Test", ClipboardList], ["video", "Video", PlayCircle]] as const).map(([m, label, Icon]) => (
-                    <button key={m} onClick={() => { vibrate(10); setMode(m); setUrl(""); setMsg(""); }} className="relative flex flex-1 items-center justify-center gap-1.5 rounded-full py-2.5 font-geist text-label-sm">
-                      {mode === m && <motion.span layoutId="editor-tab" className="absolute inset-0 rounded-full bg-primary-container" />}
-                      <Icon size={13} className={`relative z-10 ${mode === m ? "text-white" : "text-on-surface/50"}`} />
-                      <span className={`relative z-10 ${mode === m ? "text-white" : "text-on-surface/60"}`}>{label}</span>
-                    </button>
-                  ))}
-                </div>
-              )}
-
-              <div className="space-y-5">
-                <div>
-                  <p className="mb-2 flex items-center gap-2 font-geist text-label-sm uppercase text-on-surface-variant">
-                    <Link2 size={12} /> {mode === "pdf" ? "Google Drive link" : mode === "video" ? "YouTube link" : "Google Form link"} <span className="text-error">*</span>
-                  </p>
-                  <input value={url} onChange={(e) => { setUrl(e.target.value); setMsg(""); }}
-                    placeholder={mode === "pdf" ? "https://drive.google.com/file/d/…/view" : mode === "video" ? "https://youtu.be/…" : "https://docs.google.com/forms/…"}
-                    className={`skcti-input h-12 w-full px-4 font-geist text-label-md ${url && !urlOk ? "border-error" : urlOk ? "border-primary/50" : ""}`} />
-                  {url && !urlOk && (
-                    <p className="mt-1.5 font-geist text-label-sm text-error">
-                      {mode === "pdf" ? "Not a valid Drive share link — use Share → Anyone with the link → Viewer" : mode === "video" ? "Not a valid YouTube link" : "Not a valid Google Form link"}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <p className="mb-2 font-geist text-label-sm uppercase text-on-surface-variant">Title <span className="text-error">*</span></p>
-                  <input value={title} onChange={(e) => setTitle(e.target.value)}
-                    placeholder={mode === "pdf" ? "Rotational Motion — Complete Notes" : mode === "video" ? "Electrostatics — One Shot" : "Thermodynamics — Chapter Test"}
-                    className="skcti-input h-12 w-full px-4" />
-                </div>
-                <div>
-                  <p className="mb-2 font-geist text-label-sm uppercase text-on-surface-variant">Stream <span className="text-error">*</span></p>
-                  <div className="flex flex-wrap gap-2">
-                    {STREAMS.map((s) => <Chip key={s} label={s} active={streams.includes(s)} onClick={() => setStreams((c) => (c.includes(s) ? c.filter((x) => x !== s) : [...c, s]))} />)}
-                  </div>
-                </div>
-                <div>
-                  <p className="mb-2 font-geist text-label-sm uppercase text-on-surface-variant">Subject <span className="text-error">*</span></p>
-                  <div className="flex flex-wrap gap-2">
-                    {SUBJECTS.map((s) => <Chip key={s} label={s} active={subject === s} onClick={() => setSubject(s)} />)}
-                  </div>
-                </div>
-                {mode === "pdf" && (
-                  <>
-                    <div>
-                      <p className="mb-2 font-geist text-label-sm uppercase text-on-surface-variant">Type</p>
-                      <div className="flex flex-wrap gap-2">{TYPES.map((t) => <Chip key={t} label={t} active={type === t} onClick={() => setType(t)} />)}</div>
-                    </div>
-                    <div>
-                      <p className="mb-2 font-geist text-label-sm uppercase text-on-surface-variant">Weightage</p>
-                      <div className="flex flex-wrap gap-2">{WEIGHTS.map((w) => <Chip key={w} label={w} active={weight === w} onClick={() => setWeight(w)} />)}</div>
-                    </div>
-                    <LiveChapterCard title={title || "Your title here"} subject={subject || "Subject"} weightage={weight} stream={streams.join("+") || "PCM"} />
-                  </>
-                )}
-                {mode === "test" && (
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="mb-2 font-geist text-label-sm uppercase text-on-surface-variant">Kind</p>
-                      <div className="flex gap-2">{(["Chapter", "Mock"] as const).map((k) => <Chip key={k} label={k} active={kind === k} onClick={() => setKind(k)} />)}</div>
-                    </div>
-                    <div>
-                      <p className="mb-2 font-geist text-label-sm uppercase text-on-surface-variant">Minutes</p>
-                      <input inputMode="numeric" value={duration} onChange={(e) => setDuration(e.target.value.replace(/\D/g, ""))} className="skcti-input h-11 w-full px-4 font-geist" />
-                    </div>
-                  </div>
-                )}
-                <motion.button
-                  whileTap={{ scale: 0.97 }}
-                  disabled={!canSave || busy}
-                  onClick={() => void save()}
-                  className={`w-full rounded-full py-4 font-geist text-label-md font-bold transition-all ${canSave ? "bg-primary-container text-white shadow-glow-primary" : "glassy cursor-not-allowed text-on-surface/30"}`}
-                >
-                  {busy ? "Saving…" : editing ? "Save changes" : "Publish live"}
-                </motion.button>
-                {msg && <p className="font-geist text-label-sm text-error">{msg}</p>}
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* ————— view modal ————— */}
       <AnimatePresence>
@@ -333,13 +245,13 @@ export default function ContentHub() {
             <motion.div
               initial={{ scale: 0.94 }} animate={{ scale: 1 }} exit={{ scale: 0.94 }}
               onClick={(e) => e.stopPropagation()}
-              className="glassy-strong flex h-[85vh] w-full max-w-3xl flex-col overflow-hidden rounded-[2rem]"
+              className="bg-white/95 dark:bg-black/95 backdrop-blur-3xl border border-black/10 dark:border-white/10 flex h-[85vh] w-full max-w-3xl flex-col overflow-hidden rounded-[2.5rem] shadow-2xl"
             >
-              <div className="flex items-center justify-between px-5 py-3.5">
-                <p className="truncate font-sora font-semibold">{viewing.title}</p>
-                <button onClick={() => setViewing(null)} className="glassy grid h-9 w-9 shrink-0 place-items-center rounded-full"><X size={16} /></button>
+              <div className="flex items-center justify-between px-6 py-4 border-b border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5">
+                <p className="truncate font-sora font-semibold text-neutral-900 dark:text-white text-lg">{viewing.title}</p>
+                <button onClick={() => setViewing(null)} className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 text-neutral-900 dark:text-white transition-colors border border-black/10 dark:border-white/10"><X size={16} /></button>
               </div>
-              <iframe src={previewSrc(viewing)} className="w-full flex-1 bg-white/5" allow="autoplay; encrypted-media" allowFullScreen title={viewing.title} />
+              <iframe src={previewSrc(viewing)} className="w-full flex-1 bg-white dark:bg-[#0A0A0A] rounded-b-[2.5rem]" allow="autoplay; encrypted-media" allowFullScreen title={viewing.title} />
             </motion.div>
           </motion.div>
         )}

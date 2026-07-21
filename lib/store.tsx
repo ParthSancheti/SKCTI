@@ -5,14 +5,19 @@ import { doc, increment, onSnapshot, serverTimestamp, setDoc } from "firebase/fi
 import { usePathname, useRouter } from "next/navigation";
 import React, { createContext, useContext, useEffect, useRef, useState } from "react";
 import { fbAuth, fbDb, firebaseReady, googleProvider } from "./firebase";
-import { updateUser } from "./db";
-import type { AppConfig, Grade, Stream, UserDoc } from "./types";
+import { updateUser, col } from "./db";
+import type { AppConfig, Grade, Stream, UserDoc, TodoTask, AiChatMsg } from "./types";
 import { DEFAULT_CONFIG, todayKey } from "./types";
 
 /* ————————————————— haptics ————————————————— */
 export function vibrate(ms = 10) {
   try {
     if (typeof navigator !== "undefined" && "vibrate" in navigator) navigator.vibrate(ms);
+  } catch {}
+}
+export function triggerHaptic(pattern: number | number[] = 50) {
+  try {
+    if (typeof navigator !== "undefined" && "vibrate" in navigator) navigator.vibrate(pattern);
   } catch {}
 }
 
@@ -32,6 +37,8 @@ interface Store {
   fbUser: User | null; // firebase auth user
   profile: UserDoc | null; // firestore user doc (null = needs onboarding)
   profileLoaded: boolean;
+  todos: TodoTask[];
+  chatHistory: AiChatMsg[];
   config: AppConfig;
   configLoaded: boolean;
   isAdmin: boolean;
@@ -62,6 +69,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [fbUser, setFbUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserDoc | null>(null);
   const [profileLoaded, setProfileLoaded] = useState(false);
+  const [todos, setTodos] = useState<TodoTask[]>([]);
+  const [chatHistory, setChatHistory] = useState<AiChatMsg[]>([]);
   const [config, setConfig] = useState<AppConfig>(DEFAULT_CONFIG);
   const [configLoaded, setConfigLoaded] = useState(false);
   const [isDark, setIsDark] = useState(false);
@@ -77,7 +86,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     return onAuthStateChanged(fbAuth(), (u) => {
       setFbUser(u);
       setReady(true);
-      if (!u) {
+      if (u) {
+        document.cookie = "skcti_session=true; path=/; max-age=86400";
+      } else {
+        document.cookie = "skcti_session=; path=/; max-age=0";
         setProfile(null);
         setProfileLoaded(true);
         streakDone.current = false;
@@ -97,6 +109,38 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       },
       () => setProfileLoaded(true)
     );
+    return unsub;
+  }, [fbUser]);
+
+  /* —— live todos —— */
+  useEffect(() => {
+    if (!fbUser) {
+      setTodos([]);
+      return;
+    }
+    const unsub = onSnapshot(col.todos(fbUser.uid), (snap) => {
+      const arr: TodoTask[] = [];
+      snap.forEach((d) => arr.push({ id: d.id, ...d.data() } as TodoTask));
+      arr.sort((a, b) => b.createdAt - a.createdAt);
+      setTodos(arr);
+    });
+    return unsub;
+  }, [fbUser]);
+
+  /* —— live chat history —— */
+  useEffect(() => {
+    if (!fbUser) {
+      setChatHistory([]);
+      return;
+    }
+    const unsub = onSnapshot(doc(fbDb(), "users", fbUser.uid, "private", "chat"), (snap) => {
+      if (snap.exists()) {
+        const data = snap.data();
+        setChatHistory(data.msgs || []);
+      } else {
+        setChatHistory([]);
+      }
+    });
     return unsub;
   }, [fbUser]);
 
@@ -179,6 +223,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     await signInWithPopup(fbAuth(), googleProvider());
   };
   const logout = async () => {
+    document.cookie = "skcti_session=; path=/; max-age=0";
     await signOut(fbAuth());
   };
 
@@ -249,7 +294,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   return (
     <Ctx.Provider
       value={{
-        ready, fbUser, profile, profileLoaded, config, configLoaded, isAdmin,
+        ready, fbUser, profile, profileLoaded, todos, chatHistory, config, configLoaded, isAdmin,
         isDark, themePref, toggleTheme, loginWithGoogle, logout, completeOnboarding,
         setStream, upgradeGrade, dismissUpgrade, addCoins, markTaskDone, markDownloaded, markAttempted,
       }}

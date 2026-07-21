@@ -85,7 +85,7 @@ export default function HeroCarousel({ banners }: { banners: Banner[] }) {
         {expanded && (
           <motion.div
             layoutId={`hero-${expanded.id}`}
-            className="fixed inset-0 z-[110] bg-surface-container-lowest overflow-hidden"
+            className="fixed inset-0 z-[110] glassy overflow-hidden"
           >
             <Image src={expanded.image} alt="" fill className="object-cover opacity-30 mix-blend-luminosity" unoptimized />
             <div className="absolute inset-0 bg-gradient-to-t from-surface-container-lowest via-surface-container-lowest/40 to-transparent" />

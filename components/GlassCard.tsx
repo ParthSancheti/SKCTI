@@ -14,7 +14,8 @@ const GlassCard = forwardRef<HTMLDivElement, GlassCardProps>(
   ({ elite, strong, interactive, className = "", children, ...rest }, ref) => (
     <motion.div
       ref={ref}
-      whileTap={interactive ? { scale: 0.95 } : undefined}
+      whileHover={interactive ? { scale: 1.02 } : undefined}
+      whileTap={interactive ? { scale: 0.98 } : undefined}
       className={`rounded-glass ${elite ? "glassy-elite" : strong ? "glassy-strong" : "glassy"} ${className}`}
       {...rest}
     >

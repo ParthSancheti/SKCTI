@@ -388,3 +388,12 @@ body {
 /* 3D perspective helpers for the landing */
 .persp { perspective: 1200px; }
 .preserve-3d { transform-style: preserve-3d; }
+
+@keyframes hue-shift {
+  0% { filter: hue-rotate(0deg); }
+  50% { filter: hue-rotate(90deg); }
+  100% { filter: hue-rotate(0deg); }
+}
+.gemini-bg {
+  animation: hue-shift 20s infinite ease-in-out;
+}

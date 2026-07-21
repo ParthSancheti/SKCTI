@@ -66,8 +66,8 @@ const config: Config = {
         portal: "cubic-bezier(0.7, 0, 0.3, 1)",
       },
       boxShadow: {
-        "glow-primary": "0 0 24px rgba(234, 88, 12, 0.4)",
-        "glow-primary-soft": "0 0 40px rgba(234, 88, 12, 0.2)",
+        "glow-primary": "0 0 24px rgba(168, 85, 247, 0.4)",
+        "glow-primary-soft": "0 0 40px rgba(168, 85, 247, 0.2)",
       },
     },
   },

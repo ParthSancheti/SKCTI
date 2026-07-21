@@ -26,7 +26,7 @@ export default function UserDrawer({ student, onClose }: { student: UserDoc | nu
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={student.photo} alt="" className="w-14 h-14 rounded-full object-cover" referrerPolicy="no-referrer" />
               ) : (
-                <div className="w-14 h-14 rounded-full bg-primary-container/20 flex items-center justify-center font-sora font-bold text-primary">
+                <div className="w-14 h-14 rounded-full bg-purple-600/20 dark:bg-purple-400/20 flex items-center justify-center font-sora font-bold text-purple-600 dark:text-purple-400">
                   {student.name.charAt(0)}
                 </div>
               )}
@@ -43,16 +43,16 @@ export default function UserDrawer({ student, onClose }: { student: UserDoc | nu
                 { Icon: Download, label: "PDFs saved", val: student.downloads.length },
               ].map(({ Icon, label, val }) => (
                 <div key={label} className="glassy rounded-glass p-5">
-                  <Icon size={16} className="text-primary mb-2" />
+                  <Icon size={16} className="text-purple-600 dark:text-purple-400 mb-2" />
                   <p className="font-sora font-bold text-xl">{val}</p>
                   <p className="font-geist text-label-sm text-on-surface/50">{label}</p>
                 </div>
               ))}
             </div>
             <div className="glassy rounded-glass p-5 mt-4 space-y-3">
-              <p className="font-geist text-label-sm flex items-center gap-2 text-on-surface/70"><Phone size={13} className="text-primary" /> +91 {student.phone}</p>
+              <p className="font-geist text-label-sm flex items-center gap-2 text-on-surface/70"><Phone size={13} className="text-purple-600 dark:text-purple-400" /> +91 {student.phone}</p>
               <p className="font-geist text-label-sm flex items-center gap-2 text-on-surface/70">
-                <Activity size={13} className="text-primary" /> Last active {student.lastActiveDate}
+                <Activity size={13} className="text-purple-600 dark:text-purple-400" /> Last active {student.lastActiveDate}
                 {student.createdAt ? ` · joined ${student.createdAt.toDate().toLocaleDateString("en-IN", { day: "numeric", month: "short" })}` : ""}
               </p>
             </div>

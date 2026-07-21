@@ -2,27 +2,39 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    // =====================================================
+    // 1. GLOBAL FUNCTIONS
+    // =====================================================
+    
     function signedIn() {
       return request.auth != null;
     }
 
     function isAdmin() {
       return signedIn() &&
-        request.auth.token.email in
-          get(/databases/$(database)/documents/config/app).data.adminEmails;
+        request.auth.token.email in get(/databases/$(database)/documents/config/app).data.adminEmails;
     }
 
-    // App config — public read (the landing page needs app name + links
-    // before login). First-ever write (bootstrap via the Initialize button)
-    // is allowed for any signed-in user; after that, only admins.
+    // =====================================================
+    // 2. SYSTEM CONFIGURATION & INITIALIZATION
+    // =====================================================
+    
     match /config/app {
+      // Publicly readable so the landing page can load app name/branding
       allow read: if true;
-      allow create: if signedIn();
+      
+      // Any signed-in user can initialize the app ONLY IF it doesn't exist yet.
+      allow create: if signedIn() && !exists(/databases/$(database)/documents/config/app);
+      
+      // Once created, only the Admin can make changes. No one can delete it.
       allow update: if isAdmin();
       allow delete: if false;
     }
 
-    // Content, tests, banners — students read, admins write.
+    // =====================================================
+    // 3. CORE CONTENT (Students Read, Admins Write)
+    // =====================================================
+    
     match /content/{id} {
       allow read: if signedIn();
       allow write: if isAdmin();
@@ -44,26 +56,63 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
-    // Counseling leads — anyone (even logged out) can submit from the
-    // landing page; only admins can see or manage them.
+    // =====================================================
+    // 4. PUBLIC FORMS (Counseling / Leads)
+    // =====================================================
+    
     match /inquiries/{id} {
+      // Anyone can submit a lead, but they can ONLY submit these exact fields (prevents spam/malicious data)
       allow create: if request.resource.data.keys().hasOnly(
         ['name', 'phone', 'studentClass', 'message', 'status', 'createdAt']
       );
+      // Only admins can view or manage the leads
       allow read, update, delete: if isAdmin();
     }
 
-    // Users — own doc is yours; everyone signed-in can read (leaderboard).
+    // =====================================================
+    // 5. USER PROFILES & LEADERBOARDS
+    // =====================================================
+    
     match /users/{uid} {
+      // Everyone signed-in can read (necessary for Leaderboards)
       allow read: if signedIn();
+      // Users can only create or edit their OWN profile
       allow create, update: if signedIn() && request.auth.uid == uid;
+      // Only admins can delete an account completely
       allow delete: if isAdmin();
     }
 
-    // Audit log — admins only.
+    // =====================================================
+    // 6. AI LAB: CHATS & TO-DO LISTS
+    // =====================================================
+    
+    // Scenario A: Saved as Top-Level Collections (/chats/123)
+    match /chats/{chatId} {
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow read, update, delete: if signedIn() && resource.data.userId == request.auth.uid;
+    }
+    match /todos/{todoId} {
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow read, update, delete: if signedIn() && resource.data.userId == request.auth.uid;
+    }
+
+    // Scenario B: Saved as Sub-collections (/users/uid/aiChats/123)
+    // FIX: Renamed 'chats' to 'aiChats' to match frontend collection structure
+    match /users/{uid}/aiChats/{chatId} {
+      allow read, write: if signedIn() && request.auth.uid == uid;
+    }
+    match /users/{uid}/todos/{todoId} {
+      allow read, write: if signedIn() && request.auth.uid == uid;
+    }
+
+    // =====================================================
+    // 7. SECURITY & AUDIT LOGS
+    // =====================================================
+    
     match /audit/{id} {
+      // Strictly Admins only. Nobody else can read or write logs.
       allow read, create: if isAdmin();
-      allow update, delete: if false;
+      allow update, delete: if false; // Immutable logs
     }
   }
 }

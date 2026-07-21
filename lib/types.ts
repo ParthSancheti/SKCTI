@@ -11,6 +11,37 @@ export interface PlanTask {
   minutes: number;
 }
 
+export interface TodoTask {
+  id: string;
+  title: string;
+  category: string; // "Physics", "Chemistry", "Math", "Biology", "General"
+  durationMinutes: number;
+  urgency: "High" | "Medium" | "Low";
+  status: "todo" | "done";
+  dueDate?: string; // ISO date
+  createdAt: number;
+}
+
+export interface ActionItem {
+  task_name: string;
+  duration_minutes: number;
+  urgency: "High" | "Medium" | "Low";
+}
+
+export interface AiChatMsg {
+  role: "user" | "model";
+  text: string;
+  image?: string;
+  action_items?: ActionItem[];
+}
+
+export interface AiChatDoc {
+  id: string;
+  title: string;
+  messages: AiChatMsg[];
+  updatedAt: number;
+}
+
 export interface UserDoc {
   uid: string;
   name: string;
@@ -36,6 +67,8 @@ export interface ContentDoc {
   title: string;
   driveUrl: string;
   driveId: string;
+  testLink?: string;
+  youtubeUrl?: string;
   streams: Stream[];
   subject: string;
   type: string; // Notes PDF / DPP / Formula Sheet...
@@ -52,6 +85,7 @@ export interface TestDoc {
   subject: string;
   kind: "Chapter" | "Mock";
   durationMin: number;
+  marks?: number;
   published: boolean;
   createdAt?: Timestamp;
 }
@@ -61,6 +95,7 @@ export interface BannerDoc {
   title: string;
   subtitle: string;
   image: string;
+  cta?: string;
   streams: Stream[];
   published: boolean;
   createdAt?: Timestamp;
@@ -113,7 +148,7 @@ export interface FeatureFlags {
   notices: boolean;
 }
 
-export type HomeBlockId = "notice" | "focus" | "carousel" | "subjects";
+export type HomeBlockId = string;
 
 export interface LandingConfig {
   tagline: string;
@@ -127,7 +162,9 @@ export interface LandingConfig {
 export interface AppConfig {
   appName: string;
   adminEmails: string[];
-  homeBlocks: HomeBlockId[];
+  homeBlocks: string[];
+  hiddenBlocks?: string[];
+  customBlocks?: Record<string, string>;
   features: FeatureFlags;
   landing: LandingConfig;
 }
@@ -136,6 +173,8 @@ export const DEFAULT_CONFIG: AppConfig = {
   appName: "SKCTI",
   adminEmails: [],
   homeBlocks: ["notice", "focus", "carousel", "subjects"],
+  hiddenBlocks: [],
+  customBlocks: {},
   features: {
     planner: true, streak: true, coins: true, ai: true, rank: true, tests: true,
     videos: true, notices: true,
@@ -157,7 +196,8 @@ export const subjectsFor = (s: Stream) => (s === "PCM" ? SUBJECTS_PCM : SUBJECTS
 export const todayKey = () => new Date().toISOString().slice(0, 10);
 
 /** Pull a Drive file id out of any share-link shape. */
-export function extractDriveId(url: string): string | null {
+export function extractDriveId(url: string | undefined | null): string | null {
+  if (!url || typeof url !== 'string') return null;
   const m =
     url.match(/\/file\/d\/([\w-]{10,})/) ||
     url.match(/[?&]id=([\w-]{10,})/) ||

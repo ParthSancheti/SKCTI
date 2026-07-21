@@ -1,12 +1,16 @@
 import { NextResponse } from "next/server";
 
-export const runtime = "nodejs";
+export const runtime = "edge";
 
 const MODEL = process.env.GEMINI_MODEL || "gemini-2.0-flash";
 
-interface ChatMsg { role: "user" | "model"; text: string; }
+interface ChatMsg {
+  role: "user" | "model";
+  text: string;
+  image?: string; // base64
+}
 
-/** Doubt-solver chat backed by Gemini. */
+/** Doubt-solver chat backed by Gemini (Streaming + Multimodal). */
 export async function POST(req: Request) {
   const key = process.env.GEMINI_API_KEY;
   if (!key) return NextResponse.json({ error: "GEMINI_API_KEY missing" }, { status: 500 });
@@ -17,25 +21,50 @@ export async function POST(req: Request) {
     grade: string;
   };
 
-  const system = `You are SKCTI AI, a friendly doubt-solver inside a study app for an Indian ${grade} ${stream} student. Be concise (under 180 words), step-by-step for numericals, encouraging. Plain text only — no markdown symbols.`;
+  const system = `You are SKCTI AI, a friendly doubt-solver inside a study app for an Indian ${grade} ${stream} student. Be concise (under 180 words), step-by-step for numericals, encouraging. Use plain text and unicode formatting, no heavy markdown blocks unless strictly necessary.`;
 
   try {
+    const contents = messages.slice(-12).map((m) => {
+      const parts: any[] = [{ text: m.text || "Explain this." }];
+      if (m.image) {
+        // Strip data:image/...;base64, prefix
+        const b64 = m.image.split(",")[1] || m.image;
+        const mime = m.image.match(/data:(.*?);/)?.[1] || "image/jpeg";
+        parts.push({
+          inlineData: {
+            mimeType: mime,
+            data: b64,
+          },
+        });
+      }
+      return { role: m.role, parts };
+    });
+
     const r = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${key}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:streamGenerateContent?alt=sse&key=${key}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           systemInstruction: { parts: [{ text: system }] },
-          contents: messages.slice(-12).map((m) => ({ role: m.role, parts: [{ text: m.text }] })),
-          generationConfig: { temperature: 0.6, maxOutputTokens: 500 },
+          contents,
+          generationConfig: { temperature: 0.6, maxOutputTokens: 800 },
         }),
       }
     );
-    if (!r.ok) throw new Error(`Gemini ${r.status}`);
-    const data = await r.json();
-    const text: string = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "Hmm, try asking that again?";
-    return NextResponse.json({ text });
+
+    if (!r.ok) {
+      const errTxt = await r.text();
+      return NextResponse.json({ error: `Gemini Error: ${r.status} - ${errTxt}` }, { status: 502 });
+    }
+
+    return new Response(r.body, {
+      headers: {
+        "Content-Type": "text/event-stream",
+        "Cache-Control": "no-cache",
+        Connection: "keep-alive",
+      },
+    });
   } catch (e) {
     return NextResponse.json(
       { error: e instanceof Error ? e.message : "ai failed" },

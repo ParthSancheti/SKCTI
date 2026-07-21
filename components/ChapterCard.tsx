@@ -1,49 +1,121 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { BookOpen, Download, Eye, FileText, Play } from "lucide-react";
+import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { ChevronDown, Download, Eye, FileText, File, Share2 } from "lucide-react";
 import type { ContentDoc } from "@/lib/types";
-import { useStore, vibrate } from "@/lib/store";
-
-const W_COLORS: Record<string, string> = {
-  High: "bg-primary-container/20 text-primary",
-  Medium: "bg-tertiary/15 text-tertiary",
-  Low: "bg-on-surface/10 text-on-surface/50",
-};
+import { vibrate } from "@/lib/store";
+import { useHapticRouter } from "./HapticRouter";
 
 export default function ChapterCard({ chapter, onOpen }: { chapter: ContentDoc; onOpen: () => void }) {
-  const { profile, markDownloaded } = useStore();
-  const downloaded = profile?.downloads.includes(chapter.id) ?? false;
+  const [expanded, setExpanded] = useState(false);
+  const { navigate } = useHapticRouter();
 
-  const actions = [
-    { icon: Eye, label: "Read", primary: true, act: onOpen },
-    { icon: downloaded ? BookOpen : Download, label: downloaded ? "Saved" : "Save", act: () => void markDownloaded(chapter.id) },
-    { icon: FileText, label: chapter.type.split(" ")[0], act: onOpen },
-    { icon: Play, label: "Revise", act: onOpen },
-  ];
+  const handleView = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    vibrate(10);
+    if (chapter.youtubeUrl) {
+      window.open(chapter.youtubeUrl, "_blank");
+    } else {
+      navigate(`/learn/read?id=${chapter.id}`, e as any);
+    }
+  };
+
+  const handleDownload = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    vibrate(10);
+    window.open(chapter.driveUrl, "_blank");
+  };
+
+  const handleTest = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    vibrate(10);
+    if (chapter.testLink) {
+      window.open(chapter.testLink, "_blank");
+    }
+  };
+
+  const handleShare = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    vibrate(10);
+    try {
+      await navigator.share({
+        title: chapter.title,
+        text: `Check out ${chapter.title} on SKCTI Learn OS`,
+        url: window.location.href,
+      });
+    } catch {
+      // share failed or cancelled
+    }
+  };
 
   return (
-    <motion.div layout whileTap={{ scale: 0.985 }} className="glassy rounded-glass p-6">
-      <div className="flex items-start justify-between gap-3 mb-1.5">
-        <h3 className="font-sora font-semibold text-lg leading-snug">{chapter.title}</h3>
-        <span className={`shrink-0 rounded-full px-3 py-1 font-geist text-label-sm ${W_COLORS[chapter.weightage]}`}>
-          {chapter.weightage === "High" ? "High · 12%" : chapter.weightage === "Medium" ? "Med · 7%" : "Low · 4%"}
-        </span>
-      </div>
-      <p className="font-geist text-label-sm text-on-surface/50 mb-5">{chapter.subject} · {chapter.type}</p>
-      <div className="grid grid-cols-4 gap-2">
-        {actions.map(({ icon: Icon, label, primary, act }) => (
-          <motion.button
-            key={label}
-            whileTap={{ scale: 0.92 }}
-            onClick={() => { vibrate(10); act(); }}
-            className={`rounded-input py-3 flex flex-col items-center gap-1.5 transition-colors ${primary ? "bg-primary-container text-white" : "glassy"}`}
+    <div className="bg-white/5 dark:bg-white/5 backdrop-blur-xl border border-white/10 rounded-[1.5rem] shadow-lg overflow-hidden transition-all hover:bg-white/10 cursor-pointer">
+      <motion.div 
+        layout 
+        onClick={() => { vibrate(10); setExpanded(!expanded); }}
+        className="p-5 flex items-center justify-between gap-4"
+      >
+        <div className="flex items-center gap-4 min-w-0 flex-1">
+          <div className="shrink-0 rounded-xl bg-white/5 p-3 flex items-center justify-center text-white">
+            <File size={20} />
+          </div>
+          <div className="flex flex-col min-w-0">
+            <p className="font-geist text-xs text-white/50 uppercase tracking-wider truncate">{chapter.subject} • {chapter.type}</p>
+            <h3 className="font-sora text-lg font-bold text-white truncate">{chapter.title}</h3>
+          </div>
+        </div>
+        
+        <div className="flex items-center gap-3 shrink-0">
+          <span className="bg-red-500/10 text-red-400 border border-red-500/20 px-3 py-1 rounded-full text-xs font-medium">
+            {chapter.weightage || "High"}
+          </span>
+          <motion.div animate={{ rotate: expanded ? 180 : 0 }} className="text-white/50">
+            <ChevronDown size={18} />
+          </motion.div>
+        </div>
+      </motion.div>
+      
+      <AnimatePresence>
+        {expanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="px-5 pb-5 overflow-hidden"
           >
-            <Icon size={16} />
-            <span className="font-geist text-[10px] tracking-wide">{label}</span>
-          </motion.button>
-        ))}
-      </div>
-    </motion.div>
+            <div className="grid grid-cols-2 gap-3 mt-4 pt-4 border-t border-white/10">
+              <button onClick={handleView} className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-sm font-medium text-white transition-all active:scale-95">
+                <Eye size={16} />
+                <span>{chapter.youtubeUrl ? "Watch Video" : "View PDF"}</span>
+              </button>
+              
+              <button onClick={handleDownload} className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-sm font-medium text-white transition-all active:scale-95">
+                <Download size={16} />
+                <span>Download</span>
+              </button>
+              
+              <button 
+                onClick={handleTest} 
+                disabled={!chapter.testLink}
+                className={`flex items-center justify-center gap-2 py-3 px-4 rounded-xl border border-white/10 text-sm font-medium transition-all ${
+                  chapter.testLink 
+                    ? "bg-white/5 hover:bg-white/10 text-white active:scale-95" 
+                    : "bg-transparent text-white/30 cursor-not-allowed"
+                }`}
+              >
+                <FileText size={16} />
+                <span>Chapter Test</span>
+              </button>
+              
+              <button onClick={handleShare} className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-sm font-medium text-white transition-all active:scale-95">
+                <Share2 size={16} />
+                <span>Share</span>
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }

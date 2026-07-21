@@ -9,12 +9,13 @@ import {
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useMemo, useState } from "react";
 import ChapterCard from "@/components/ChapterCard";
-import PdfViewerModal from "@/components/PdfViewerModal";
 import { ChapterSkeleton } from "@/components/SkeletonLoader";
 import { col, snapTo } from "@/lib/db";
 import { useStore, vibrate } from "@/lib/store";
 import type { ContentDoc, VideoDoc } from "@/lib/types";
 import { subjectsFor, youtubeEmbedUrl, youtubeThumb } from "@/lib/types";
+import SubjectCard from "@/components/SubjectCard";
+import { useHapticRouter } from "@/components/HapticRouter";
 
 const SUBJECT_ICON: Record<string, typeof Atom> = {
   Physics: Atom, Chemistry: FlaskConical, Math: Calculator, Biology: Dna,
@@ -69,6 +70,11 @@ function LearnInner() {
   const [mode, setMode] = useState<"notes" | "videos" | "saved">("notes");
   const [subject, setSubject] = useState<string | null>(params.get("subject"));
   const [typeFilter, setTypeFilter] = useState<string | null>(null);
+  const { navigate } = useHapticRouter();
+
+  useEffect(() => {
+    setSubject(params.get("subject"));
+  }, [params.get("subject")]);
 
   useEffect(() => {
     if (!profile) return;
@@ -135,38 +141,42 @@ function LearnInner() {
   const videoCountFor = (s: string) => (videos ?? []).filter((v) => v.subject === s).length;
 
   return (
-    <div className="space-y-6 pt-6">
-      <div>
-        <h1 className="font-sora text-headline-xl">Learn OS</h1>
-        <p className="mt-1 font-hanken text-body-md text-on-surface/60">
-          {profile.stream} · {profile.grade} — {(items?.length ?? 0) + (videos?.length ?? 0)} resources live
-        </p>
-      </div>
-
-      {/* search + tabs */}
-      <div className="header-blur-mask sticky top-0 z-40 -mx-margin-mobile space-y-3 px-margin-mobile py-2 lg:mx-0 lg:px-0">
-        <div className="glassy flex items-center gap-3 rounded-full px-5">
-          <Search size={17} className="shrink-0 text-primary" />
-          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search any chapter, topic, subject…"
-            className="w-full bg-transparent py-3.5 font-hanken text-body-md outline-none placeholder:text-on-surface/30" />
-          {q && <button onClick={() => setQ("")} className="shrink-0 text-on-surface/40"><X size={15} /></button>}
+    <div className="space-y-6 pb-24">
+      {!subject && (
+        <div className="mx-6 mt-6 mb-8 flex flex-col gap-6">
+          <div>
+            <h1 className="font-sora text-6xl font-black tracking-tight text-neutral-900 dark:text-white mb-2">Learn OS</h1>
+          <p className="font-geist text-body-lg text-neutral-600 dark:text-neutral-400">
+            {profile.stream} · {profile.grade} — {(items?.length ?? 0) + (videos?.length ?? 0)} resources live
+          </p>
         </div>
-        {!searching && (
-          <div className="glassy inline-flex rounded-full p-1">
-            {tabs.map(([m, label]) => (
-              <button key={m} onClick={() => { vibrate(10); setMode(m); }}
-                className={`relative rounded-full px-5 py-2.5 font-geist text-label-md ${mode === m ? "text-white" : "text-on-surface/60"}`}>
-                {mode === m && <motion.span layoutId="learn-mode" className="absolute inset-0 rounded-full bg-primary-container shadow-glow-primary" />}
-                <span className="relative flex items-center gap-1.5">
-                  {m === "saved" && <Bookmark size={12} />}
-                  {m === "videos" && <PlayCircle size={12} />}
-                  {label}
-                </span>
-              </button>
-            ))}
-          </div>
-        )}
+        
+        {/* Massive Search Bar (identical to Home style) */}
+        <div className="w-full flex items-center gap-3 bg-white/5 dark:bg-white/5 backdrop-blur-3xl border border-white/10 rounded-full px-6 py-4 shadow-xl transition-all focus-within:bg-white/10 focus-within:border-white/30">
+          <Search size={22} className="shrink-0 text-purple-500" />
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search chapters, topics..."
+            className="w-full bg-transparent font-hanken text-body-lg outline-none text-black dark:text-white placeholder:text-neutral-500 dark:placeholder:text-neutral-400" />
+          {q && <button onClick={() => setQ("")} className="shrink-0 text-black dark:text-white"><X size={18} /></button>}
+        </div>
       </div>
+      )}
+
+      {!searching && !subject && (
+        <div className="mx-6 flex flex-wrap gap-2">
+          {tabs.map(([m, label]) => (
+            <button key={m} onClick={() => { vibrate(10); setMode(m); }}
+              className={`flex items-center gap-2 rounded-full px-5 py-2 font-geist text-label-sm font-semibold transition-all ${
+                mode === m
+                  ? "bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg"
+                  : "bg-white/10 text-neutral-700 dark:text-white hover:bg-white/20"
+              }`}>
+              {m === "saved" && <Bookmark size={14} />}
+              {m === "videos" && <PlayCircle size={14} />}
+              {label}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* ————— global search results ————— */}
       {searching ? (
@@ -191,83 +201,72 @@ function LearnInner() {
         <AnimatePresence mode="wait">
           {!subject ? (
             /* ————— level 1: subject cards ————— */
-            <motion.div key="subjects" initial={{ opacity: 0, x: -24 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -24 }} className="grid grid-cols-2 gap-4">
-              {subjects.map((s, i) => {
-                const Icon = SUBJECT_ICON[s] ?? Atom;
-                return (
-                  <motion.button
-                    key={s}
-                    initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06 }}
-                    whileTap={{ scale: 0.96 }}
-                    onClick={() => { vibrate(10); setSubject(s); setTypeFilter(null); }}
-                    className={`glassy-elite relative overflow-hidden rounded-[2rem] bg-gradient-to-br p-6 text-left ${SUBJECT_HUE[s] ?? ""}`}
-                  >
-                    <div className="glassy grid h-12 w-12 place-items-center rounded-2xl text-primary">
-                      <Icon size={22} />
-                    </div>
-                    <p className="mt-5 font-sora text-title-lg font-bold">{s}</p>
-                    <p className="mt-0.5 font-geist text-label-sm text-on-surface/50">
-                      {items === null ? "…" : `${countFor(s)} notes${config.features.videos ? ` · ${videoCountFor(s)} videos` : ""}`}
-                    </p>
-                    <ChevronRight size={17} className="absolute bottom-6 right-5 text-on-surface/30" />
-                  </motion.button>
-                );
-              })}
+            <motion.div key="subjects" initial={{ opacity: 0, x: -24 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -24 }} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mx-6">
+              {subjects.map((s) => (
+                <SubjectCard key={s} subject={s} count={countFor(s)} />
+              ))}
             </motion.div>
           ) : (
             /* ————— level 2: topic-wise ————— */
-            <motion.div key={subject} initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 24 }} className="space-y-4">
-              <div className="flex items-center gap-3">
-                <button onClick={() => { vibrate(10); setSubject(null); }} className="glassy grid h-10 w-10 place-items-center rounded-full">
+            <motion.div key={subject} initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 24 }} className="space-y-4 pt-6">
+              <div className="flex items-center gap-3 mx-6">
+                <button onClick={(e) => { vibrate(10); navigate("/learn", e); }} className="bg-white/10 dark:bg-white/5 backdrop-blur-xl border border-white/10 w-10 h-10 flex items-center justify-center rounded-full text-neutral-900 dark:text-white hover:bg-white/20 transition-all shadow-md">
                   <ChevronLeft size={17} />
                 </button>
                 <div>
-                  <h2 className="font-sora text-headline-lg">{subject}</h2>
-                  <p className="font-geist text-label-sm text-on-surface/50">{subjectItems.length} topics</p>
+                  <h2 className="font-sora text-headline-lg font-black tracking-tight text-neutral-900 dark:text-white">{subject}</h2>
+                  <p className="font-geist text-label-sm text-black dark:text-neutral-400">{subjectItems.length} topics</p>
                 </div>
               </div>
               {subjectTypes.length > 1 && (
-                <div className="hide-scrollbar flex gap-2 overflow-x-auto">
+                <div className="hide-scrollbar flex gap-2 overflow-x-auto mx-6">
                   {["All", ...subjectTypes].map((t) => {
                     const active = t === "All" ? !typeFilter : typeFilter === t;
                     return (
                       <button key={t} onClick={() => { vibrate(10); setTypeFilter(t === "All" ? null : t); }}
-                        className={`shrink-0 rounded-full px-4 py-2 font-geist text-label-sm ${active ? "bg-primary-container text-white shadow-glow-primary" : "glassy text-on-surface/70"}`}>
+                        className={`shrink-0 rounded-full px-5 py-2 font-geist text-label-sm font-semibold transition-all ${
+                          active 
+                            ? "bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg" 
+                            : "bg-white/10 text-neutral-700 dark:text-white hover:bg-white/20"
+                        }`}>
                         {t}
                       </button>
                     );
                   })}
                 </div>
               )}
-              {items === null && [0, 1, 2].map((i) => <ChapterSkeleton key={i} />)}
-              {items !== null && subjectItems.length === 0 && (
-                <div className="glassy rounded-glass p-10 text-center">
-                  <p className="font-sora font-semibold">Nothing in {subject} yet</p>
-                  <p className="mt-1 font-hanken text-body-md text-on-surface/50">Notes published from the admin panel appear here instantly.</p>
-                </div>
-              )}
-              {subjectItems.map((c) => <ChapterCard key={c.id} chapter={c} onOpen={() => setOpen(c)} />)}
+              <div className="mx-6 space-y-4">
+                {items === null && [0, 1, 2].map((i) => <ChapterSkeleton key={i} />)}
+                {items !== null && subjectItems.length === 0 && (
+                  <div className="bg-white/5 dark:bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-10 text-center shadow-xl">
+                    <p className="font-sora font-semibold text-neutral-900 dark:text-white">Nothing in {subject} yet</p>
+                    <p className="mt-1 font-geist text-label-sm text-black dark:text-neutral-400">Notes published from the admin panel appear here instantly.</p>
+                  </div>
+                )}
+                {subjectItems.map((c) => <ChapterCard key={c.id} chapter={c} onOpen={() => setOpen(c)} />)}
+              </div>
 
               {config.features.videos && videoCountFor(subject) > 0 && (
-                <>
-                  <h3 className="pt-2 font-sora text-headline-lg">Lectures</h3>
-                  <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
+                <div className="mx-6 pt-4">
+                  <h3 className="font-sora text-headline-lg font-black tracking-tight text-neutral-900 dark:text-white mb-4">Lectures</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {(videos ?? []).filter((v) => v.subject === subject).map((v) => (
                       <VideoTile key={v.id} v={v} onOpen={() => setOpenVideo(v)} />
                     ))}
                   </div>
-                </>
+                </div>
               )}
+
             </motion.div>
           )}
         </AnimatePresence>
       ) : mode === "videos" ? (
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
-          {videos === null && [0, 1, 2, 3].map((i) => <div key={i} className="glassy aspect-video animate-pulse rounded-2xl" />)}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mx-6">
+          {videos === null && [0, 1, 2, 3].map((i) => <div key={i} className="bg-white/10 animate-pulse border border-white/5 aspect-video rounded-3xl" />)}
           {videos !== null && shownVideos.length === 0 && (
-            <div className="glassy col-span-full rounded-glass p-10 text-center">
-              <p className="font-sora font-semibold">No videos yet</p>
-              <p className="mt-1 font-hanken text-body-md text-on-surface/50">Lectures published from the admin panel appear here instantly.</p>
+            <div className="bg-white/5 dark:bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-10 text-center shadow-xl col-span-full">
+              <p className="font-sora font-semibold text-neutral-900 dark:text-white">No videos yet</p>
+              <p className="mt-1 font-geist text-label-sm text-black dark:text-neutral-400">Lectures published from the admin panel appear here instantly.</p>
             </div>
           )}
           {shownVideos.map((v) => <VideoTile key={v.id} v={v} onOpen={() => setOpenVideo(v)} />)}
@@ -287,7 +286,6 @@ function LearnInner() {
         </div>
       )}
 
-      <PdfViewerModal chapter={open} onClose={() => setOpen(null)} />
       <VideoModal video={openVideo} onClose={() => setOpenVideo(null)} />
     </div>
   );
@@ -295,17 +293,17 @@ function LearnInner() {
 
 function VideoTile({ v, onOpen }: { v: VideoDoc; onOpen: () => void }) {
   return (
-    <motion.button whileTap={{ scale: 0.96 }} onClick={() => { vibrate(10); onOpen(); }} className="glassy overflow-hidden rounded-2xl text-left">
+    <motion.button whileTap={{ scale: 0.96 }} onClick={() => { vibrate(10); onOpen(); }} className="bg-white/5 dark:bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl hover:bg-white/10 transition-all shadow-xl overflow-hidden text-left flex flex-col">
       <div className="relative aspect-video w-full bg-black/30">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={youtubeThumb(v.youtubeId)} alt={v.title} className="h-full w-full object-cover" />
-        <span className="absolute inset-0 grid place-items-center bg-black/10">
-          <PlayCircle size={34} className="text-white drop-shadow-lg" />
+        <span className="absolute inset-0 grid place-items-center bg-black/20 hover:bg-black/10 transition-colors">
+          <PlayCircle size={38} className="text-white drop-shadow-xl" />
         </span>
       </div>
-      <div className="p-3">
-        <p className="font-geist text-[10px] font-semibold uppercase tracking-wide text-primary">{v.subject}</p>
-        <p className="mt-0.5 line-clamp-2 font-sora text-sm font-semibold leading-snug">{v.title}</p>
+      <div className="p-4 flex-1">
+        <p className="font-geist text-[10px] font-bold uppercase tracking-widest text-purple-500">{v.subject}</p>
+        <p className="mt-1 line-clamp-2 font-sora text-sm font-semibold leading-snug text-neutral-900 dark:text-white">{v.title}</p>
       </div>
     </motion.button>
   );
@@ -318,3 +316,5 @@ export default function Learn() {
     </Suspense>
   );
 }
+
+
