@@ -4,4 +4,5 @@
     <string name="title_activity_main">SKCTI OS</string>
     <string name="package_name">com.skcti.app</string>
     <string name="custom_url_scheme">com.skcti.app</string>
+    <string name="server_client_id">142521151624-cuv2orimqc8jn9gtjcsl9ga5cindv4j8.apps.googleusercontent.com</string>
 </resources>

@@ -100,6 +100,21 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
+  /* —— initialize capacitor google auth —— */
+  useEffect(() => {
+    if (Capacitor.isNativePlatform()) {
+      try {
+        GoogleAuth.initialize({
+          clientId: "142521151624-cuv2orimqc8jn9gtjcsl9ga5cindv4j8.apps.googleusercontent.com",
+          scopes: ["profile", "email"],
+          grantOfflineAccess: true,
+        });
+      } catch (e) {
+        console.error("Failed to init GoogleAuth", e);
+      }
+    }
+  }, []);
+
   /* —— live user doc —— */
   useEffect(() => {
     if (!fbUser) return;
