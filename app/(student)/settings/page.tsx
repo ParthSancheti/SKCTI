@@ -407,7 +407,7 @@ export default function Settings() {
 
         {/* Sign Out Card */}
         <button
-          onClick={() => { vibrate(15); void logout().then(() => router.replace("/login")); }}
+          onClick={() => { vibrate(15); void logout().then(() => router.replace("/")); }}
           className="bg-red-500/10 dark:bg-red-500/10 backdrop-blur-2xl border border-red-500/20 rounded-[24px] p-5 flex items-center justify-center gap-3 md:col-span-2 hover:bg-red-500/20 transition-colors group"
         >
           <LogOut size={20} className="text-red-500 group-hover:-translate-x-1 transition-transform" />

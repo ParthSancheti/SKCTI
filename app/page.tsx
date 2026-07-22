@@ -195,7 +195,7 @@ export default function Landing() {
         {/* Top Header */}
         <div className="absolute top-0 inset-x-0 w-full flex items-center gap-3 px-6 pt-12 z-50">
           <img src="/src/logo.png" className="w-8 h-8 rounded-full shadow-lg" alt="SKCTI Logo" />
-          <h1 className="font-sora text-3xl font-black text-white drop-shadow-md tracking-tight">SKCTI</h1>
+          <h1 className="font-sora text-3xl font-black text-neutral-900 dark:text-white drop-shadow-md tracking-tight">SKCTI</h1>
         </div>
         
         {/* Feature Swipe Carousel */}
@@ -211,8 +211,8 @@ export default function Landing() {
             
             {/* Card 1 */}
             <div className="min-w-full snap-center relative overflow-hidden flex flex-col justify-end p-8 pb-32">
-              <img src="/image1.png" className="absolute inset-0 w-full h-full object-cover dark:hidden" alt="Onboarding" />
-              <img src="/image1_dark.png" className="absolute inset-0 w-full h-full object-cover hidden dark:block" alt="Onboarding" />
+              <img src="/src/welcome/image1.png" className="absolute inset-0 w-full h-full object-cover dark:hidden" alt="Onboarding" />
+              <img src="/src/welcome/image1_dark.png" className="absolute inset-0 w-full h-full object-cover hidden dark:block" alt="Onboarding" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
               <div className="relative z-10 flex flex-col justify-end">
                 <h3 className="font-sora text-4xl leading-tight font-black text-white mb-3 tracking-tight">Welcome to SKCTI.</h3>
@@ -222,8 +222,8 @@ export default function Landing() {
             
             {/* Card 2 */}
             <div className="min-w-full snap-center relative overflow-hidden flex flex-col justify-end p-8 pb-32">
-              <img src="/image2.png" className="absolute inset-0 w-full h-full object-cover dark:hidden" alt="Structured Learning" />
-              <img src="/image2_dark.png" className="absolute inset-0 w-full h-full object-cover hidden dark:block" alt="Structured Learning" />
+              <img src="/src/welcome/image2.png" className="absolute inset-0 w-full h-full object-cover dark:hidden" alt="Structured Learning" />
+              <img src="/src/welcome/image2_dark.png" className="absolute inset-0 w-full h-full object-cover hidden dark:block" alt="Structured Learning" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
               <div className="relative z-10 flex flex-col justify-end">
                 <h3 className="font-sora text-4xl leading-tight font-black text-white mb-3 tracking-tight">Structured Learning.</h3>
@@ -233,8 +233,8 @@ export default function Landing() {
             
             {/* Card 3 */}
             <div className="min-w-full snap-center relative overflow-hidden flex flex-col justify-end p-8 pb-32">
-              <img src="/image3.png" className="absolute inset-0 w-full h-full object-cover dark:hidden" alt="AI Doubt Solving" />
-              <img src="/image3_dark.png" className="absolute inset-0 w-full h-full object-cover hidden dark:block" alt="AI Doubt Solving" />
+              <img src="/src/welcome/image3.png" className="absolute inset-0 w-full h-full object-cover dark:hidden" alt="AI Doubt Solving" />
+              <img src="/src/welcome/image3_dark.png" className="absolute inset-0 w-full h-full object-cover hidden dark:block" alt="AI Doubt Solving" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
               <div className="relative z-10 flex flex-col justify-end">
                 <h3 className="font-sora text-4xl leading-tight font-black text-white mb-3 tracking-tight">AI Doubt Solving.</h3>

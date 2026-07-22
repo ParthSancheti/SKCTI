@@ -18,7 +18,7 @@ export default function TitleBar() {
   const [comingSoonTitle, setComingSoonTitle] = useState("");
   
   const store = useStore();
-  const { profile, config, isDark, toggleTheme } = store;
+  const { profile, config, isDark, toggleTheme, logout } = store;
 
   // Directive 4: Immersive Subject View & Gemini UI Clone
   if (pathname === "/ai" || (pathname === "/learn" && searchParams.get("subject"))) {
@@ -103,7 +103,13 @@ export default function TitleBar() {
                   <div className="my-2 border-t border-white/10" />
                   
                   <button
-                    onClick={() => { vibrate(50); setMenuOpen(false); window.location.href = "/login"; document.cookie = "skcti_session=; path=/; max-age=0"; }}
+                    onClick={() => { 
+                      vibrate(50); 
+                      setMenuOpen(false); 
+                      void logout().then(() => {
+                        window.location.href = "/";
+                      });
+                    }}
                     className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-red-50 dark:hover:bg-red-500/10 font-geist text-label-md text-left transition-all text-red-600 dark:text-red-500"
                   >
                     <LogOut size={18} /> Sign Out

@@ -1,7 +1,9 @@
 "use client";
 
-import { onAuthStateChanged, signInWithPopup, signOut, type User } from "firebase/auth";
+import { onAuthStateChanged, signInWithPopup, signOut, signInWithCredential, GoogleAuthProvider, type User } from "firebase/auth";
 import { doc, increment, onSnapshot, serverTimestamp, setDoc } from "firebase/firestore";
+import { Capacitor } from "@capacitor/core";
+import { GoogleAuth } from "@codetrix-studio/capacitor-google-auth";
 import { usePathname, useRouter } from "next/navigation";
 import React, { createContext, useContext, useEffect, useRef, useState } from "react";
 import { fbAuth, fbDb, firebaseReady, googleProvider } from "./firebase";
@@ -221,7 +223,20 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   /* —— auth actions —— */
   const loginWithGoogle = async () => {
-    await signInWithPopup(fbAuth(), googleProvider());
+    if (Capacitor.isNativePlatform()) {
+      try {
+        const user = await GoogleAuth.signIn();
+        if (user.authentication.idToken) {
+          const credential = GoogleAuthProvider.credential(user.authentication.idToken);
+          await signInWithCredential(fbAuth(), credential);
+        }
+      } catch (err) {
+        console.error("Native Google Login failed:", err);
+        throw err;
+      }
+    } else {
+      await signInWithPopup(fbAuth(), googleProvider());
+    }
   };
   const logout = async () => {
     document.cookie = "skcti_session=; path=/; max-age=0";
@@ -324,10 +339,15 @@ export function useAuthGate() {
   const { ready, fbUser, profile, profileLoaded } = useStore();
   const router = useRouter();
   const pathname = usePathname();
+  
   useEffect(() => {
     if (!ready) return;
-    if (!fbUser) router.replace("/login");
+    // Explicitly allow the root landing page (public zone)
+    if (pathname === "/") return;
+    
+    if (!fbUser) router.replace("/");
     else if (profileLoaded && !profile && pathname !== "/onboarding") router.replace("/onboarding");
   }, [ready, fbUser, profile, profileLoaded, pathname, router]);
+  
   return ready && !!fbUser && profileLoaded && !!profile;
 }

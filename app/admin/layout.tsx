@@ -42,7 +42,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   useEffect(() => {
     if (!ready) return;
-    if (!fbUser) router.replace("/login");
+    if (!fbUser) router.replace("/");
     else if (configLoaded && !isAdmin) router.replace("/home");
   }, [ready, fbUser, isAdmin, configLoaded, router]);
 

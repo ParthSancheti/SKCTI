@@ -17,7 +17,7 @@ const LINKS = [
 export default function SideNav() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { profile, config, fbUser } = useStore();
+  const { profile, config, fbUser, logout } = useStore();
   const { navigate } = useHapticRouter();
   
   const stream = profile?.stream ?? "PCM";
@@ -76,8 +76,9 @@ export default function SideNav() {
               onClick={(e) => {
                 e.preventDefault();
                 vibrate(50);
-                window.location.href = "/login";
-                document.cookie = "skcti_session=; path=/; max-age=0";
+                void logout().then(() => {
+                  window.location.href = "/";
+                });
               }}
               className="w-10 h-10 rounded-full bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white flex items-center justify-center shrink-0 transition-all z-10 relative"
               aria-label="Logout"

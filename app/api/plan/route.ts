@@ -9,20 +9,20 @@ export async function POST(req: Request) {
   const key = process.env.GEMINI_API_KEY;
   if (!key) return NextResponse.json({ error: "GEMINI_API_KEY missing" }, { status: 500 });
 
-  const { stream, grade, chapters } = (await req.json()) as {
-    stream: string;
-    grade: string;
-    chapters: string[];
-  };
+  try {
+    const { stream, grade, chapters } = (await req.json()) as {
+      stream: string;
+      grade: string;
+      chapters: string[];
+    };
 
-  const prompt = `You are a study planner for an Indian ${grade} standard ${stream} student preparing for boards + ${
-    stream === "PCB" ? "NEET" : "JEE"
-  }.
+    const prompt = `You are a study planner for an Indian ${grade} standard ${stream} student preparing for boards + ${
+      stream === "PCB" ? "NEET" : "JEE"
+    }.
 Available chapters on their app today: ${chapters.length ? chapters.join("; ") : "none uploaded yet — use standard ${stream} syllabus topics"}.
 Create today's focused plan: exactly 4 tasks, total 120-180 minutes, mixing subjects, specific and actionable (e.g. "Solve 15 numericals on Rotational Motion").
 Return ONLY a JSON array, no markdown: [{"title": string, "subject": string, "minutes": number}]`;
 
-  try {
     const r = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${key}`,
       {
@@ -46,10 +46,8 @@ Return ONLY a JSON array, no markdown: [{"title": string, "subject": string, "mi
       minutes: Math.max(15, Math.min(90, Number(t.minutes) || 30)),
     }));
     return NextResponse.json({ tasks });
-  } catch (e) {
-    return NextResponse.json(
-      { error: e instanceof Error ? e.message : "plan failed" },
-      { status: 502 }
-    );
+  } catch (error) {
+    console.error("AI PLANNER CRASH:", error);
+    return NextResponse.json({ error: "Failed to generate plan" }, { status: 500 });
   }
 }

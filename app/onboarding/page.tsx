@@ -22,7 +22,7 @@ export default function Onboarding() {
 
   useEffect(() => {
     if (!ready) return;
-    if (!fbUser) router.replace("/login");
+    if (!fbUser) router.replace("/");
     else if (profileLoaded && profile) router.replace("/home");
   }, [ready, fbUser, profile, profileLoaded, router]);
 

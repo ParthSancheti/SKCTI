@@ -1,7 +1,6 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import type { BannerDoc as Banner } from "@/lib/types";
@@ -49,13 +48,10 @@ export default function HeroCarousel({ banners }: { banners: Banner[] }) {
             transition={{ duration: 0.8 }}
             className="absolute inset-0"
           >
-            <Image
+            <img
               src={banner.image}
               alt=""
-              fill
-              sizes="(max-width: 768px) 100vw, 800px"
-              className="object-cover opacity-40 mix-blend-luminosity"
-              unoptimized
+              className="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-luminosity"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-surface-container-lowest/90 via-transparent to-transparent" />
             <div className="absolute bottom-0 left-0 right-0 p-8">
@@ -87,7 +83,7 @@ export default function HeroCarousel({ banners }: { banners: Banner[] }) {
             layoutId={`hero-${expanded.id}`}
             className="fixed inset-0 z-[110] glassy overflow-hidden"
           >
-            <Image src={expanded.image} alt="" fill className="object-cover opacity-30 mix-blend-luminosity" unoptimized />
+            <img src={expanded.image} alt="" className="absolute inset-0 w-full h-full object-cover opacity-30 mix-blend-luminosity" />
             <div className="absolute inset-0 bg-gradient-to-t from-surface-container-lowest via-surface-container-lowest/40 to-transparent" />
             <motion.button
               whileTap={{ scale: 0.95 }}
