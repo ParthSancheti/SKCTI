@@ -5,6 +5,7 @@ import { doc, increment, onSnapshot, serverTimestamp, setDoc } from "firebase/fi
 import { Capacitor } from "@capacitor/core";
 import { GoogleAuth } from "@codetrix-studio/capacitor-google-auth";
 import { usePathname, useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
 import React, { createContext, useContext, useEffect, useRef, useState } from "react";
 import { fbAuth, fbDb, firebaseReady, googleProvider } from "./firebase";
 import { updateUser, col } from "./db";
@@ -200,27 +201,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   }, [profile]);
 
-  /* —— theme (local, device-first) —— */
+  const { theme, setTheme, systemTheme } = useTheme();
+  
   useEffect(() => {
-    const m = document.cookie.match(/(?:^|; )skcti-theme=([^;]+)/);
-    const pref = (m ? m[1] : "device") as ThemePref;
-    setThemePref(pref);
-    const mq = window.matchMedia("(prefers-color-scheme: dark)");
-    const apply = () => {
-      const dark = pref === "dark" || (pref === "device" && mq.matches);
-      setIsDark(dark);
-      document.documentElement.classList.toggle("dark", dark);
-    };
-    apply();
-    if (pref === "device") {
-      mq.addEventListener("change", apply);
-      return () => mq.removeEventListener("change", apply);
-    }
-  }, [themePref]);
+    setIsDark(theme === "dark" || (theme === "system" && systemTheme === "dark"));
+  }, [theme, systemTheme]);
 
   const toggleTheme = () => {
     vibrate(15);
-    const next: ThemePref = isDark ? "light" : "dark";
     const overlay = document.getElementById("theme-overlay");
     if (overlay) {
       overlay.classList.remove("theme-overlay-run");
@@ -229,10 +217,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       window.setTimeout(() => overlay.classList.remove("theme-overlay-run"), 650);
     }
     window.setTimeout(() => {
-      document.cookie = `skcti-theme=${next};path=/;max-age=31536000`;
-      setThemePref(next);
-      setIsDark(next === "dark");
-      document.documentElement.classList.toggle("dark", next === "dark");
+      setTheme(isDark ? "light" : "dark");
     }, 250);
   };
 

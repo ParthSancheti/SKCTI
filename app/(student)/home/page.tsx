@@ -117,13 +117,11 @@ export default function Home() {
 
   if (!profile) return null;
   const firstName = profile.name.split(" ")[0];
-  const hour = new Date().getHours();
-  const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
 
   /* ————— blocks (order comes from admin config) ————— */
   const blocks: Record<string, React.ReactNode> = {
     notice: config.features.notices && notices.length > 0 ? (
-      <div key="notice" className="space-y-2 px-6 lg:px-0">
+      <div key="notice" className="space-y-2">
         {notices.map((n, i) => (
           <motion.div
             key={n.id}
@@ -141,7 +139,7 @@ export default function Home() {
 
     carousel: banners.length > 0 ? <HeroCarousel key="carousel" banners={banners} /> : null,
     subjects: (
-      <div key="subjects" className="px-6 lg:px-0 flex flex-col gap-8">
+      <div key="subjects" className="flex flex-col gap-8">
         {/* Today's Focus Widget */}
         <TodoWidget />
 
@@ -162,8 +160,7 @@ export default function Home() {
       {/* ————— home content starts here ————— */}
 
       {/* ————— mobile welcome text (outside header) ————— */}
-      <div className="mx-6 lg:hidden mb-6">
-        <p className="font-geist text-label-md text-black dark:text-neutral-400">{greeting}</p>
+      <div className="lg:hidden mb-6">
         <h2 className="font-sora text-3xl font-black text-neutral-900 dark:text-white tracking-tight mt-1">Welcome back, {firstName}</h2>
       </div>
 
@@ -174,7 +171,7 @@ export default function Home() {
             initial={{ opacity: 0, y: -20, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, height: 0 }}
-            className="mx-6 lg:mx-0 bg-white/5 dark:bg-white/5 backdrop-blur-3xl rounded-[2rem] p-6 flex items-center gap-4 border border-white/10 shadow-xl"
+            className="bg-white/5 dark:bg-white/5 backdrop-blur-3xl rounded-[2rem] p-6 flex items-center gap-4 border border-white/10 shadow-xl"
           >
             <PartyPopper size={26} className="text-purple-600 dark:text-purple-400 shrink-0" />
             <div className="flex-1">
@@ -189,10 +186,10 @@ export default function Home() {
       </AnimatePresence>
 
       {/* ————— Blinkit search ————— */}
-      <motion.div layoutId="search-bar" className="mx-6 lg:mx-0">
-        <button onClick={() => { vibrate(50); router.push("/learn"); }} className="w-full bg-white/5 dark:bg-white/5 backdrop-blur-3xl border border-white/10 shadow-lg rounded-full px-6 py-4 flex items-center gap-4 text-left transition-transform hover:scale-[0.99] active:scale-[0.97]">
+      <motion.div layoutId="search-bar">
+        <button onClick={() => { vibrate(50); router.push("/learn"); }} className="w-full bg-white/5 dark:bg-white/5 backdrop-blur-3xl border border-white/10 shadow-lg rounded-full px-4 py-3 flex items-center gap-4 text-left transition-transform hover:scale-[0.99] active:scale-[0.97]">
           <Search size={20} className="text-purple-600 dark:text-purple-400" />
-          <span className="font-hanken text-body-md text-black dark:text-neutral-400">Search chapters, notes, DPPs…</span>
+          <span className="font-hanken text-body-md text-black dark:text-neutral-400">Search...</span>
         </button>
       </motion.div>
 
@@ -201,13 +198,13 @@ export default function Home() {
         .filter((id) => !config.hiddenBlocks?.includes(id))
         .map((id) => {
           if (blocks[id]) return blocks[id];
-          if (config.customBlocks?.[id]) return <div key={id} className="px-6 lg:px-0" dangerouslySetInnerHTML={{ __html: config.customBlocks[id] }} />;
+          if (config.customBlocks?.[id]) return <div key={id} dangerouslySetInnerHTML={{ __html: config.customBlocks[id] }} />;
           return null;
         })
         .filter(Boolean)}
 
       {chapters.length === 0 && (
-        <div className="px-6 lg:px-0">
+        <div>
           <div className="bg-white/5 dark:bg-white/5 backdrop-blur-3xl border border-white/10 shadow-2xl rounded-3xl p-8 text-center">
             <ChevronDown size={20} className="mx-auto text-purple-600 dark:text-purple-400 mb-2 animate-bounce" />
             <p className="font-sora font-semibold">Library incoming</p>

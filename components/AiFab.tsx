@@ -19,7 +19,7 @@ export default function AiFab() {
         router.push("/ai");
       }}
       aria-label="Open AI Lab"
-      className="fixed right-6 bottom-28 z-[60] w-14 h-14 rounded-full bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-[0_0_30px_rgba(168,85,247,0.5)] flex items-center justify-center hover:scale-105 active:scale-95 transition-transform lg:right-10 lg:bottom-10"
+      className="fixed right-6 bottom-28 z-[60] w-14 h-14 rounded-full bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-[0_0_40px_rgba(168,85,247,0.8)] border border-white/20 animate-pulse flex items-center justify-center hover:scale-105 active:scale-95 transition-transform lg:right-10 lg:bottom-10"
     >
       <Sparkles size={24} />
     </button>

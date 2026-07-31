@@ -27,14 +27,14 @@ export default function BottomNav() {
   }
 
   return (
-    <nav className="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-[400px] h-16 rounded-full bg-white/5 dark:bg-white/5 backdrop-blur-3xl border border-white/10 z-[60] flex items-center justify-around px-2 shadow-2xl">
+    <nav className="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-[400px] h-14 rounded-full bg-white/5 dark:bg-white/5 backdrop-blur-3xl border border-white/10 z-[60] flex items-center justify-around px-1 shadow-2xl">
       {tabs.map(({ href, label, Icon }) => {
         const active = pathname.startsWith(href);
         return (
           <button key={href} onClick={(e) => navigate(href, e)} className="h-full flex items-center justify-center cursor-pointer">
             {active ? (
               <div
-                className="bg-white/30 dark:bg-white/20 backdrop-blur-[60px] border border-black/10 dark:border-white/20 text-black dark:text-white rounded-full px-6 py-2.5 flex items-center gap-2 shadow-lg scale-105 transition-all"
+                className="bg-white/30 dark:bg-white/20 backdrop-blur-[60px] border border-black/10 dark:border-white/20 text-black dark:text-white rounded-full px-4 py-2 flex items-center gap-2 shadow-lg scale-105 transition-all"
               >
                 <Icon size={20} />
                 <span className="font-geist text-sm font-semibold">

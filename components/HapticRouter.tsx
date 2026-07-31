@@ -35,8 +35,8 @@ export function HapticRouterProvider({ children }: { children: ReactNode }) {
       // Wait for route to transition then fade out
       setTimeout(() => {
         setAnimating(null);
-      }, 300);
-    }, 400);
+      }, 150);
+    }, 50);
   };
 
   return (
@@ -45,17 +45,11 @@ export function HapticRouterProvider({ children }: { children: ReactNode }) {
       <AnimatePresence>
         {animating && (
           <motion.div
-            initial={{ 
-              opacity: 0, 
-              clipPath: `circle(0px at ${animating.x}px ${animating.y}px)`
-            }}
-            animate={{ 
-              opacity: 1, 
-              clipPath: `circle(2500px at ${animating.x}px ${animating.y}px)`
-            }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed inset-0 z-[200] bg-white/20 dark:bg-black/20 backdrop-blur-3xl pointer-events-none"
+            transition={{ duration: 0.15 }}
+            className="fixed inset-0 z-[200] bg-white/50 dark:bg-black/50 pointer-events-none"
           />
         )}
       </AnimatePresence>

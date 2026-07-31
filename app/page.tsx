@@ -286,9 +286,7 @@ export default function Landing() {
         <nav className="fixed inset-x-0 top-0 z-50 px-4 pt-4">
           <div className="glassy mx-auto flex max-w-5xl items-center justify-between rounded-full px-3 py-2.5 pl-5">
             <div className="flex items-center gap-2.5">
-              <div className="grid h-8 w-8 place-items-center rounded-xl bg-gradient-to-br from-purple-600 to-blue-600 font-sora text-sm font-bold text-white shadow-lg">
-                {cfg.appName[0] ?? "S"}
-              </div>
+              <img src="/src/logo.png" className="h-8 w-8 rounded-xl bg-white p-1 shadow-lg shrink-0" alt="SKCTI Logo" />
               <span className="font-sora text-base font-bold text-neutral-900 dark:text-white">{cfg.appName}</span>
             </div>
             {/* Start CTA */}

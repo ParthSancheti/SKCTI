@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "142521151624",
+    "project_id": "project-7d7c40ac-0a05-442d-954",
+    "storage_bucket": "project-7d7c40ac-0a05-442d-954.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:142521151624:android:1b0d40f9bc757a56952f3d",
+        "android_client_info": {
+          "package_name": "com.skcti.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "142521151624-cuv2orimqc8jn9gtjcsl9ga5cindv4j8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCxq-IvHual-MEMtkZHxpmvwjxLrMLzMd8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "142521151624-cuv2orimqc8jn9gtjcsl9ga5cindv4j8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
