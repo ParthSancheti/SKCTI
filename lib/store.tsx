@@ -5,6 +5,7 @@ import { doc, increment, onSnapshot, serverTimestamp, setDoc } from "firebase/fi
 import { Capacitor } from "@capacitor/core";
 import { GoogleAuth } from "@codetrix-studio/capacitor-google-auth";
 import { usePathname, useRouter } from "next/navigation";
+import { StatusBar } from "@capacitor/status-bar";
 import { useTheme } from "next-themes";
 import React, { createContext, useContext, useEffect, useRef, useState } from "react";
 import { fbAuth, fbDb, firebaseReady, googleProvider } from "./firebase";
@@ -101,17 +102,18 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
-  /* —— initialize capacitor google auth —— */
+  /* —— initialize capacitor google auth & status bar —— */
   useEffect(() => {
     if (Capacitor.isNativePlatform()) {
       try {
+        StatusBar.setOverlaysWebView({ overlay: true }).catch(() => {});
         GoogleAuth.initialize({
           clientId: "142521151624-cuv2orimqc8jn9gtjcsl9ga5cindv4j8.apps.googleusercontent.com",
           scopes: ["profile", "email"],
           grantOfflineAccess: true,
         });
       } catch (e) {
-        console.error("Failed to init GoogleAuth", e);
+        console.error("Failed to init native plugins", e);
       }
     }
   }, []);

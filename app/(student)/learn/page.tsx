@@ -153,16 +153,16 @@ function LearnInner() {
   return (
     <div className="space-y-6 pb-24">
       {!subject && (
-        <div className="mx-6 mt-6 mb-8 flex flex-col gap-6">
+        <div className="mt-2 mb-8 flex flex-col gap-4">
           <div>
-            <h1 className="font-sora text-6xl font-black tracking-tight text-black dark:text-white mb-2">Learn OS</h1>
+            <h1 className="font-sora text-3xl font-extrabold tracking-tight text-neutral-900 dark:text-white mb-1">Learn OS</h1>
           <p className="font-geist text-body-lg text-neutral-600 dark:text-neutral-400">
             {profile.stream} · {profile.grade} — {(items?.length ?? 0) + (videos?.length ?? 0)} resources live
           </p>
         </div>
         
-        {/* Massive Search Bar (identical to Home style) */}
-        <div className="w-full flex items-center gap-3 glassy rounded-full px-6 py-4 transition-all focus-within:brightness-110">
+        {/* Massive Search Bar (liquid glass) */}
+        <div className="w-full flex items-center gap-3 bg-white/10 dark:bg-white/5 backdrop-blur-lg border border-white/20 shadow-lg rounded-full px-6 py-4 transition-all focus-within:brightness-110">
           <Search size={22} className="shrink-0 text-purple-500" />
           <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search chapters, topics..."
             className="w-full bg-transparent font-hanken text-body-lg outline-none text-black dark:text-white placeholder:text-neutral-500 dark:placeholder:text-neutral-400" />
@@ -172,13 +172,13 @@ function LearnInner() {
       )}
 
       {!searching && !subject && (
-        <div className="mx-6 flex flex-wrap gap-2">
+        <div className="flex flex-row flex-nowrap overflow-x-auto hide-scrollbar gap-2 pb-2">
           {tabs.map(([m, label]) => (
             <button key={m} onClick={() => { vibrate(10); setMode(m); }}
               className={`flex items-center gap-2 rounded-full px-5 py-2 font-geist text-label-sm font-semibold transition-all ${
                 mode === m
-                  ? "bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg"
-                  : "glassy hover:brightness-110 text-black dark:text-white"
+                  ? "bg-white/10 dark:bg-white/10 backdrop-blur-lg border border-white/20 shadow-lg text-neutral-900 dark:text-white"
+                  : "glassy hover:brightness-110 text-neutral-600 dark:text-neutral-400"
               }`}>
               {m === "saved" && <Bookmark size={14} />}
               {m === "videos" && <PlayCircle size={14} />}
@@ -211,15 +211,15 @@ function LearnInner() {
         <AnimatePresence mode="wait">
           {!subject ? (
             /* ————— level 1: subject cards ————— */
-            <motion.div key="subjects" initial={{ opacity: 0, x: -24 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -24 }} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mx-6">
+            <motion.div key="subjects" initial={{ opacity: 0, x: -24 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -24 }} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {subjects.map((s) => (
                 <SubjectCard key={s} subject={s} count={countFor(s)} />
               ))}
             </motion.div>
           ) : (
             /* ————— level 2: topic-wise ————— */
-            <motion.div key={subject} initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 24 }} className="space-y-4 pt-6">
-              <div className="flex items-center gap-3 mx-6">
+            <motion.div key={subject} initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 24 }} className="space-y-4 pt-4">
+              <div className="flex items-center gap-3">
                 <button onClick={(e) => { vibrate(10); navigate("/learn", e); }} className="glassy w-10 h-10 flex items-center justify-center rounded-full text-black dark:text-white hover:brightness-110 transition-all">
                   <ChevronLeft size={17} />
                 </button>
@@ -230,7 +230,7 @@ function LearnInner() {
               </div>
 
               {/* Local Subject Search & Filter Row */}
-              <div className="mx-6 flex items-center gap-3">
+              <div className="flex items-center gap-3">
                 <div className="flex-1 flex items-center gap-3 glassy rounded-xl px-4 py-3 transition-all focus-within:brightness-110">
                   <Search size={18} className="shrink-0 text-black/50 dark:text-white/50" />
                   <input 
@@ -262,7 +262,7 @@ function LearnInner() {
                 </div>
               </div>
               {subjectTypes.length > 1 && (
-                <div className="hide-scrollbar flex gap-2 overflow-x-auto mx-6">
+                <div className="hide-scrollbar flex gap-2 overflow-x-auto pb-2">
                   {["All", ...subjectTypes].map((t) => {
                     const active = t === "All" ? !typeFilter : typeFilter === t;
                     return (
@@ -278,7 +278,7 @@ function LearnInner() {
                   })}
                 </div>
               )}
-              <div className="mx-6 space-y-4">
+              <div className="space-y-4">
                 {items === null && [0, 1, 2].map((i) => <ChapterSkeleton key={i} />)}
                 {items !== null && subjectItems.length === 0 && (
                   <div className="glassy-strong rounded-3xl p-10 text-center">
@@ -290,7 +290,7 @@ function LearnInner() {
               </div>
 
               {config.features.videos && videoCountFor(subject) > 0 && (
-                <div className="mx-6 pt-4">
+                <div className="pt-4">
                   <h3 className="font-sora text-headline-lg font-black tracking-tight text-black dark:text-white mb-4">Lectures</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {(videos ?? []).filter((v) => v.subject === subject).map((v) => (
@@ -304,7 +304,7 @@ function LearnInner() {
           )}
         </AnimatePresence>
       ) : mode === "videos" ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mx-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {videos === null && [0, 1, 2, 3].map((i) => <div key={i} className="glassy animate-pulse aspect-video rounded-3xl" />)}
           {videos !== null && shownVideos.length === 0 && (
             <div className="glassy-strong rounded-3xl p-10 text-center col-span-full">

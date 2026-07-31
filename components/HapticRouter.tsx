@@ -49,7 +49,7 @@ export function HapticRouterProvider({ children }: { children: ReactNode }) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
-            className="fixed inset-0 z-[200] bg-white/50 dark:bg-black/50 pointer-events-none"
+            className="fixed inset-0 z-[200] bg-black/5 dark:bg-black/20 pointer-events-none"
           />
         )}
       </AnimatePresence>

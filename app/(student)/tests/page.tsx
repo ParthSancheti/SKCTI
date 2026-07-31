@@ -34,9 +34,9 @@ export default function Tests() {
 
   return (
     <div className="space-y-6 pb-24">
-      <div className="mx-6 mt-6 mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+      <div className="mt-2 mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
         <div>
-          <h1 className="font-sora text-6xl font-black tracking-tight text-neutral-900 dark:text-white mb-2">Test Arena</h1>
+          <h1 className="font-sora text-3xl font-extrabold tracking-tight text-neutral-900 dark:text-white mb-1">Test Arena</h1>
           <p className="font-geist text-body-lg text-neutral-600 dark:text-neutral-400 mt-1">{profile.attempted.length} attempted · +25 coins per test</p>
         </div>
         <div className="flex items-center gap-2">
@@ -52,7 +52,7 @@ export default function Tests() {
         </div>
       </div>
 
-      <div className="space-y-4 mx-6">
+      <div className="space-y-4">
         {tests === null && [0, 1].map((i) => <TestSkeleton key={i} />)}
         {tests !== null && shown.length === 0 && (
           <div className="glassy-strong rounded-3xl p-10 text-center">

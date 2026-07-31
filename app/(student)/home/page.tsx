@@ -159,9 +159,8 @@ export default function Home() {
     <div className="pt-2 lg:pt-0 space-y-8">
       {/* ————— home content starts here ————— */}
 
-      {/* ————— mobile welcome text (outside header) ————— */}
       <div className="lg:hidden mb-6">
-        <h2 className="font-sora text-3xl font-black text-neutral-900 dark:text-white tracking-tight mt-1">Welcome back, {firstName}</h2>
+        <h2 className="font-sora text-3xl font-extrabold text-neutral-900 dark:text-white tracking-tight mt-1">Welcome back, {firstName}</h2>
       </div>
 
       {/* ————— grade upgrade celebration ————— */}
@@ -185,11 +184,10 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      {/* ————— Blinkit search ————— */}
       <motion.div layoutId="search-bar">
-        <button onClick={() => { vibrate(50); router.push("/learn"); }} className="w-full bg-white/5 dark:bg-white/5 backdrop-blur-3xl border border-white/10 shadow-lg rounded-full px-4 py-3 flex items-center gap-4 text-left transition-transform hover:scale-[0.99] active:scale-[0.97]">
-          <Search size={20} className="text-purple-600 dark:text-purple-400" />
-          <span className="font-hanken text-body-md text-black dark:text-neutral-400">Search...</span>
+        <button onClick={() => { vibrate(50); router.push("/learn"); }} className="w-full bg-white/10 dark:bg-white/5 backdrop-blur-lg border border-white/20 shadow-lg rounded-full px-6 py-4 flex items-center gap-4 text-left transition-transform hover:scale-[0.99] active:scale-[0.97]">
+          <Search size={22} className="text-purple-500" />
+          <span className="font-hanken text-body-lg text-black dark:text-neutral-400">Search chapters, topics...</span>
         </button>
       </motion.div>
 
