@@ -109,7 +109,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (Capacitor.isNativePlatform()) {
       try {
         StatusBar.setOverlaysWebView({ overlay: true }).catch(() => {});
-        NavigationBar.setTransparency({ isTransparent: true }).catch(() => {});
+        NavigationBar.setColor({ color: 'transparent', dividerColor: 'transparent' }).catch(() => {});
         
         CapApp.addListener('backButton', () => {
           if (window.location.pathname.startsWith('/home') || window.location.pathname === '/') {
