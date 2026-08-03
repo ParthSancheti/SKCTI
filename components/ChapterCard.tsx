@@ -6,6 +6,7 @@ import { ChevronDown, Eye, FileText, File, PlayCircle } from "lucide-react";
 import type { ContentDoc } from "@/lib/types";
 import { vibrate } from "@/lib/store";
 import { useHapticRouter } from "./HapticRouter";
+import { Browser } from "@capacitor/browser";
 
 export default function ChapterCard({ chapter, onOpen }: { chapter: ContentDoc; onOpen: () => void }) {
   const [expanded, setExpanded] = useState(false);
@@ -17,11 +18,11 @@ export default function ChapterCard({ chapter, onOpen }: { chapter: ContentDoc; 
     navigate(`/learn/read?id=${chapter.id}`, e as any);
   };
 
-  const handleViewVideo = (e: React.MouseEvent) => {
+  const handleViewVideo = async (e: React.MouseEvent) => {
     e.stopPropagation();
     vibrate(10);
     if (chapter.youtubeUrl) {
-      window.open(chapter.youtubeUrl, "_blank");
+      await Browser.open({ url: chapter.youtubeUrl });
     }
   };
 

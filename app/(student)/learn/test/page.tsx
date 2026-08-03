@@ -3,10 +3,11 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { doc, getDoc } from "firebase/firestore";
-import { ChevronLeft, CheckCircle2 } from "lucide-react";
+import { ChevronLeft, CheckCircle2, ClipboardList } from "lucide-react";
 import { fbDb } from "@/lib/firebase";
-import { formEmbedUrl, type ContentDoc } from "@/lib/types";
+import { type ContentDoc } from "@/lib/types";
 import { useStore, vibrate } from "@/lib/store";
+import { Browser } from "@capacitor/browser";
 
 export default function TestViewerPage() {
   const params = useSearchParams();
@@ -36,6 +37,12 @@ export default function TestViewerPage() {
     };
     fetchDoc();
   }, [id]);
+
+  useEffect(() => {
+    if (content?.testLink) {
+      Browser.open({ url: content.testLink }).catch(console.error);
+    }
+  }, [content?.testLink]);
 
   if (error) {
     return (
@@ -107,16 +114,14 @@ export default function TestViewerPage() {
         )}
       </div>
 
-      {/* Test Iframe Container */}
-      <div className="w-full h-full lg:h-[calc(100vh-80px)] p-0 lg:p-4">
-        <iframe 
-          src={formEmbedUrl(content.testLink)} 
-          className="w-full h-full border-none rounded-none lg:rounded-2xl bg-white pointer-events-auto"
-          allow="autoplay; encrypted-media" 
-          allowFullScreen 
-          onContextMenu={(e) => e.preventDefault()}
-          title={`Test for ${content.title}`}
-        />
+      {/* Test Browser Container */}
+      <div className="w-full h-full lg:h-[calc(100vh-80px)] p-0 lg:p-4 flex flex-col items-center justify-center pointer-events-auto">
+        <ClipboardList size={48} className="text-purple-500 mb-4" />
+        <h2 className="text-2xl font-sora font-bold text-white mb-2">Test is open in Browser</h2>
+        <p className="text-neutral-400 font-geist text-sm mb-6 text-center max-w-xs">Return here to mark it done when you finish.</p>
+        <button onClick={() => Browser.open({ url: content.testLink! })} className="bg-gradient-to-r from-purple-600 to-blue-600 hover:brightness-110 text-white font-bold py-3 px-6 rounded-full transition-all shadow-lg active:scale-95">
+          Re-open Test
+        </button>
       </div>
     </div>
   );

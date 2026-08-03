@@ -16,6 +16,7 @@ import type { ContentDoc, VideoDoc } from "@/lib/types";
 import { subjectsFor, youtubeEmbedUrl, youtubeThumb } from "@/lib/types";
 import SubjectCard from "@/components/SubjectCard";
 import { useHapticRouter } from "@/components/HapticRouter";
+import { Browser } from "@capacitor/browser";
 
 const SUBJECT_ICON: Record<string, typeof Atom> = {
   Physics: Atom, Chemistry: FlaskConical, Math: Calculator, Biology: Dna,
@@ -27,37 +28,7 @@ const SUBJECT_HUE: Record<string, string> = {
   Biology: "from-lime-500/25 to-emerald-700/10",
 };
 
-function VideoModal({ video, onClose }: { video: VideoDoc | null; onClose: () => void }) {
-  return (
-    <AnimatePresence>
-      {video && (
-        <motion.div
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[80] flex items-center justify-center bg-black/85 p-4 backdrop-blur-md"
-          onClick={onClose}
-        >
-          <motion.div
-            initial={{ scale: 0.94, y: 16 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.94, y: 16 }}
-            className="glassy-strong w-full max-w-3xl overflow-hidden rounded-[2rem]"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between px-5 py-3.5">
-              <div className="min-w-0">
-                <p className="font-geist text-label-sm text-primary">{video.subject}</p>
-                <p className="truncate font-sora text-sm font-semibold">{video.title}</p>
-              </div>
-              <button onClick={onClose} className="glassy grid h-9 w-9 shrink-0 place-items-center rounded-full"><X size={16} /></button>
-            </div>
-            <div className="aspect-video w-full bg-black">
-              <iframe src={youtubeEmbedUrl(video.youtubeId)} className="h-full w-full"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen title={video.title} />
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
-}
+
 
 function LearnInner() {
   const { profile, config } = useStore();
@@ -66,7 +37,6 @@ function LearnInner() {
   const [videos, setVideos] = useState<VideoDoc[] | null>(null);
   const [q, setQ] = useState("");
   const [open, setOpen] = useState<ContentDoc | null>(null);
-  const [openVideo, setOpenVideo] = useState<VideoDoc | null>(null);
   const [mode, setMode] = useState<"notes" | "videos" | "saved">("notes");
   const [subject, setSubject] = useState<string | null>(params.get("subject"));
   const [typeFilter, setTypeFilter] = useState<string | null>(null);
@@ -196,7 +166,7 @@ function LearnInner() {
           {config.features.videos && shownVideos.length > 0 && (
             <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
               {shownVideos.map((v) => (
-                <VideoTile key={v.id} v={v} onOpen={() => setOpenVideo(v)} />
+                <VideoTile key={v.id} v={v} onOpen={async () => await Browser.open({ url: `https://youtube.com/watch?v=${v.youtubeId}` })} />
               ))}
             </div>
           )}
@@ -294,7 +264,7 @@ function LearnInner() {
                   <h3 className="font-sora text-headline-lg font-black tracking-tight text-black dark:text-white mb-4">Lectures</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {(videos ?? []).filter((v) => v.subject === subject).map((v) => (
-                      <VideoTile key={v.id} v={v} onOpen={() => setOpenVideo(v)} />
+                      <VideoTile key={v.id} v={v} onOpen={async () => await Browser.open({ url: `https://youtube.com/watch?v=${v.youtubeId}` })} />
                     ))}
                   </div>
                 </div>
@@ -312,7 +282,7 @@ function LearnInner() {
               <p className="mt-1 font-geist text-label-sm text-black dark:text-neutral-400">Lectures published from the admin panel appear here instantly.</p>
             </div>
           )}
-          {shownVideos.map((v) => <VideoTile key={v.id} v={v} onOpen={() => setOpenVideo(v)} />)}
+          {shownVideos.map((v) => <VideoTile key={v.id} v={v} onOpen={async () => await Browser.open({ url: `https://youtube.com/watch?v=${v.youtubeId}` })} />)}
         </div>
       ) : (
         /* ————— saved ————— */
@@ -328,8 +298,6 @@ function LearnInner() {
           )}
         </div>
       )}
-
-      <VideoModal video={openVideo} onClose={() => setOpenVideo(null)} />
     </div>
   );
 }

@@ -36,8 +36,8 @@ export default function TitleBar() {
 
   return (
     <>
-      <header className="sticky top-2 mt-[env(safe-area-inset-top,0px)] z-40 mx-4 lg:mx-0 mb-4 px-4 py-2 bg-white/5 dark:bg-white/5 backdrop-blur-3xl border border-white/10 rounded-full shadow-lg flex items-center justify-between overflow-hidden">
-        <div className="flex items-center gap-3 w-full">
+      <header className="sticky top-2 mt-[env(safe-area-inset-top,0px)] z-40 mx-2 lg:mx-0 mb-4 px-2 py-2 bg-white/5 dark:bg-white/5 backdrop-blur-3xl border border-white/10 rounded-full shadow-lg flex items-center justify-between overflow-hidden">
+        <div className="flex items-center gap-2 w-full">
           {/* PC Left Side */}
           <div className="flex-1 min-w-0 hidden lg:block">
             <h1 className="font-sora text-xl font-extrabold tracking-tight text-neutral-900 dark:text-white truncate">{title}</h1>
@@ -83,7 +83,7 @@ export default function TitleBar() {
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.9, y: -6 }}
                     transition={{ type: "spring", stiffness: 420, damping: 28 }}
-                    className="absolute right-0 top-full mt-4 w-64 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-3xl shadow-2xl p-2 origin-top-right z-50"
+                    className="fixed right-4 top-[calc(env(safe-area-inset-top,0px)+4.5rem)] w-64 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-3xl shadow-2xl p-2 origin-top-right z-50"
                   >
                   {[
                     { icon: "🌓", label: isDark ? "Light mode" : "Dark mode", act: () => toggleTheme() },

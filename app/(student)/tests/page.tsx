@@ -3,6 +3,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { onSnapshot, query, where } from "firebase/firestore";
 import { CheckCircle2, ClipboardList, Clock, PlayCircle, X, ChevronLeft } from "lucide-react";
+import { Browser } from "@capacitor/browser";
 import { useEffect, useMemo, useState } from "react";
 import { TestSkeleton } from "@/components/SkeletonLoader";
 import { col, snapTo } from "@/lib/db";
@@ -83,7 +84,7 @@ export default function Tests() {
               
               <div className="pt-4 border-t border-black/10 dark:border-white/10 flex justify-end">
                 <button
-                  onClick={() => { vibrate(10); setOpen(t); }}
+                  onClick={async () => { vibrate(10); setOpen(t); await Browser.open({ url: t.formUrl }); }}
                   className="glassy-strong px-5 py-2.5 rounded-xl font-geist text-sm font-semibold flex items-center gap-2 hover:brightness-110 active:scale-95 transition-all text-black dark:text-white"
                 >
                   <PlayCircle size={16} />
@@ -130,16 +131,14 @@ export default function Tests() {
               )}
             </div>
 
-            {/* Test Iframe Container */}
-            <div className="w-full h-full lg:h-[calc(100vh-80px)] p-0 lg:p-4">
-              <iframe 
-                src={formEmbedUrl(open.formUrl)} 
-                className="w-full h-full border-none rounded-none lg:rounded-2xl bg-white pointer-events-auto"
-                allow="autoplay; encrypted-media" 
-                allowFullScreen 
-                onContextMenu={(e) => e.preventDefault()}
-                title={open.title}
-              />
+            {/* Test Browser Container */}
+            <div className="w-full h-full lg:h-[calc(100vh-80px)] p-0 lg:p-4 flex flex-col items-center justify-center pointer-events-auto">
+              <ClipboardList size={48} className="text-purple-500 mb-4" />
+              <h2 className="text-2xl font-sora font-bold text-white mb-2">Test is open in Browser</h2>
+              <p className="text-neutral-400 font-geist text-sm mb-6 text-center max-w-xs">Return here to mark it done when you finish.</p>
+              <button onClick={() => Browser.open({ url: open.formUrl })} className="bg-gradient-to-r from-purple-600 to-blue-600 hover:brightness-110 text-white font-bold py-3 px-6 rounded-full transition-all shadow-lg active:scale-95">
+                Re-open Test
+              </button>
             </div>
           </motion.div>
         )}
