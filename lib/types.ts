@@ -60,7 +60,32 @@ export interface UserDoc {
   justUpgraded?: boolean;
   createdAt?: Timestamp;
   lastSeen?: Timestamp;
+
+  /* —— settings that used to be fake local useState —— */
+  notifications?: NotificationPrefs;
+  prefs?: UserPrefs;
+  /** Minutes actually logged from completed plan tasks. Powers Study Analytics. */
+  studyMinutes?: number;
 }
+
+export interface NotificationPrefs {
+  /** "Study Reminders" toggle in Settings. */
+  reminders: boolean;
+  /** "App Updates" toggle in Settings. */
+  updates: boolean;
+  /** FCM registration token for this device, if push is granted. */
+  pushToken?: string;
+}
+
+export interface UserPrefs {
+  /** Drops backdrop-filter on weak devices — see html[data-perf] in globals.css. */
+  reducedEffects: boolean;
+  /** Language for notices and AI replies. */
+  language: "en" | "hi" | "mr";
+}
+
+export const DEFAULT_NOTIFICATIONS: NotificationPrefs = { reminders: true, updates: true };
+export const DEFAULT_PREFS: UserPrefs = { reducedEffects: false, language: "en" };
 
 export interface ContentDoc {
   id: string;
@@ -161,9 +186,43 @@ export interface LandingConfig {
   showInquiry: boolean;
 }
 
+/**
+ * Admin-tunable AI settings.
+ *
+ * NOTE — there is deliberately NO apiKey field here. The admin Settings page
+ * currently renders two password inputs labelled "Primary Gemini API Key" and
+ * "Fallback API Key". Storing a key in config/app would push it to every
+ * signed-in student's device on page load, because that document is read by
+ * the client SDK. Keys stay in Vercel environment variables, server-side only.
+ * The Settings card now says so instead of pretending to accept one.
+ */
+export interface AiConfig {
+  model: string;
+  /** Whole-app ceiling per day. 0 = unlimited. */
+  dailyLimit: number;
+  /** Per-student ceiling per day, so one user can't drain the shared budget. */
+  perUserLimit: number;
+  /** Emergency killswitch — pauses all AI generation immediately. */
+  paused: boolean;
+}
+
+export interface MaintenanceConfig {
+  enabled: boolean;
+  message: string;
+  /** Admins keep full access while maintenance is on. */
+  allowAdmins: boolean;
+}
+
+/** Content editors get Content Hub + Test Hub only. Owners get everything. */
+export type AdminRole = "owner" | "editor";
+
 export interface AppConfig {
   appName: string;
   adminEmails: string[];
+  /** email -> role. Absent email defaults to "owner" for backward compatibility. */
+  adminRoles?: Record<string, AdminRole>;
+  ai?: AiConfig;
+  maintenance?: MaintenanceConfig;
   homeBlocks: string[];
   hiddenBlocks?: string[];
   customBlocks?: Record<string, string>;
@@ -171,9 +230,25 @@ export interface AppConfig {
   landing: LandingConfig;
 }
 
+export const DEFAULT_AI: AiConfig = {
+  model: "llama-3.3-70b-versatile",
+  dailyLimit: 1000,
+  perUserLimit: 40,
+  paused: false,
+};
+
+export const DEFAULT_MAINTENANCE: MaintenanceConfig = {
+  enabled: false,
+  message: "We're making the app better. Back in a few minutes.",
+  allowAdmins: true,
+};
+
 export const DEFAULT_CONFIG: AppConfig = {
   appName: "SKCTI",
   adminEmails: [],
+  adminRoles: {},
+  ai: DEFAULT_AI,
+  maintenance: DEFAULT_MAINTENANCE,
   homeBlocks: ["notice", "focus", "carousel", "subjects"],
   hiddenBlocks: [],
   customBlocks: {},

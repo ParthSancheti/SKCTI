@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import AiFab from "@/components/AiFab";
 import BottomNav from "@/components/BottomNav";
+import MaintenanceGate from "@/components/MaintenanceGate";
 import { CoinFlightLayer } from "@/components/CoinSystem";
 import PortalEffect from "@/components/PortalEffect";
 import SideNav from "@/components/SideNav";
@@ -27,6 +28,7 @@ export default function StudentLayout({ children }: { children: React.ReactNode 
     );
 
   return (
+    <MaintenanceGate>
     <HapticRouterProvider>
       <ThemeOverlay />
       <PortalEffect />
@@ -45,5 +47,6 @@ export default function StudentLayout({ children }: { children: React.ReactNode 
       {!isImmersive && <BottomNav />}
       {!isImmersive && <AiFab />}
     </HapticRouterProvider>
+    </MaintenanceGate>
   );
 }

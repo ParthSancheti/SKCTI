@@ -4,8 +4,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Blocks, Gauge, Inbox, Settings, UploadCloud, Users, LogOut, Menu, X, ClipboardList, Search, Plus, Bell, Link2 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import MeshBackground from "@/components/MeshBackground";
-import ThemeOverlay from "@/components/ThemeOverlay";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useStore, vibrate, triggerHaptic } from "@/lib/store";
@@ -49,8 +47,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (!ready || !fbUser || !configLoaded || !isAdmin)
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <MeshBackground />
-        <div className="glassy-strong rounded-glass px-8 py-6 text-center">
+          <div className="glassy-strong rounded-glass px-8 py-6 text-center">
           <span className="mx-auto block w-6 h-6 rounded-full border-2 border-primary border-t-transparent animate-spin mb-3" />
           <p className="font-geist text-label-sm text-on-surface/60">Checking admin clearance…</p>
         </div>
@@ -60,7 +57,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const sidebarInner = (
     <>
       <div className="flex items-center justify-center gap-4 py-2 pb-8 border-b border-black/10 dark:border-white/10 mb-6">
-        <img src="/src/logo.png" className="w-14 h-14 rounded-xl bg-white p-1.5 shadow-lg" alt="SKCTI Logo" />
+        <img src="/src/logo.webp" className="w-14 h-14 rounded-full bg-white p-1.5 shadow-lg" alt="SKCTI Logo" />
         <span className="font-sora font-black text-3xl tracking-tight text-neutral-900 dark:text-white">SKCTI OS</span>
       </div>
       {LINKS.map(({ href, label, Icon, exact }) => {
@@ -69,7 +66,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <Link key={href} href={href} onClick={() => { vibrate(10); setMobileMenuOpen(false); }}>
             <motion.div
               whileTap={{ scale: 0.95 }}
-              className={`flex items-center gap-3 px-5 py-4 rounded-2xl font-geist text-body-md font-semibold transition-all relative ${
+              className={`flex items-center gap-3 px-5 py-4 rounded-full font-geist text-body-md font-semibold transition-all relative ${
                 active
                   ? "bg-black/10 dark:bg-white/20 text-neutral-900 dark:text-white shadow-md border border-black/10 dark:border-white/20"
                   : "text-neutral-600 dark:text-neutral-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-neutral-900 dark:hover:text-white"
@@ -110,13 +107,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row relative">
-      <MeshBackground />
-      <ThemeOverlay />
-
+      
       {/* Floating Mobile Header */}
         <header className="lg:hidden fixed top-0 inset-x-0 z-50 p-4 flex justify-between items-start pointer-events-none">
           <div className="pointer-events-auto flex items-center gap-3 bg-black/5 dark:bg-white/5 backdrop-blur-md border border-black/10 dark:border-white/10 rounded-full px-4 py-2 shadow-lg hover:bg-black/10 dark:hover:bg-white/10 transition-all">
-            <img src="/src/logo.png" className="w-8 h-8 rounded-lg bg-white p-1" alt="SKCTI Logo" />
+            <img src="/src/logo.webp" className="w-8 h-8 rounded-full bg-white p-1" alt="SKCTI Logo" />
             <span className="font-sora font-bold tracking-tight text-neutral-900 dark:text-white">Admin OS</span>
           </div>
           <motion.button

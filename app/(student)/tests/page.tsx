@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { onSnapshot, query, where } from "firebase/firestore";
-import { CheckCircle2, ClipboardList, Clock, PlayCircle, X, ChevronLeft } from "lucide-react";
+import { CheckCircle2, ClipboardList, Clock, PlayCircle, X, ChevronLeft, ExternalLink } from "lucide-react";
 import { Browser } from "@capacitor/browser";
 import { useEffect, useMemo, useState } from "react";
 import { TestSkeleton } from "@/components/SkeletonLoader";
@@ -15,7 +15,6 @@ export default function Tests() {
   const { profile, config, markAttempted } = useStore();
   const [tests, setTests] = useState<TestDoc[] | null>(null);
   const [tab, setTab] = useState<"All" | "Chapter" | "Mock">("All");
-  const [open, setOpen] = useState<TestDoc | null>(null);
 
   useEffect(() => {
     if (!profile) return;
@@ -56,7 +55,7 @@ export default function Tests() {
       <div className="space-y-4">
         {tests === null && [0, 1].map((i) => <TestSkeleton key={i} />)}
         {tests !== null && shown.length === 0 && (
-          <div className="glassy-strong rounded-3xl p-10 text-center">
+          <div className="glassy-strong rounded-[2rem] p-10 text-center">
             <ClipboardList size={22} className="mx-auto text-purple-500 mb-2" />
             <p className="font-sora font-semibold text-black dark:text-white">No tests yet</p>
             <p className="font-geist text-label-sm text-black dark:text-neutral-400 mt-1">Quizzes published for {profile.stream} land here live.</p>
@@ -68,7 +67,7 @@ export default function Tests() {
             <motion.div
               key={t.id}
               layout
-              className="w-full glassy rounded-[1.5rem] p-6 text-left hover:brightness-110 transition-all flex flex-col gap-4"
+              className="w-full glassy rounded-[2rem] p-6 text-left hover:brightness-110 transition-all flex flex-col gap-4"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">
@@ -82,10 +81,19 @@ export default function Tests() {
                 )}
               </div>
               
-              <div className="pt-4 border-t border-black/10 dark:border-white/10 flex justify-end">
+              <div className="pt-4 border-t border-black/10 dark:border-white/10 flex justify-end gap-3">
+                {!done && (
+                  <button
+                    onClick={() => { vibrate(20); void markAttempted(t.id, t.rewardCoins ?? 25); }}
+                    className="glassy-strong px-4 py-2.5 rounded-full font-geist text-sm font-semibold flex items-center gap-2 hover:bg-purple-500/10 active:scale-95 transition-all text-purple-600 dark:text-purple-400 border border-purple-500/20"
+                  >
+                    <CheckCircle2 size={16} />
+                    Done +{t.rewardCoins ?? 25}
+                  </button>
+                )}
                 <button
-                  onClick={async () => { vibrate(10); setOpen(t); await Browser.open({ url: t.formUrl }); }}
-                  className="glassy-strong px-5 py-2.5 rounded-xl font-geist text-sm font-semibold flex items-center gap-2 hover:brightness-110 active:scale-95 transition-all text-black dark:text-white"
+                  onClick={async () => { vibrate(10); await Browser.open({ url: t.formUrl }); }}
+                  className="glassy-strong px-5 py-2.5 rounded-full font-geist text-sm font-semibold flex items-center gap-2 hover:brightness-110 active:scale-95 transition-all text-black dark:text-white"
                 >
                   <PlayCircle size={16} />
                   Start Test
@@ -96,53 +104,7 @@ export default function Tests() {
         })}
       </div>
 
-      {/* ————— embedded Google Form ————— */}
-      <AnimatePresence>
-        {open && (
-          <motion.div 
-            initial={{ opacity: 0 }} 
-            animate={{ opacity: 1 }} 
-            exit={{ opacity: 0 }} 
-            className="fixed inset-0 z-[100] bg-black lg:relative lg:inset-auto lg:z-auto lg:bg-transparent"
-          >
-            {/* Floating UI */}
-            <div className="absolute inset-0 pointer-events-none z-50">
-              {/* Top Left: Back Button */}
-              <div className="absolute top-4 left-4 pointer-events-auto">
-                <button 
-                  onClick={() => { vibrate(10); setOpen(null); }}
-                  className="flex items-center justify-center w-12 h-12 rounded-full glassy hover:brightness-110 transition-all text-white lg:text-black lg:dark:text-white"
-                >
-                  <ChevronLeft size={24} />
-                </button>
-              </div>
 
-              {/* Bottom Right: Mark Done Button */}
-              {!profile.attempted.includes(open.id) && (
-                <div className="absolute bottom-6 right-6 pointer-events-auto">
-                  <button 
-                    onClick={() => { vibrate(20); void markAttempted(open.id, open.rewardCoins ?? 25); setOpen(null); }}
-                    className="flex items-center gap-2 px-5 py-3 rounded-full border border-purple-500/50 bg-black/40 backdrop-blur-md text-purple-400 hover:bg-black/60 transition-all font-geist text-sm font-bold shadow-[0_0_20px_rgba(168,85,247,0.3)]"
-                  >
-                    <CheckCircle2 size={16} className="text-purple-300" />
-                    <span className="text-white drop-shadow-md">Mark done +{open.rewardCoins ?? 25} 🪙</span>
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {/* Test Browser Container */}
-            <div className="w-full h-full lg:h-[calc(100vh-80px)] p-0 lg:p-4 flex flex-col items-center justify-center pointer-events-auto">
-              <ClipboardList size={48} className="text-purple-500 mb-4" />
-              <h2 className="text-2xl font-sora font-bold text-white mb-2">Test is open in Browser</h2>
-              <p className="text-neutral-400 font-geist text-sm mb-6 text-center max-w-xs">Return here to mark it done when you finish.</p>
-              <button onClick={() => Browser.open({ url: open.formUrl })} className="bg-gradient-to-r from-purple-600 to-blue-600 hover:brightness-110 text-white font-bold py-3 px-6 rounded-full transition-all shadow-lg active:scale-95">
-                Re-open Test
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }

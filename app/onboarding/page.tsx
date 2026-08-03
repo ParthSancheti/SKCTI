@@ -4,7 +4,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, Atom, Dna, GraduationCap, Phone } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import MeshBackground from "@/components/MeshBackground";
 import { useStore, vibrate } from "@/lib/store";
 import type { Grade, Stream } from "@/lib/types";
 
@@ -122,7 +121,6 @@ export default function Onboarding() {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-8 md:p-12 relative overflow-hidden">
-      <MeshBackground />
       
       {/* Bento Glass Card Container */}
       <div className="w-full max-w-5xl flex flex-col md:flex-row bg-white/20 dark:bg-white/5 backdrop-blur-lg border border-white/30 dark:border-white/10 rounded-[2.5rem] md:rounded-[3rem] shadow-2xl relative z-10 overflow-hidden min-h-[600px]">

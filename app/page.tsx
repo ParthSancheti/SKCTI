@@ -9,7 +9,6 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import MeshBackground from "@/components/MeshBackground";
 import { createInquiry } from "@/lib/db";
 import { fbDb, firebaseReady } from "@/lib/firebase";
 import { useStore, vibrate } from "@/lib/store";
@@ -92,10 +91,10 @@ export default function Landing() {
   const [form, setForm] = useState({ name: "", phone: "", studentClass: "11th", message: "" });
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
-  const [err, setErr] = useState("");
   const [activeSlide, setActiveSlide] = useState(0);
   const carouselRef = useRef<HTMLDivElement>(null);
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  const [showSplash, setShowSplash] = useState(true);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     setTouchStartX(e.targetTouches[0].clientX);
@@ -139,9 +138,21 @@ export default function Landing() {
   }, []);
 
   useEffect(() => {
-    if (ready && fbUser && profileLoaded) {
-      if (profile) router.replace("/home");
-      else router.replace("/onboarding");
+    // Instantly reveal landing page for first-time visitors to avoid blank screen
+    if (!document.cookie.includes("skcti_session=true")) {
+      setShowSplash(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (ready) {
+      if (fbUser && profileLoaded) {
+        if (profile) router.replace("/home");
+        else router.replace("/onboarding");
+      } else if (!fbUser) {
+        // Ensure splash hides if they actually aren't logged in
+        setShowSplash(false);
+      }
     }
   }, [ready, fbUser, profile, profileLoaded, router]);
 
@@ -188,12 +199,19 @@ export default function Landing() {
     setSending(false);
   };
 
+  if (showSplash) {
+    return (
+      <div className="min-h-screen bg-[#09090b] flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-purple-500/20 border-t-purple-500 rounded-full animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-transparent">
       {/* Mesh background is pushed to z-[-1] to ensure it never overlaps text */}
       <div className="fixed inset-0 z-[-1]">
-        <MeshBackground />
-      </div>
+        </div>
 
       {/* ==================================================== */}
       {/* 1. NATIVE MOBILE ONBOARDING (Only visible on max-md) */}
@@ -203,7 +221,7 @@ export default function Landing() {
         {/* Top Header */}
         <div className="absolute top-0 inset-x-0 w-full flex items-center gap-3 px-6 pt-[env(safe-area-inset-top,2rem)] z-50">
           <div className="bg-white rounded-full p-2 shadow-md shrink-0">
-            <img src="/src/logo.png" className="w-8 h-8 rounded-full" alt="SKCTI Logo" />
+            <img src="/src/logo.webp" className="w-8 h-8 rounded-full" alt="SKCTI Logo" />
           </div>
           <h1 className="font-sora text-3xl font-black text-white drop-shadow-md tracking-tight">SKCTI</h1>
         </div>
@@ -220,8 +238,8 @@ export default function Landing() {
             
             {/* Card 1 */}
             <div className="min-w-full relative overflow-hidden flex flex-col justify-end p-8 pb-32">
-              <img src="/src/welcome/image1.png" className="absolute inset-0 w-full h-full object-cover dark:hidden" alt="Onboarding" loading="eager" />
-              <img src="/src/welcome/image1_dark.png" className="absolute inset-0 w-full h-full object-cover hidden dark:block" alt="Onboarding" loading="eager" />
+              <img src="/src/welcome/image1.webp" className="absolute inset-0 w-full h-full object-cover dark:hidden" alt="Onboarding" width={1000} height={1000} decoding="async" fetchPriority="high" />
+              <img src="/src/welcome/image1_dark.webp" className="absolute inset-0 w-full h-full object-cover hidden dark:block" alt="Onboarding" width={1000} height={1000} decoding="async" fetchPriority="high" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
               <div className="relative z-10 flex flex-col justify-end">
                 <h3 className="font-sora text-4xl leading-tight font-black text-white mb-3 tracking-tight">Welcome to SKCTI.</h3>
@@ -231,8 +249,8 @@ export default function Landing() {
             
             {/* Card 2 */}
             <div className="min-w-full relative overflow-hidden flex flex-col justify-end p-8 pb-32">
-              <img src="/src/welcome/image2.png" className="absolute inset-0 w-full h-full object-cover dark:hidden" alt="Structured Learning" loading="eager" />
-              <img src="/src/welcome/image2_dark.png" className="absolute inset-0 w-full h-full object-cover hidden dark:block" alt="Structured Learning" loading="eager" />
+              <img src="/src/welcome/image2.webp" width={1000} height={1000} className="absolute inset-0 w-full h-full object-cover dark:hidden" loading="lazy" decoding="async" alt="Structured Learning" />
+              <img src="/src/welcome/image2_dark.webp" width={1000} height={1000} className="absolute inset-0 w-full h-full object-cover hidden dark:block" loading="lazy" decoding="async" alt="Structured Learning" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
               <div className="relative z-10 flex flex-col justify-end">
                 <h3 className="font-sora text-4xl leading-tight font-black text-white mb-3 tracking-tight">Structured Learning.</h3>
@@ -242,8 +260,8 @@ export default function Landing() {
             
             {/* Card 3 */}
             <div className="min-w-full relative overflow-hidden flex flex-col justify-end p-8 pb-32">
-              <img src="/src/welcome/image3.png" className="absolute inset-0 w-full h-full object-cover dark:hidden" alt="AI Doubt Solving" loading="eager" />
-              <img src="/src/welcome/image3_dark.png" className="absolute inset-0 w-full h-full object-cover hidden dark:block" alt="AI Doubt Solving" loading="eager" />
+              <img src="/src/welcome/image3.webp" width={1000} height={1000} className="absolute inset-0 w-full h-full object-cover dark:hidden" loading="lazy" decoding="async" alt="AI Doubt Solving" />
+              <img src="/src/welcome/image3_dark.webp" width={1000} height={1000} className="absolute inset-0 w-full h-full object-cover hidden dark:block" loading="lazy" decoding="async" alt="AI Doubt Solving" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
               <div className="relative z-10 flex flex-col justify-end">
                 <h3 className="font-sora text-4xl leading-tight font-black text-white mb-3 tracking-tight">AI Doubt Solving.</h3>
@@ -271,7 +289,7 @@ export default function Landing() {
 
         {/* Absolute Bottom Action Bar */}
         <div className="absolute bottom-[env(safe-area-inset-bottom,1.5rem)] w-full px-6 z-10">
-          <div className="flex justify-between items-center bg-white/5 dark:bg-white/5 backdrop-blur-lg border border-white/10 rounded-[2rem] p-2 pr-2 pl-6">
+          <div className="flex justify-between items-center bg-white/5 dark:bg-white/5 backdrop-blur-lg border border-white/10 rounded-[2rem] py-4 pr-4 pl-8">
             <button 
               onClick={() => router.push('/home')} 
               className="text-sm font-bold text-white/70 hover:text-white transition-colors"
@@ -301,7 +319,7 @@ export default function Landing() {
         <nav className="fixed inset-x-0 top-0 z-50 px-4 pt-4">
           <div className="glassy mx-auto flex max-w-5xl items-center justify-between rounded-full px-3 py-2.5 pl-5">
             <div className="flex items-center gap-2.5">
-              <img src="/src/logo.png" className="h-8 w-8 rounded-xl bg-white p-1 shadow-lg shrink-0" alt="SKCTI Logo" />
+              <img src="/src/logo.webp" className="h-8 w-8 rounded-full bg-white p-1 shadow-lg shrink-0" alt="SKCTI Logo" />
               <span className="font-sora text-base font-bold text-neutral-900 dark:text-white">{cfg.appName}</span>
             </div>
             {/* Start CTA */}
@@ -539,7 +557,7 @@ export default function Landing() {
             {/* Top Header */}
             <div className="absolute top-[env(safe-area-inset-top,1.5rem)] left-6 flex items-center gap-3 z-50">
               <div className="bg-white rounded-full p-2 shadow-sm shrink-0">
-                <img src="/src/logo.png" className="w-10 h-10 rounded-full" alt="SKCTI Logo" />
+                <img src="/src/logo.webp" className="w-10 h-10 rounded-full" alt="SKCTI Logo" />
               </div>
               <span className="font-sora font-black text-2xl tracking-tight text-white drop-shadow-md">SKCTI</span>
             </div>

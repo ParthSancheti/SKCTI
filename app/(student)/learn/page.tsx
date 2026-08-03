@@ -125,17 +125,17 @@ function LearnInner() {
       {!subject && (
         <div className="mt-2 mb-8 flex flex-col gap-4">
           <div>
-            <h1 className="font-sora text-3xl font-extrabold tracking-tight text-neutral-900 dark:text-white mb-1">Learn OS</h1>
+            <h1 className="font-sora text-4xl font-extrabold tracking-tight text-neutral-900 dark:text-white mb-1">Learn OS</h1>
           <p className="font-geist text-body-lg text-neutral-600 dark:text-neutral-400">
-            {profile.stream} · {profile.grade} — {(items?.length ?? 0) + (videos?.length ?? 0)} resources live
+            {profile.stream} · {profile.grade} — {subjects.length} modules active
           </p>
         </div>
         
         {/* Massive Search Bar (liquid glass) */}
-        <div className="w-full flex items-center gap-3 bg-white/10 dark:bg-white/5 backdrop-blur-lg border border-white/20 shadow-lg rounded-full px-6 py-4 transition-all focus-within:brightness-110">
-          <Search size={22} className="shrink-0 text-purple-500" />
+        <div className="w-full flex items-center gap-3 bg-white/10 dark:bg-white/5 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-lg rounded-full px-5 py-3 transition-all focus-within:border-purple-500/50">
+          <Search size={20} className="shrink-0 text-[#9d72ff]" />
           <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search chapters, topics..."
-            className="w-full bg-transparent font-hanken text-body-lg outline-none text-black dark:text-white placeholder:text-neutral-500 dark:placeholder:text-neutral-400" />
+            className="w-full bg-transparent font-hanken text-base outline-none text-black dark:text-white placeholder:text-neutral-500 dark:placeholder:text-neutral-500" />
           {q && <button onClick={() => setQ("")} className="shrink-0 text-black dark:text-white"><X size={18} /></button>}
         </div>
       </div>
@@ -145,10 +145,10 @@ function LearnInner() {
         <div className="flex flex-row flex-nowrap overflow-x-auto hide-scrollbar gap-2 pb-2">
           {tabs.map(([m, label]) => (
             <button key={m} onClick={() => { vibrate(10); setMode(m); }}
-              className={`flex items-center gap-2 rounded-full px-5 py-2 font-geist text-label-sm font-semibold transition-all ${
+              className={`flex items-center gap-2 rounded-full px-4 py-1.5 font-geist text-sm transition-all border ${
                 mode === m
-                  ? "bg-white/10 dark:bg-white/10 backdrop-blur-lg border border-white/20 shadow-lg text-neutral-900 dark:text-white"
-                  : "glassy hover:brightness-110 text-neutral-600 dark:text-neutral-400"
+                  ? "bg-purple-600/10 dark:bg-[#9d72ff]/10 border-purple-600/50 dark:border-[#9d72ff]/50 text-purple-700 dark:text-white font-semibold"
+                  : "bg-black/5 dark:bg-white/5 border-black/10 dark:border-white/10 text-neutral-600 dark:text-neutral-400 hover:bg-black/10 dark:hover:bg-white/10 font-medium"
               }`}>
               {m === "saved" && <Bookmark size={14} />}
               {m === "videos" && <PlayCircle size={14} />}
@@ -201,7 +201,7 @@ function LearnInner() {
 
               {/* Local Subject Search & Filter Row */}
               <div className="flex items-center gap-3">
-                <div className="flex-1 flex items-center gap-3 glassy rounded-xl px-4 py-3 transition-all focus-within:brightness-110">
+                <div className="flex-1 flex items-center gap-3 glassy rounded-full px-4 py-3 transition-all focus-within:brightness-110">
                   <Search size={18} className="shrink-0 text-black/50 dark:text-white/50" />
                   <input 
                     value={subjectSearch} 
@@ -218,7 +218,7 @@ function LearnInner() {
                       vibrate(10);
                       setSubjectFilter(e.target.value as any);
                     }}
-                    className={`appearance-none glassy rounded-xl pl-10 pr-8 py-3 font-geist text-sm font-semibold outline-none transition-all cursor-pointer ${
+                    className={`appearance-none glassy rounded-full pl-10 pr-8 py-3 font-geist text-sm font-semibold outline-none transition-all cursor-pointer ${
                       subjectFilter !== "All" ? "text-purple-600 dark:text-purple-400" : "text-black dark:text-white"
                     }`}
                   >
@@ -251,7 +251,7 @@ function LearnInner() {
               <div className="space-y-4">
                 {items === null && [0, 1, 2].map((i) => <ChapterSkeleton key={i} />)}
                 {items !== null && subjectItems.length === 0 && (
-                  <div className="glassy-strong rounded-3xl p-10 text-center">
+                  <div className="glassy-strong rounded-[2rem] p-10 text-center">
                     <p className="font-sora font-semibold text-black dark:text-white">Nothing in {subject} yet</p>
                     <p className="mt-1 font-geist text-label-sm text-black dark:text-neutral-400">Notes published from the admin panel appear here instantly.</p>
                   </div>
@@ -275,9 +275,9 @@ function LearnInner() {
         </AnimatePresence>
       ) : mode === "videos" ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {videos === null && [0, 1, 2, 3].map((i) => <div key={i} className="glassy animate-pulse aspect-video rounded-3xl" />)}
+          {videos === null && [0, 1, 2, 3].map((i) => <div key={i} className="glassy animate-pulse aspect-video rounded-[2rem]" />)}
           {videos !== null && shownVideos.length === 0 && (
-            <div className="glassy-strong rounded-3xl p-10 text-center col-span-full">
+            <div className="glassy-strong rounded-[2rem] p-10 text-center col-span-full">
               <p className="font-sora font-semibold text-black dark:text-white">No videos yet</p>
               <p className="mt-1 font-geist text-label-sm text-black dark:text-neutral-400">Lectures published from the admin panel appear here instantly.</p>
             </div>
@@ -304,7 +304,7 @@ function LearnInner() {
 
 function VideoTile({ v, onOpen }: { v: VideoDoc; onOpen: () => void }) {
   return (
-    <motion.button whileTap={{ scale: 0.96 }} onClick={() => { vibrate(10); onOpen(); }} className="glassy rounded-3xl hover:brightness-110 transition-all overflow-hidden text-left flex flex-col">
+    <motion.button whileTap={{ scale: 0.96 }} onClick={() => { vibrate(10); onOpen(); }} className="glassy rounded-[2rem] hover:brightness-110 transition-all overflow-hidden text-left flex flex-col">
       <div className="relative aspect-video w-full bg-black/10 dark:bg-black/30">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={youtubeThumb(v.youtubeId)} alt={v.title} className="h-full w-full object-cover" />

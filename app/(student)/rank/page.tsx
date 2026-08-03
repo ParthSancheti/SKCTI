@@ -28,8 +28,8 @@ export default function Rank() {
 
   return (
     <div className="space-y-8 pb-24">
-      <div className="mx-6 mt-6 mb-8 flex flex-col gap-2">
-        <h1 className="font-sora text-6xl font-black tracking-tight text-neutral-900 dark:text-white">Rank Board</h1>
+      <div className="mx-6 mt-6 mb-8 flex flex-col">
+        <h1 className="font-sora text-3xl font-extrabold tracking-tight text-neutral-900 dark:text-white mb-1">Rank Board</h1>
         <p className="font-geist text-body-lg text-neutral-600 dark:text-neutral-400">Live · earn coins from tasks & tests to climb</p>
       </div>
 
@@ -92,5 +92,3 @@ export default function Rank() {
     </div>
   );
 }
-
-

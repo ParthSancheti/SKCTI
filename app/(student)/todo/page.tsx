@@ -86,12 +86,12 @@ export default function TodoApp() {
   };
 
   return (
-    <div className="flex h-[calc(100vh-2rem)] lg:h-auto min-h-[calc(100vh-4rem)] w-full gap-6 relative px-4 lg:px-8 py-0">
+    <div className="flex h-[100dvh] lg:h-auto min-h-[calc(100vh-4rem)] w-full gap-6 relative py-0">
 
       {/* Mobile Floating Back Button */}
       <button 
         onClick={() => { vibrate(10); router.push("/home"); }} 
-        className="lg:hidden absolute top-4 left-4 z-50 w-10 h-10 flex items-center justify-center rounded-full bg-white/10 dark:bg-white/5 backdrop-blur-md border border-white/20 text-black dark:text-white pointer-events-auto shadow-lg hover:bg-white/20 transition-colors"
+        className="lg:hidden absolute top-[env(safe-area-inset-top,1rem)] mt-2 left-0 z-50 w-10 h-10 flex items-center justify-center rounded-full bg-white/10 dark:bg-white/5 backdrop-blur-md border border-white/20 text-black dark:text-white pointer-events-auto shadow-lg hover:bg-white/20 transition-colors"
       >
         <ChevronLeft size={20} />
       </button>

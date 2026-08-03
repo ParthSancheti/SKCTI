@@ -3,11 +3,12 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { doc, getDoc } from "firebase/firestore";
-import { ChevronLeft, CheckCircle2, ClipboardList } from "lucide-react";
+import { ChevronLeft, CheckCircle2, ExternalLink } from "lucide-react";
 import { fbDb } from "@/lib/firebase";
 import { type ContentDoc } from "@/lib/types";
 import { useStore, vibrate } from "@/lib/store";
 import { Browser } from "@capacitor/browser";
+import { formEmbedUrl } from "@/lib/types";
 
 export default function TestViewerPage() {
   const params = useSearchParams();
@@ -38,11 +39,7 @@ export default function TestViewerPage() {
     fetchDoc();
   }, [id]);
 
-  useEffect(() => {
-    if (content?.testLink) {
-      Browser.open({ url: content.testLink }).catch(console.error);
-    }
-  }, [content?.testLink]);
+
 
   if (error) {
     return (
@@ -87,41 +84,57 @@ export default function TestViewerPage() {
   }
 
   return (
-    <div className="fixed inset-0 z-[100] bg-black lg:relative lg:inset-auto lg:z-auto lg:bg-transparent">
-      {/* Floating UI */}
-      <div className="absolute inset-0 pointer-events-none z-50">
-        {/* Top Left: Back Button */}
-        <div className="absolute top-4 left-4 pointer-events-auto">
-          <button 
-            onClick={() => router.back()}
-            className="flex items-center justify-center w-12 h-12 rounded-full glassy hover:brightness-110 transition-all text-white lg:text-black lg:dark:text-white"
-          >
-            <ChevronLeft size={24} />
-          </button>
+    <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-0 md:p-8">
+      {/* The Modal Container */}
+      <div className="w-full h-full md:max-w-4xl bg-white dark:bg-neutral-900 md:rounded-[2rem] overflow-hidden flex flex-col relative shadow-2xl pointer-events-auto">
+        
+        {/* Header */}
+        <div className="flex items-center justify-between px-4 py-3 md:py-4 border-b border-black/5 dark:border-white/5 bg-neutral-100 dark:bg-black/50 z-10">
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={() => { vibrate(10); router.back(); }}
+              className="flex items-center justify-center w-10 h-10 rounded-full bg-black/5 dark:bg-white/10 hover:brightness-110 transition-all text-black dark:text-white"
+            >
+              <ChevronLeft size={20} />
+            </button>
+            <h2 className="font-sora font-semibold text-base md:text-lg text-black dark:text-white truncate max-w-[200px] sm:max-w-[300px]">{content.title}</h2>
+          </div>
+          
+          <div className="flex items-center gap-3">
+            {/* Mark Done Button */}
+            {profile && !profile.attempted.includes(content.id) && (
+              <button 
+                onClick={() => { vibrate(20); void markAttempted(content.id, content.rewardCoins ?? 25); router.back(); }}
+                className="hidden md:flex items-center gap-1.5 px-4 py-2 rounded-full border border-purple-500/50 bg-purple-500/10 text-purple-600 dark:text-purple-400 hover:bg-purple-500/20 transition-all font-geist text-sm font-bold shadow-sm"
+              >
+                <CheckCircle2 size={16} /> Mark Done +{content.rewardCoins ?? 25}
+              </button>
+            )}
+            <button onClick={() => Browser.open({ url: content.testLink! })} className="flex items-center justify-center w-10 h-10 rounded-full bg-black/5 dark:bg-white/10 hover:brightness-110 transition-all text-black dark:text-white" title="Open in browser">
+              <ExternalLink size={18} />
+            </button>
+          </div>
         </div>
 
-        {/* Bottom Right: Mark Done Button */}
+        {/* Iframe */}
+        <iframe
+          src={formEmbedUrl(content.testLink!)}
+          className="w-full flex-1 border-none bg-white"
+          title={content.title}
+        />
+
+        {/* Mobile Mark Done (floating) */}
         {profile && !profile.attempted.includes(content.id) && (
-          <div className="absolute bottom-6 right-6 pointer-events-auto">
+          <div className="md:hidden absolute bottom-6 right-6 z-20 pointer-events-auto">
             <button 
               onClick={() => { vibrate(20); void markAttempted(content.id, content.rewardCoins ?? 25); router.back(); }}
-              className="flex items-center gap-2 px-5 py-3 rounded-full border border-purple-500/50 bg-black/40 backdrop-blur-md text-purple-400 hover:bg-black/60 transition-all font-geist text-sm font-bold shadow-[0_0_20px_rgba(168,85,247,0.3)]"
+              className="flex items-center gap-2 px-5 py-3 rounded-full border border-purple-500/50 bg-black/80 backdrop-blur-md text-purple-400 hover:bg-black/90 transition-all font-geist text-sm font-bold shadow-lg"
             >
-              <CheckCircle2 size={16} className="text-purple-300" />
-              <span className="text-white drop-shadow-md">Mark done +{content.rewardCoins ?? 25} 🪙</span>
+              <CheckCircle2 size={16} className="text-purple-400" />
+              <span>Done +{content.rewardCoins ?? 25} 🪙</span>
             </button>
           </div>
         )}
-      </div>
-
-      {/* Test Browser Container */}
-      <div className="w-full h-full lg:h-[calc(100vh-80px)] p-0 lg:p-4 flex flex-col items-center justify-center pointer-events-auto">
-        <ClipboardList size={48} className="text-purple-500 mb-4" />
-        <h2 className="text-2xl font-sora font-bold text-white mb-2">Test is open in Browser</h2>
-        <p className="text-neutral-400 font-geist text-sm mb-6 text-center max-w-xs">Return here to mark it done when you finish.</p>
-        <button onClick={() => Browser.open({ url: content.testLink! })} className="bg-gradient-to-r from-purple-600 to-blue-600 hover:brightness-110 text-white font-bold py-3 px-6 rounded-full transition-all shadow-lg active:scale-95">
-          Re-open Test
-        </button>
       </div>
     </div>
   );

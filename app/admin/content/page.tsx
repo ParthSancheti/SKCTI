@@ -221,12 +221,12 @@ export default function ContentHub() {
                 {!d.published && " · Hidden"}
               </p>
             </div>
-            <motion.button whileTap={{ scale: 0.95 }} onClick={() => { vibrate(10); setViewing(d); }} className="bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/10 dark:border-white/10 px-4 py-2 shrink-0 rounded-xl font-geist text-xs font-bold text-neutral-900 dark:text-white transition-colors">View</motion.button>
-            <motion.button whileTap={{ scale: 0.95 }} onClick={() => openEdit(d)} className="bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/10 dark:border-white/10 px-4 py-2 shrink-0 rounded-xl font-geist text-xs font-bold text-neutral-900 dark:text-white transition-colors">Edit</motion.button>
-            <motion.button whileTap={{ scale: 0.95 }} onClick={() => void togglePub(d)} className="bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/10 dark:border-white/10 px-4 py-2 shrink-0 rounded-xl font-geist text-xs font-bold text-neutral-900 dark:text-white transition-colors">
+            <motion.button whileTap={{ scale: 0.95 }} onClick={() => { vibrate(10); setViewing(d); }} className="bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/10 dark:border-white/10 px-4 py-2 shrink-0 rounded-full font-geist text-xs font-bold text-neutral-900 dark:text-white transition-colors">View</motion.button>
+            <motion.button whileTap={{ scale: 0.95 }} onClick={() => openEdit(d)} className="bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/10 dark:border-white/10 px-4 py-2 shrink-0 rounded-full font-geist text-xs font-bold text-neutral-900 dark:text-white transition-colors">Edit</motion.button>
+            <motion.button whileTap={{ scale: 0.95 }} onClick={() => void togglePub(d)} className="bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/10 dark:border-white/10 px-4 py-2 shrink-0 rounded-full font-geist text-xs font-bold text-neutral-900 dark:text-white transition-colors">
               {d.published ? "Draft" : "Publish"}
             </motion.button>
-            <motion.button whileTap={{ scale: 0.95 }} onClick={() => void remove(d)} aria-label="Delete" className="bg-black/5 dark:bg-white/5 hover:bg-red-500/20 border border-black/10 dark:border-white/10 grid h-10 w-10 shrink-0 place-items-center rounded-xl transition-colors">
+            <motion.button whileTap={{ scale: 0.95 }} onClick={() => void remove(d)} aria-label="Delete" className="bg-black/5 dark:bg-white/5 hover:bg-red-500/20 border border-black/10 dark:border-white/10 grid h-10 w-10 shrink-0 place-items-center rounded-full transition-colors">
               <Trash2 size={16} className="text-neutral-900 dark:text-white hover:text-red-600 dark:hover:text-red-400 transition-colors" />
             </motion.button>
           </GlassCard>

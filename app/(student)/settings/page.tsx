@@ -2,28 +2,36 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  ChevronLeft, Flame, GraduationCap, LogOut, Moon, Pencil, Phone, Shield, Sun, Sparkles, Bell, Mail, X, Trash2, Cpu, Download, FileText, BarChart3
+  ChevronLeft, Flame, GraduationCap, LogOut, Moon, Pencil, Phone, Shield, Sun, Sparkles, Bell, Mail, X, Trash2, Cpu, Download, FileText, BarChart3, Gauge
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { updateUser, col } from "@/lib/db";
-import { useStore, vibrate } from "@/lib/store";
+import { useStore } from "@/lib/store";
+import { haptic, vibrate } from "@/lib/haptics";
+import { useToast } from "@/components/Toast";
 import type { Stream } from "@/lib/types";
 import { fbDb } from "@/lib/firebase";
 import { getDocs, writeBatch } from "firebase/firestore";
 
 export default function Settings() {
-  const { profile, config, isAdmin, isDark, toggleTheme, setStream, upgradeGrade, logout } = useStore();
+  const {
+    profile, config, isAdmin, isDark, toggleTheme, setStream, upgradeGrade, logout,
+    notifications, prefs, setNotification, setPref, clearDownloads, deleteAccount,
+  } = useStore();
   const router = useRouter();
+  const toast = useToast();
   
   const [editingProfile, setEditingProfile] = useState(false);
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [confirmStream, setConfirmStream] = useState<Stream | null>(null);
   
-  // Toggles
-  const [reminders, setReminders] = useState(true);
-  const [updates, setUpdates] = useState(true);
+  const [confirmClear, setConfirmClear] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleteText, setDeleteText] = useState("");
+  const [deleting, setDeleting] = useState(false);
+  const [deleteErr, setDeleteErr] = useState<string | null>(null);
   
   // Easter Egg
   const [tapCount, setTapCount] = useState(0);
@@ -38,6 +46,9 @@ export default function Settings() {
   }, [profile]);
 
   if (!profile) return null;
+
+  const studyHours = `${Math.floor((profile.studyMinutes ?? 0) / 60)}h`;
+  const tasksDone = profile.doneTasks.length;
 
   const saveProfile = async () => {
     vibrate(20);
@@ -72,9 +83,9 @@ export default function Settings() {
       const batch = writeBatch(fbDb());
       q.forEach((d) => batch.delete(d.ref));
       await batch.commit();
-      alert("AI History Wiped! 🧹");
-    } catch (e) {
-      console.error(e);
+      toast.success("AI history cleared");
+    } catch {
+      toast.error("Couldn't clear it. Check your connection and try again.");
     }
     setClearingAi(false);
   };
@@ -331,55 +342,88 @@ export default function Settings() {
           </button>
         </div>
 
-        {/* Notifications */}
+        {/* Notifications — now persisted, not local useState */}
         <div className="bg-white/5 dark:bg-white/5 backdrop-blur-md border border-white/10 rounded-[24px] p-5 flex flex-col justify-center">
           <div className="flex items-center gap-3 mb-4">
             <Bell size={22} className="text-orange-500" />
             <h3 className="font-sora font-semibold text-black dark:text-white">Notifications</h3>
           </div>
           <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="font-geist text-sm text-black dark:text-white">Study Reminders</span>
-              <motion.button
-                whileTap={{ scale: 0.95 }}
-                onClick={() => { vibrate(10); setReminders(!reminders); }}
-                className={`w-11 h-6 rounded-full p-1 transition-colors ${reminders ? "bg-green-500" : "bg-black/10 dark:bg-white/10"}`}
-              >
-                <motion.span layout className={`block w-4 h-4 rounded-full bg-white shadow ${reminders ? "ml-auto" : ""}`} />
-              </motion.button>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="font-geist text-sm text-black dark:text-white">App Updates</span>
-              <motion.button
-                whileTap={{ scale: 0.95 }}
-                onClick={() => { vibrate(10); setUpdates(!updates); }}
-                className={`w-11 h-6 rounded-full p-1 transition-colors ${updates ? "bg-green-500" : "bg-black/10 dark:bg-white/10"}`}
-              >
-                <motion.span layout className={`block w-4 h-4 rounded-full bg-white shadow ${updates ? "ml-auto" : ""}`} />
-              </motion.button>
-            </div>
+            {([
+              { key: "reminders" as const, label: "Study Reminders", sub: "A nudge if your plan is untouched by evening" },
+              { key: "updates" as const, label: "App Updates", sub: "New chapters, tests and notices" },
+            ]).map(({ key, label, sub }) => (
+              <div key={key} className="flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <span className="font-geist text-sm text-black dark:text-white">{label}</span>
+                  <p className="font-geist text-[11px] text-neutral-500 dark:text-neutral-400">{sub}</p>
+                </div>
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  role="switch"
+                  aria-checked={notifications[key]}
+                  aria-label={label}
+                  onClick={() => { haptic.select(); void setNotification(key, !notifications[key]); }}
+                  className={`w-11 h-6 shrink-0 rounded-full p-1 transition-colors ${notifications[key] ? "bg-green-500" : "bg-black/10 dark:bg-white/10"}`}
+                >
+                  <motion.span layout className={`block w-4 h-4 rounded-full bg-white shadow ${notifications[key] ? "ml-auto" : ""}`} />
+                </motion.button>
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* Downloaded PDFs Card */}
+        {/* Saved chapters — the "Clear Downloads" button had no onClick, and
+            nothing in the app ever cached PDF bytes, so "stored locally" was
+            describing something that wasn't happening. */}
         <div className="bg-white/5 dark:bg-white/5 backdrop-blur-md border border-white/10 rounded-[24px] p-5 flex flex-col justify-between">
           <div>
             <div className="flex items-center gap-3 mb-2">
               <FileText size={22} className="text-blue-400" />
-              <h3 className="font-sora font-semibold text-black dark:text-white">Offline Materials</h3>
+              <h3 className="font-sora font-semibold text-black dark:text-white">Saved Chapters</h3>
             </div>
-            <p className="font-geist text-xs text-neutral-500 dark:text-neutral-400 mb-6">Manage your downloaded DPPs and notes.</p>
+            <p className="font-geist text-xs text-neutral-500 dark:text-neutral-400 mb-6">
+              Chapters you&apos;ve opened. Recently read ones stay available offline.
+            </p>
           </div>
-          
-          <div className="flex items-center justify-between">
-            <span className="font-geist font-bold text-sm text-black dark:text-white">{profile.downloads.length} PDFs stored locally</span>
-            <button className="px-4 py-2 bg-white/10 dark:bg-white/10 hover:bg-white/20 transition-colors rounded-full font-geist font-bold text-xs text-black dark:text-white">
-              Clear Downloads
+
+          <div className="flex items-center justify-between gap-3">
+            <span className="font-geist font-bold text-sm text-black dark:text-white">
+              {profile.downloads.length} {profile.downloads.length === 1 ? "chapter" : "chapters"} saved
+            </span>
+            <button
+              onClick={() => { haptic.warning(); setConfirmClear(true); }}
+              disabled={profile.downloads.length === 0}
+              className="press shrink-0 rounded-full bg-white/10 px-4 py-2 font-geist text-xs font-bold text-black transition-colors hover:bg-white/20 disabled:opacity-40 dark:text-white"
+            >
+              Clear
             </button>
           </div>
+
+          <AnimatePresence>
+            {confirmClear && (
+              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
+                <div className="mt-4 rounded-2xl border border-red-500/20 bg-red-500/10 p-4">
+                  <p className="font-hanken mb-3 text-sm text-red-600 dark:text-red-400">
+                    Clear your saved chapter list? Your coins and streak stay.
+                  </p>
+                  <div className="flex gap-2">
+                    <button onClick={() => setConfirmClear(false)} className="press flex-1 rounded-xl bg-white/10 py-2 font-geist text-xs font-bold text-black dark:text-white">Cancel</button>
+                    <button
+                      onClick={() => { haptic.impact(); void clearDownloads(); setConfirmClear(false); }}
+                      className="press flex-1 rounded-xl bg-red-500 py-2 font-geist text-xs font-bold text-white shadow-md"
+                    >
+                      Clear
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
-        {/* Study Tracking Details Card */}
+        {/* Study Analytics — "45h" and "120" were hardcoded literals, so every
+            student on the platform saw the same fake stats. Real values now. */}
         <div className="bg-white/5 dark:bg-white/5 backdrop-blur-md border border-white/10 rounded-[24px] p-5 flex flex-col justify-between">
           <div>
             <div className="flex items-center gap-3 mb-2">
@@ -390,18 +434,72 @@ export default function Settings() {
           </div>
 
           <div className="grid grid-cols-3 gap-2">
-            <div className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl p-3 flex flex-col items-center justify-center text-center">
-              <p className="font-sora font-bold text-sm text-black dark:text-white">45h</p>
-              <p className="font-geist text-[9px] uppercase font-bold tracking-widest text-neutral-500 dark:text-neutral-400 mt-1">Total Hours</p>
+            {[
+              { value: studyHours, label: "Total Hours" },
+              { value: tasksDone, label: "Tasks Done" },
+              { value: profile.attempted.length, label: "Tests Taken" },
+            ].map(({ value, label }) => (
+              <div key={label} className="flex flex-col items-center justify-center rounded-input border border-black/10 bg-black/5 p-3 text-center dark:border-white/10 dark:bg-white/5">
+                <p className="font-sora text-sm font-bold tabular-nums text-black dark:text-white">{value}</p>
+                <p className="font-geist mt-1 text-[9px] font-bold uppercase tracking-widest text-neutral-500 dark:text-neutral-400">{label}</p>
+              </div>
+            ))}
+          </div>
+          {tasksDone === 0 && (
+            <p className="font-geist mt-3 text-center text-[11px] text-neutral-500 dark:text-neutral-400">
+              Finish a task from Today&apos;s Focus and these start filling in.
+            </p>
+          )}
+        </div>
+
+        {/* Appearance & language — the reduced-effects switch drives
+            html[data-perf="low"] in globals.css, which drops backdrop-filter on
+            phones that can't afford a dozen simultaneous blur layers. */}
+        <div className="bg-white/5 dark:bg-white/5 backdrop-blur-md border border-white/10 rounded-[24px] p-5 flex flex-col justify-center md:col-span-2">
+          <div className="flex items-center gap-3 mb-4">
+            <Gauge size={22} className="text-cyan-500" />
+            <h3 className="font-sora font-semibold text-black dark:text-white">Performance &amp; Language</h3>
+          </div>
+
+          <div className="flex items-center justify-between gap-3 mb-4">
+            <div className="min-w-0">
+              <span className="font-geist text-sm text-black dark:text-white">Reduce visual effects</span>
+              <p className="font-geist text-[11px] text-neutral-500 dark:text-neutral-400">
+                Turns off the glass blur. Try this if scrolling feels choppy.
+              </p>
             </div>
-            <div className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl p-3 flex flex-col items-center justify-center text-center">
-              <p className="font-sora font-bold text-sm text-black dark:text-white">120</p>
-              <p className="font-geist text-[9px] uppercase font-bold tracking-widest text-neutral-500 dark:text-neutral-400 mt-1">Tasks Done</p>
-            </div>
-            <div className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl p-3 flex flex-col items-center justify-center text-center">
-              <p className="font-sora font-bold text-sm text-black dark:text-white">{profile.attempted.length}</p>
-              <p className="font-geist text-[9px] uppercase font-bold tracking-widest text-neutral-500 dark:text-neutral-400 mt-1">Tests Taken</p>
-            </div>
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              role="switch"
+              aria-checked={prefs.reducedEffects}
+              aria-label="Reduce visual effects"
+              onClick={() => { haptic.select(); void setPref("reducedEffects", !prefs.reducedEffects); }}
+              className={`w-11 h-6 shrink-0 rounded-full p-1 transition-colors ${prefs.reducedEffects ? "bg-cyan-500" : "bg-black/10 dark:bg-white/10"}`}
+            >
+              <motion.span layout className={`block w-4 h-4 rounded-full bg-white shadow ${prefs.reducedEffects ? "ml-auto" : ""}`} />
+            </motion.button>
+          </div>
+
+          <label className="font-geist text-[10px] uppercase font-bold text-neutral-400 dark:text-neutral-500 mb-2 block">
+            Language for notices &amp; AI replies
+          </label>
+          <div className="flex rounded-full border border-black/5 bg-black/5 p-1.5 dark:border-white/5 dark:bg-white/5">
+            {([
+              { code: "en" as const, label: "English" },
+              { code: "hi" as const, label: "हिंदी" },
+              { code: "mr" as const, label: "मराठी" },
+            ]).map(({ code, label }) => (
+              <button
+                key={code}
+                onClick={() => { haptic.select(); void setPref("language", code); }}
+                className="relative flex-1 rounded-full py-2.5 font-geist text-sm font-bold transition-colors"
+              >
+                {prefs.language === code && (
+                  <motion.span layoutId="lang-pill" className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-600 to-blue-600 shadow-md" />
+                )}
+                <span className={`relative z-10 ${prefs.language === code ? "text-white" : "text-black/60 dark:text-white/60"}`}>{label}</span>
+              </button>
+            ))}
           </div>
         </div>
 
@@ -413,6 +511,64 @@ export default function Settings() {
           <LogOut size={20} className="text-red-500 group-hover:-translate-x-1 transition-transform" />
           <span className="font-sora font-bold text-red-500">Sign Out</span>
         </button>
+
+        {/* Danger zone — there was previously no way for a student (a minor)
+            to remove their own data from the platform. */}
+        <div className="md:col-span-2 rounded-[24px] border border-red-500/20 bg-red-500/[0.06] p-5">
+          <div className="flex items-center gap-3 mb-2">
+            <Trash2 size={20} className="text-red-500" />
+            <h3 className="font-sora font-semibold text-red-500">Delete account</h3>
+          </div>
+          <p className="font-geist text-xs text-neutral-500 dark:text-neutral-400">
+            Permanently removes your profile, plan, todos, AI history and rank entry.
+            Coins and streak are gone for good. This cannot be undone.
+          </p>
+
+          {!confirmDelete ? (
+            <button
+              onClick={() => { haptic.warning(); setConfirmDelete(true); }}
+              className="press mt-4 rounded-full border border-red-500/30 px-5 py-2.5 font-geist text-xs font-bold text-red-500"
+            >
+              Delete my account
+            </button>
+          ) : (
+            <div className="mt-4">
+              <p className="font-hanken mb-2 text-sm text-red-600 dark:text-red-400">
+                Type <span className="font-geist font-bold">DELETE</span> to confirm.
+              </p>
+              <input
+                autoFocus
+                value={deleteText}
+                onChange={(e) => setDeleteText(e.target.value.toUpperCase())}
+                placeholder="DELETE"
+                className="w-full rounded-2xl border border-red-500/25 bg-black/5 px-4 py-3 font-geist text-sm tracking-widest text-black outline-none focus:border-red-500 dark:bg-white/5 dark:text-white"
+              />
+              <div className="mt-3 flex gap-2">
+                <button
+                  onClick={() => { setConfirmDelete(false); setDeleteText(""); }}
+                  className="press flex-1 rounded-xl bg-white/10 py-2.5 font-geist text-xs font-bold text-black dark:text-white"
+                >
+                  Keep my account
+                </button>
+                <button
+                  disabled={deleteText !== "DELETE" || deleting}
+                  onClick={async () => {
+                    setDeleting(true);
+                    haptic.heavy();
+                    try { await deleteAccount(); router.replace("/"); }
+                    catch { setDeleting(false); setDeleteErr("Couldn't delete. Sign out, sign back in, and try again."); }
+                  }}
+                  className="press flex-1 rounded-xl bg-red-600 py-2.5 font-geist text-xs font-bold text-white shadow-md disabled:opacity-40"
+                >
+                  {deleting ? "Deleting…" : "Delete forever"}
+                </button>
+              </div>
+              {deleteErr && (
+                <p className="font-geist mt-2 text-xs text-red-500">{deleteErr}</p>
+              )}
+            </div>
+          )}
+        </div>
 
       </div>
 

@@ -165,10 +165,10 @@ export default function AiLab() {
   };
 
   return (
-    <div className="flex h-[calc(100vh-6rem)] w-full gap-6 relative lg:pt-6">
+    <div className="flex h-[100dvh] lg:h-[calc(100vh-1.5rem)] w-[calc(100%+3rem)] -mx-6 lg:w-full lg:mx-0 gap-0 lg:gap-6 relative lg:pt-6 overflow-hidden">
       
       {/* Mobile Floating Top Buttons */}
-      <div className={`lg:hidden absolute top-4 left-4 right-4 z-50 flex items-center justify-between pointer-events-none transition-opacity duration-300 ${scrolled ? "opacity-0" : "opacity-100"}`}>
+      <div className={`lg:hidden absolute top-[env(safe-area-inset-top,1rem)] mt-2 left-4 right-4 z-50 flex items-center justify-between pointer-events-none transition-opacity duration-300 ${scrolled ? "opacity-0" : "opacity-100"}`}>
         <button onClick={() => { vibrate(10); router.push("/home"); }} className="w-10 h-10 flex items-center justify-center rounded-full bg-white/10 dark:bg-white/5 backdrop-blur-md border border-white/20 text-black dark:text-white pointer-events-auto shadow-lg">
           <ChevronLeft size={20} />
         </button>
@@ -264,8 +264,8 @@ export default function AiLab() {
       </div>
 
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col relative pt-14 lg:pt-0 pb-24 h-full">
-        <div onScroll={handleScroll} className="flex-1 overflow-y-auto hide-scrollbar flex flex-col px-2 lg:px-12 w-full max-w-4xl mx-auto">
+      <div className="flex-1 flex flex-col relative pt-20 lg:pt-0 pb-24 h-full">
+        <div onScroll={handleScroll} className="flex-1 overflow-y-auto hide-scrollbar flex flex-col px-4 lg:px-12 w-full max-w-4xl mx-auto">
           {msgs.length === 0 ? (
             <div className="flex-1 flex flex-col items-center justify-center text-center mt-[-10vh]">
               {/* Animated SVG Star */}
@@ -356,7 +356,7 @@ export default function AiLab() {
             </div>
           )}
       {/* Floating Input Console (Inside Main Chat Area for perfect centering) */}
-      <div className="absolute bottom-6 left-0 right-0 w-[92%] max-w-[800px] mx-auto z-[70]">
+      <div className="absolute bottom-[calc(env(safe-area-inset-bottom,1rem)+1rem)] left-0 right-0 w-full px-4 lg:px-0 lg:w-[92%] max-w-[800px] mx-auto z-[70]">
         {/* Image Preview Overlay */}
         {image && (
           <div className="absolute -top-20 left-6">

@@ -36,7 +36,7 @@ export default function TitleBar() {
 
   return (
     <>
-      <header className="sticky top-2 mt-[env(safe-area-inset-top,0px)] z-40 mx-2 lg:mx-0 mb-4 px-2 py-2 bg-white/5 dark:bg-white/5 backdrop-blur-3xl border border-white/10 rounded-full shadow-lg flex items-center justify-between overflow-hidden">
+      <header className="sticky top-2 mt-[env(safe-area-inset-top,0px)] z-40 mx-2 lg:mx-0 mb-4 px-4 py-2 bg-white/5 dark:bg-white/5 backdrop-blur-3xl border border-white/10 rounded-full shadow-lg flex items-center justify-between">
         <div className="flex items-center gap-2 w-full">
           {/* PC Left Side */}
           <div className="flex-1 min-w-0 hidden lg:block">
@@ -44,8 +44,8 @@ export default function TitleBar() {
           </div>
           
           {/* Mobile Left Side */}
-          <div className="flex-1 min-w-0 flex lg:hidden items-center gap-2 -ml-6">
-             <img src="/src/logo.png" className="w-12 h-12 rounded-full bg-white p-1 shadow-lg shrink-0" alt="SKCTI Logo" />
+          <div className="flex-1 min-w-0 flex lg:hidden items-center gap-2">
+             <img src="/src/logo.webp" className="w-10 h-10 rounded-full bg-white p-1 shadow-lg shrink-0" alt="SKCTI Logo" />
              <span className="font-sora font-extrabold text-xl tracking-tight text-neutral-900 dark:text-white pl-2">SKCTI</span>
           </div>
 
@@ -60,7 +60,7 @@ export default function TitleBar() {
             <CoinPill />
           </div>
 
-          <div className="relative -mr-6">
+          <div className="relative pl-2">
             <motion.button
               whileTap={{ scale: 0.92 }}
               onClick={(e) => { vibrate(50); firePortal(e.clientX, e.clientY); setMenuOpen(!menuOpen); }}

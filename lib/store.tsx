@@ -1,7 +1,7 @@
 "use client";
 
-import { onAuthStateChanged, signInWithPopup, signOut, signInWithCredential, GoogleAuthProvider, type User } from "firebase/auth";
-import { doc, increment, onSnapshot, serverTimestamp, setDoc } from "firebase/firestore";
+import { onAuthStateChanged, signInWithPopup, signOut, signInWithCredential, deleteUser, GoogleAuthProvider, type User } from "firebase/auth";
+import { doc, getDocs, increment, onSnapshot, serverTimestamp, setDoc, writeBatch } from "firebase/firestore";
 import { Capacitor } from "@capacitor/core";
 import { App as CapApp } from "@capacitor/app";
 import { GoogleAuth } from "@codetrix-studio/capacitor-google-auth";
@@ -12,20 +12,11 @@ import { useTheme } from "next-themes";
 import React, { createContext, useContext, useEffect, useRef, useState } from "react";
 import { fbAuth, fbDb, firebaseReady, googleProvider } from "./firebase";
 import { updateUser, col } from "./db";
-import type { AppConfig, Grade, Stream, UserDoc, TodoTask, AiChatMsg } from "./types";
-import { DEFAULT_CONFIG, todayKey } from "./types";
+import type { AppConfig, Grade, Stream, UserDoc, TodoTask, AiChatMsg, NotificationPrefs, UserPrefs, AdminRole } from "./types";
+import { vibrate as hVibrate } from "./haptics";
+import { DEFAULT_AI, DEFAULT_CONFIG, DEFAULT_MAINTENANCE, DEFAULT_NOTIFICATIONS, DEFAULT_PREFS, todayKey } from "./types";
 
 /* ————————————————— haptics ————————————————— */
-export function vibrate(ms = 10) {
-  try {
-    if (typeof navigator !== "undefined" && "vibrate" in navigator) navigator.vibrate(ms);
-  } catch {}
-}
-export function triggerHaptic(pattern: number | number[] = 50) {
-  try {
-    if (typeof navigator !== "undefined" && "vibrate" in navigator) navigator.vibrate(pattern);
-  } catch {}
-}
 
 /* ————————————————— visual event bus (R3/R4) ————————————————— */
 export function firePortal(x: number, y: number) {
@@ -62,6 +53,16 @@ interface Store {
   markDownloaded: (contentId: string) => Promise<void>;
   markAttempted: (testId: string, rewardCoins?: number) => Promise<void>;
   markViewed: (contentId: string, rewardCoins?: number) => Promise<void>;
+
+  /* —— settings that were previously fake local state —— */
+  notifications: NotificationPrefs;
+  prefs: UserPrefs;
+  setNotification: (key: keyof NotificationPrefs, value: boolean) => Promise<void>;
+  setPref: <K extends keyof UserPrefs>(key: K, value: UserPrefs[K]) => Promise<void>;
+  clearDownloads: () => Promise<void>;
+  deleteAccount: () => Promise<void>;
+  adminRole: AdminRole | null;
+  isOwner: boolean;
 }
 
 const Ctx = createContext<Store | null>(null);
@@ -190,6 +191,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
             ...d,
             features: { ...DEFAULT_CONFIG.features, ...(d.features ?? {}) },
             landing: { ...DEFAULT_CONFIG.landing, ...(d.landing ?? {}) },
+            ai: { ...DEFAULT_AI, ...(d.ai ?? {}) },
+            maintenance: { ...DEFAULT_MAINTENANCE, ...(d.maintenance ?? {}) },
           });
         }
         setConfigLoaded(true);
@@ -222,7 +225,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, [theme, systemTheme]);
 
   const toggleTheme = () => {
-    vibrate(15);
+    hVibrate(15);
     const overlay = document.getElementById("theme-overlay");
     if (overlay) {
       overlay.classList.remove("theme-overlay-run");
@@ -274,6 +277,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       doneTasks: [],
       todayPlan: null,
       justUpgraded: false,
+      notifications: DEFAULT_NOTIFICATIONS,
+      prefs: DEFAULT_PREFS,
+      studyMinutes: 0,
     };
     await setDoc(doc(fbDb(), "users", fbUser.uid), {
       ...docData,
@@ -301,9 +307,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (!profile) return;
     const key = `${todayKey()}:${taskId}`;
     if (profile.doneTasks.includes(key)) return;
+    // Study Analytics used to display a hardcoded "45h". Log the real minutes
+    // from the plan task the student just finished so the number means something.
+    const mins = profile.todayPlan?.tasks.find((t) => t.id === taskId)?.minutes ?? 0;
     await updateUser(profile.uid, {
       doneTasks: [...profile.doneTasks.filter((t) => t.startsWith(todayKey())), key],
       coins: increment(10) as never,
+      studyMinutes: increment(mins) as never,
     });
   };
   const markDownloaded = async (contentId: string) => {
@@ -326,13 +336,74 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       });
   };
 
+  /* —— settings persistence (was useState, reset on every reload) —— */
+  const notifications: NotificationPrefs = { ...DEFAULT_NOTIFICATIONS, ...(profile?.notifications ?? {}) };
+  const prefs: UserPrefs = { ...DEFAULT_PREFS, ...(profile?.prefs ?? {}) };
+
+  const setNotification = async (key: keyof NotificationPrefs, value: boolean) => {
+    if (!profile) return;
+    await updateUser(profile.uid, { notifications: { ...notifications, [key]: value } });
+  };
+
+  const setPref = async <K extends keyof UserPrefs>(key: K, value: UserPrefs[K]) => {
+    if (!profile) return;
+    await updateUser(profile.uid, { prefs: { ...prefs, [key]: value } });
+  };
+
+  /* Apply the reduced-effects preference to the document so the CSS in
+     globals.css (html[data-perf="low"]) can drop backdrop-filter. */
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    if (prefs.reducedEffects) document.documentElement.dataset.perf = "low";
+    else delete document.documentElement.dataset.perf;
+  }, [prefs.reducedEffects]);
+
+  /** The "Clear Downloads" button in Settings had no onClick at all. */
+  const clearDownloads = async () => {
+    if (!profile) return;
+    await updateUser(profile.uid, { downloads: [] });
+  };
+
+  /**
+   * Account deletion. There was previously no way for a student — a minor —
+   * to remove their data. Wipes the profile, both subcollections and the
+   * leaderboard entry, then signs out.
+   */
+  const deleteAccount = async () => {
+    const u = fbUser;
+    if (!u) return;
+    const uid = u.uid;
+    try {
+      const [todoSnap, chatSnap] = await Promise.all([
+        getDocs(col.todos(uid)),
+        getDocs(col.aiChats(uid)),
+      ]);
+      const batch = writeBatch(fbDb());
+      todoSnap.forEach((d) => batch.delete(d.ref));
+      chatSnap.forEach((d) => batch.delete(d.ref));
+      batch.delete(doc(fbDb(), "leaderboard", uid));
+      batch.delete(doc(fbDb(), "users", uid));
+      await batch.commit();
+    } finally {
+      document.cookie = "skcti_session=; path=/; max-age=0";
+      // Removes the Firebase Auth record too, not just the Firestore data.
+      await deleteUser(u).catch(() => signOut(fbAuth()));
+    }
+  };
+
   const email = (fbUser?.email ?? "").toLowerCase();
   const isAdmin = !!email && (config.adminEmails.map((e) => e.toLowerCase()).includes(email) || envAdmins.includes(email));
+
+  // Absent from adminRoles => "owner", so existing single-admin setups keep
+  // full access without a migration.
+  const adminRole: AdminRole | null = isAdmin ? (config.adminRoles?.[email] ?? "owner") : null;
+  const isOwner = adminRole === "owner";
 
   return (
     <Ctx.Provider
       value={{
         ready, fbUser, profile, profileLoaded, todos, chatHistory, config, configLoaded, isAdmin,
+        notifications, prefs, setNotification, setPref, clearDownloads, deleteAccount, adminRole, isOwner,
         isDark, themePref, toggleTheme, loginWithGoogle, logout, completeOnboarding,
         setStream, upgradeGrade, dismissUpgrade, addCoins, markTaskDone, markDownloaded, markAttempted, markViewed,
       }}
@@ -341,6 +412,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     </Ctx.Provider>
   );
 }
+
+export { vibrate, triggerHaptic } from "./haptics";
 
 export function useStore() {
   const ctx = useContext(Ctx);

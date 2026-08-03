@@ -2,7 +2,6 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import MeshBackground from "@/components/MeshBackground";
 
 export default function Login() {
   const router = useRouter();
@@ -15,7 +14,6 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center">
-      <MeshBackground />
     </div>
   );
 }

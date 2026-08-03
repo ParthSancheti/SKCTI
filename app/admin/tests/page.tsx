@@ -76,25 +76,32 @@ export default function TestHub() {
         </motion.button>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-3">
-        <div className="relative flex-1">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400" size={18} />
-          <input
+      {/* Search & Filter Row */}
+      <div className="flex w-full items-center gap-3">
+        <div className="flex-1 flex items-center gap-3 bg-black/5 dark:bg-white/5 backdrop-blur-md border border-black/10 dark:border-white/10 rounded-full px-5 py-3 transition-all focus-within:bg-black/10 dark:focus-within:bg-white/10 focus-within:border-purple-500 dark:focus-within:border-purple-400">
+          <Search size={18} className="text-neutral-900/50 dark:text-white/50" />
+          <input 
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={e => setSearchQuery(e.target.value)}
             placeholder="Search tests..."
-            className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl pl-11 pr-4 py-3 font-geist text-sm outline-none focus:border-purple-500 transition-colors backdrop-blur-md text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-white/30"
+            className="bg-transparent border-none outline-none font-geist text-sm text-neutral-900 dark:text-white w-full placeholder:text-neutral-900/40 dark:placeholder:text-white/40"
           />
           {searchQuery && (
-            <button onClick={() => setSearchQuery("")} className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors"><X size={16} /></button>
+            <button onClick={() => setSearchQuery("")} className="text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors"><X size={16} /></button>
           )}
         </div>
-        <button
-          onClick={() => setFiltersOpen(!filtersOpen)}
-          className={`flex items-center justify-center gap-2 px-5 py-3 rounded-xl border transition-colors font-geist text-sm font-bold ${filtersOpen || filterSubject !== "All" ? "bg-purple-600 border-purple-600 text-white" : "bg-black/5 dark:bg-white/5 border-black/10 dark:border-white/10 text-neutral-700 dark:text-neutral-300 hover:bg-black/10 dark:hover:bg-white/10"}`}
+        
+        <motion.button 
+          whileTap={{ scale: 0.95 }}
+          onClick={() => { vibrate(10); setFiltersOpen(!filtersOpen); }}
+          className={`flex items-center justify-center h-[48px] w-[48px] md:w-auto md:px-5 gap-2 rounded-full font-geist text-xs font-bold transition-all border shrink-0 ${
+            filtersOpen || filterSubject !== "All"
+              ? "bg-gradient-to-r from-purple-600 to-blue-600 border-transparent text-white shadow-lg" 
+              : "bg-black/5 dark:bg-white/5 border-black/10 dark:border-white/10 text-neutral-900 dark:text-white hover:bg-black/10 dark:hover:bg-white/10"
+          }`}
         >
-          <Filter size={16} /> Filters {(filterSubject !== "All") && "•"}
-        </button>
+          <Filter size={16} /> <span className="hidden md:inline">Advanced Filters {(filterSubject !== "All") && "•"}</span>
+        </motion.button>
       </div>
 
       {filtersOpen && (
@@ -105,7 +112,7 @@ export default function TestHub() {
               <select
                 value={filterSubject}
                 onChange={(e) => setFilterSubject(e.target.value)}
-                className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-lg px-3 py-1.5 font-geist text-sm text-neutral-900 dark:text-white outline-none focus:border-purple-500 transition-colors"
+                className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-full px-3 py-1.5 font-geist text-sm text-neutral-900 dark:text-white outline-none focus:border-purple-500 transition-colors"
               >
                 <option value="All" className="text-black">All Subjects</option>
                 <option value="Physics" className="text-black">Physics</option>
@@ -124,7 +131,7 @@ export default function TestHub() {
       <div className="space-y-3">
         {list.length === 0 && configLoaded ? (
           <GlassCard className="p-12 flex flex-col items-center justify-center text-center">
-            <div className="w-16 h-16 rounded-2xl glassy flex items-center justify-center mb-6">
+            <div className="w-16 h-16 rounded-full glassy flex items-center justify-center mb-6">
               <ClipboardList size={32} className="text-black/40 dark:text-white/40" />
             </div>
             <h2 className="font-sora text-title-md text-black dark:text-white">No tests found</h2>
@@ -142,11 +149,11 @@ export default function TestHub() {
                   {!t.published && " · Draft"}
                 </p>
               </div>
-              <motion.button whileTap={{ scale: 0.95 }} onClick={() => openEdit(t)} className="glassy hover:brightness-110 px-4 py-2 shrink-0 rounded-xl font-geist text-xs font-bold text-black dark:text-white transition-all">Edit</motion.button>
-              <motion.button whileTap={{ scale: 0.95 }} onClick={() => void togglePub(t)} className="glassy hover:brightness-110 px-4 py-2 shrink-0 rounded-xl font-geist text-xs font-bold text-black dark:text-white transition-all">
+              <motion.button whileTap={{ scale: 0.95 }} onClick={() => openEdit(t)} className="glassy hover:brightness-110 px-4 py-2 shrink-0 rounded-full font-geist text-xs font-bold text-black dark:text-white transition-all">Edit</motion.button>
+              <motion.button whileTap={{ scale: 0.95 }} onClick={() => void togglePub(t)} className="glassy hover:brightness-110 px-4 py-2 shrink-0 rounded-full font-geist text-xs font-bold text-black dark:text-white transition-all">
                 {t.published ? "Draft" : "Publish"}
               </motion.button>
-              <motion.button whileTap={{ scale: 0.95 }} onClick={() => void remove(t)} aria-label="Delete" className="glassy hover:bg-red-500/20 grid h-10 w-10 shrink-0 place-items-center rounded-xl transition-colors">
+              <motion.button whileTap={{ scale: 0.95 }} onClick={() => void remove(t)} aria-label="Delete" className="glassy hover:bg-red-500/20 grid h-10 w-10 shrink-0 place-items-center rounded-full transition-colors">
                 <Trash2 size={16} className="text-black dark:text-white hover:text-red-600 dark:hover:text-red-400 transition-colors" />
               </motion.button>
             </GlassCard>
