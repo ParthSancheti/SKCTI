@@ -45,7 +45,7 @@ export default function Rank() {
                   initial={{ opacity: 0, y: 24 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.12, type: "spring", stiffness: 300, damping: 24 }}
-                  className={`bg-white/5 dark:bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-5 text-center shadow-xl ${i === 1 ? "pb-9 shadow-purple-500/20" : "opacity-90"}`}
+                  className={`bg-white/5 dark:bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-5 text-center shadow-xl ${i === 1 ? "pb-9 shadow-purple-500/20" : "opacity-90"}`}
                 >
                   {i === 1 && <Crown size={18} className="mx-auto text-primary mb-1" />}
                   <div className="w-12 h-12 mx-auto rounded-full bg-primary-container/20 flex items-center justify-center font-sora font-bold text-primary mb-2 overflow-hidden">
@@ -74,7 +74,7 @@ export default function Rank() {
                   initial={{ opacity: 0, x: -14 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: Math.min(i * 0.04, 0.4) }}
-                  className={`mx-6 rounded-2xl px-5 py-4 flex items-center gap-4 transition-all ${me ? "bg-white/10 dark:bg-white/10 backdrop-blur-2xl border border-purple-500/40 sticky bottom-28 lg:bottom-6 z-30 shadow-lg" : "bg-white/5 dark:bg-white/5 backdrop-blur-xl border border-white/10 shadow-md hover:bg-white/10"}`}
+                  className={`mx-6 rounded-2xl px-5 py-4 flex items-center gap-4 transition-all ${me ? "bg-white/10 dark:bg-white/10 backdrop-blur-md border border-purple-500/40 sticky bottom-28 lg:bottom-6 z-30 shadow-lg" : "bg-white/5 dark:bg-white/5 backdrop-blur-md border border-white/10 shadow-md hover:bg-white/10"}`}
                 >
                   <span className="font-geist text-label-md text-black dark:text-neutral-400 w-7 tabular-nums">#{i + 4}</span>
                   <p className="font-sora font-semibold flex-1 truncate text-neutral-900 dark:text-white">{me ? "You" : s.name}</p>

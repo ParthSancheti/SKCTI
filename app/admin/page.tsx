@@ -141,7 +141,7 @@ export default function AdminDashboard() {
             initial={{ borderRadius: 24, opacity: 1 }}
             animate={{ borderRadius: 0, scale: 1, opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[200] bg-white/5 backdrop-blur-3xl border border-white/10"
+            className="fixed inset-0 z-[200] bg-white/5 backdrop-blur-lg border border-white/10"
           />
         )}
       </AnimatePresence>
@@ -168,7 +168,7 @@ export default function AdminDashboard() {
         {kpis.map(({ id, Icon, label, val, sub }, i) => (
           <motion.div key={label} layoutId={id} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}>
             <motion.div whileTap={{ scale: 0.95 }}>
-              <GlassCard onClick={() => expandNavigate(id, kpis[i].route)} className="p-6 cursor-pointer bg-white/5 dark:bg-white/5 backdrop-blur-2xl border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/10 transition-all">
+              <GlassCard onClick={() => expandNavigate(id, kpis[i].route)} className="p-6 cursor-pointer bg-white/5 dark:bg-white/5 backdrop-blur-md border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/10 transition-all">
                 <Icon size={18} className="text-purple-600 dark:text-purple-400 mb-3" />
                 <p className="font-sora font-bold text-3xl text-neutral-900 dark:bg-gradient-to-br dark:from-white dark:to-white/50 dark:bg-clip-text dark:text-transparent dark:drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">{val}</p>
                 <p className="font-sora font-semibold text-sm mt-1 text-neutral-900 dark:text-white">{label}</p>
@@ -208,7 +208,7 @@ export default function AdminDashboard() {
         {/* AI Fleet Command Module */}
         <motion.div layoutId="card-ai">
           <motion.div whileTap={{ scale: 0.95 }}>
-            <GlassCard className="p-8 cursor-pointer bg-white/5 dark:bg-white/5 backdrop-blur-2xl border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/10 transition-all" onClick={() => expandNavigate("card-ai", "/admin/settings?tab=ai")}>
+            <GlassCard className="p-8 cursor-pointer bg-white/5 dark:bg-white/5 backdrop-blur-md border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/10 transition-all" onClick={() => expandNavigate("card-ai", "/admin/settings?tab=ai")}>
             <div className="flex items-center gap-3 mb-6">
               <div className="w-10 h-10 rounded-xl bg-purple-600/10 dark:bg-purple-400/10 flex items-center justify-center border border-purple-600/20 shadow-inner">
                 <Sparkles size={20} className="text-purple-600 dark:text-purple-400" />

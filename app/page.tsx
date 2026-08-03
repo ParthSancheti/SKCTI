@@ -7,6 +7,7 @@ import {
   MessageCircle, Phone, PlayCircle, Send, Sparkles, Trophy, Youtube, ChevronRight, X
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import MeshBackground from "@/components/MeshBackground";
@@ -95,6 +96,23 @@ export default function Landing() {
   const [err, setErr] = useState("");
   const [activeSlide, setActiveSlide] = useState(0);
   const carouselRef = useRef<HTMLDivElement>(null);
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStartX(e.targetTouches[0].clientX);
+  };
+  
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX === null) return;
+    const touchEndX = e.changedTouches[0].clientX;
+    const diff = touchStartX - touchEndX;
+    if (diff > 50 && activeSlide < 2) {
+      setActiveSlide(s => s + 1);
+    } else if (diff < -50 && activeSlide > 0) {
+      setActiveSlide(s => s - 1);
+    }
+    setTouchStartX(null);
+  };
 
   const [showLogin, setShowLogin] = useState(false);
   const { loginWithGoogle } = useStore();
@@ -116,16 +134,7 @@ export default function Landing() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setActiveSlide((prev) => {
-        const next = (prev + 1) % 3;
-        if (carouselRef.current) {
-          carouselRef.current.scrollTo({
-            left: next * carouselRef.current.clientWidth,
-            behavior: "smooth"
-          });
-        }
-        return next;
-      });
+      setActiveSlide((prev) => (prev + 1) % 3);
     }, 4000);
     return () => clearInterval(interval);
   }, []);
@@ -194,25 +203,25 @@ export default function Landing() {
         
         {/* Top Header */}
         <div className="absolute top-0 inset-x-0 w-full flex items-center gap-3 px-6 pt-12 z-50">
-          <img src="/src/logo.png" className="w-8 h-8 rounded-full shadow-lg" alt="SKCTI Logo" />
+          <div className="bg-white rounded-full p-2 shadow-sm shrink-0">
+            <img src="/src/logo.png" className="w-8 h-8 rounded-full" alt="SKCTI Logo" />
+          </div>
           <h1 className="font-sora text-3xl font-black text-neutral-900 dark:text-white drop-shadow-md tracking-tight">SKCTI</h1>
         </div>
         
         {/* Feature Swipe Carousel */}
         <div 
           ref={carouselRef}
-          onScroll={(e) => {
-            const index = Math.round(e.currentTarget.scrollLeft / e.currentTarget.clientWidth);
-            if (index !== activeSlide) setActiveSlide(index);
-          }}
-          onPointerUp={() => vibrate(50)}
-          className="flex-1 w-full h-full flex overflow-x-auto snap-x snap-mandatory hide-scrollbar absolute inset-0"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+          className="flex-1 w-full h-full flex absolute inset-0 transition-transform duration-700 ease-in-out"
+          style={{ transform: `translate3d(-${activeSlide * 100}%, 0, 0)` }}
         >
             
             {/* Card 1 */}
-            <div className="min-w-full snap-center relative overflow-hidden flex flex-col justify-end p-8 pb-32">
-              <img src="/src/welcome/image1.png" className="absolute inset-0 w-full h-full object-cover dark:hidden" alt="Onboarding" />
-              <img src="/src/welcome/image1_dark.png" className="absolute inset-0 w-full h-full object-cover hidden dark:block" alt="Onboarding" />
+            <div className="min-w-full relative overflow-hidden flex flex-col justify-end p-8 pb-32">
+              <Image unoptimized priority src="/src/welcome/image1.png" fill className="object-cover dark:hidden" alt="Onboarding" />
+              <Image unoptimized priority src="/src/welcome/image1_dark.png" fill className="object-cover hidden dark:block" alt="Onboarding" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
               <div className="relative z-10 flex flex-col justify-end">
                 <h3 className="font-sora text-4xl leading-tight font-black text-white mb-3 tracking-tight">Welcome to SKCTI.</h3>
@@ -221,9 +230,9 @@ export default function Landing() {
             </div>
             
             {/* Card 2 */}
-            <div className="min-w-full snap-center relative overflow-hidden flex flex-col justify-end p-8 pb-32">
-              <img src="/src/welcome/image2.png" className="absolute inset-0 w-full h-full object-cover dark:hidden" alt="Structured Learning" />
-              <img src="/src/welcome/image2_dark.png" className="absolute inset-0 w-full h-full object-cover hidden dark:block" alt="Structured Learning" />
+            <div className="min-w-full relative overflow-hidden flex flex-col justify-end p-8 pb-32">
+              <Image unoptimized priority src="/src/welcome/image2.png" fill className="object-cover dark:hidden" alt="Structured Learning" />
+              <Image unoptimized priority src="/src/welcome/image2_dark.png" fill className="object-cover hidden dark:block" alt="Structured Learning" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
               <div className="relative z-10 flex flex-col justify-end">
                 <h3 className="font-sora text-4xl leading-tight font-black text-white mb-3 tracking-tight">Structured Learning.</h3>
@@ -232,9 +241,9 @@ export default function Landing() {
             </div>
             
             {/* Card 3 */}
-            <div className="min-w-full snap-center relative overflow-hidden flex flex-col justify-end p-8 pb-32">
-              <img src="/src/welcome/image3.png" className="absolute inset-0 w-full h-full object-cover dark:hidden" alt="AI Doubt Solving" />
-              <img src="/src/welcome/image3_dark.png" className="absolute inset-0 w-full h-full object-cover hidden dark:block" alt="AI Doubt Solving" />
+            <div className="min-w-full relative overflow-hidden flex flex-col justify-end p-8 pb-32">
+              <Image unoptimized priority src="/src/welcome/image3.png" fill className="object-cover dark:hidden" alt="AI Doubt Solving" />
+              <Image unoptimized priority src="/src/welcome/image3_dark.png" fill className="object-cover hidden dark:block" alt="AI Doubt Solving" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
               <div className="relative z-10 flex flex-col justify-end">
                 <h3 className="font-sora text-4xl leading-tight font-black text-white mb-3 tracking-tight">AI Doubt Solving.</h3>
@@ -247,16 +256,18 @@ export default function Landing() {
         {/* Pagination Dots */}
         <div className="absolute bottom-[calc(env(safe-area-inset-bottom)+80px)] flex gap-2 justify-center w-full z-10">
           {[0, 1, 2].map((i) => (
-            <span 
+            <button 
               key={i} 
-              className={`h-2 rounded-full transition-all duration-300 ${activeSlide === i ? "w-6 bg-white" : "w-2 bg-white/30"}`}
+              onClick={() => setActiveSlide(i)}
+              className={`h-2 rounded-full transition-all duration-300 ${activeSlide === i ? "w-6 bg-white" : "w-2 bg-white/50 hover:bg-white/70"}`}
+              aria-label={`Go to slide ${i + 1}`}
             />
           ))}
         </div>
 
         {/* Absolute Bottom Action Bar */}
         <div className="absolute bottom-6 w-full px-6 z-10">
-          <div className="flex justify-between items-center bg-white/5 dark:bg-white/5 backdrop-blur-3xl border border-white/10 rounded-[2rem] p-2 pr-2 pl-6">
+          <div className="flex justify-between items-center bg-white/5 dark:bg-white/5 backdrop-blur-lg border border-white/10 rounded-[2rem] p-2 pr-2 pl-6">
             <button 
               onClick={() => router.push('/home')} 
               className="text-sm font-bold text-white/70 hover:text-white transition-colors"
@@ -437,12 +448,12 @@ export default function Landing() {
               </p>
               <div className="mt-8 flex flex-wrap justify-center gap-4">
                 {L.youtube && (
-                  <a href={L.youtube} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full bg-[#FF0000]/90 backdrop-blur-xl border border-white/20 px-8 py-4 font-geist text-label-md font-bold text-white transition-transform hover:scale-105 duration-300 shadow-xl">
+                  <a href={L.youtube} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full bg-[#FF0000]/90 backdrop-blur-md border border-white/20 px-8 py-4 font-geist text-label-md font-bold text-white transition-transform hover:scale-105 duration-300 shadow-xl">
                     <Youtube size={20} /> YouTube
                   </a>
                 )}
                 {L.instagram && (
-                  <a href={L.instagram} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full bg-gradient-to-tr from-[#f58529] via-[#dd2a7b] to-[#8134af] backdrop-blur-xl border border-white/20 px-8 py-4 font-geist text-label-md font-bold text-white transition-transform hover:scale-105 duration-300 shadow-xl">
+                  <a href={L.instagram} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full bg-gradient-to-tr from-[#f58529] via-[#dd2a7b] to-[#8134af] backdrop-blur-md border border-white/20 px-8 py-4 font-geist text-label-md font-bold text-white transition-transform hover:scale-105 duration-300 shadow-xl">
                     <Instagram size={20} /> Instagram
                   </a>
                 )}
@@ -519,7 +530,7 @@ export default function Landing() {
         {showLogin && (
           <motion.div 
             layoutId="auth-container"
-            className="fixed inset-0 z-[100] flex flex-col md:flex-row bg-white/10 dark:bg-white/5 backdrop-blur-3xl border-white/20"
+            className="fixed inset-0 z-[100] flex flex-col md:flex-row bg-white/10 dark:bg-white/5 backdrop-blur-lg border-white/20"
           >
             {/* Top Header */}
             <div className="absolute top-6 left-6 flex items-center gap-2 z-50">

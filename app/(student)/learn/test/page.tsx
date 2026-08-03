@@ -40,7 +40,7 @@ export default function TestViewerPage() {
   if (error) {
     return (
       <div className="flex min-h-screen items-center justify-center p-6 text-center">
-        <div className="glassy-strong rounded-[2rem] p-8 max-w-sm border border-white/10 bg-white/5 backdrop-blur-2xl">
+        <div className="glassy-strong rounded-[2rem] p-8 max-w-sm border border-white/10 bg-white/5 backdrop-blur-md">
           <p className="font-sora text-lg font-bold text-red-500 mb-2">Error</p>
           <p className="font-geist text-sm text-neutral-400 mb-6">{error}</p>
           <button 
@@ -65,7 +65,7 @@ export default function TestViewerPage() {
   if (!content.testLink) {
     return (
       <div className="flex min-h-screen items-center justify-center p-6 text-center">
-        <div className="glassy-strong rounded-[2rem] p-8 max-w-sm border border-white/10 bg-white/5 backdrop-blur-2xl">
+        <div className="glassy-strong rounded-[2rem] p-8 max-w-sm border border-white/10 bg-white/5 backdrop-blur-md">
           <p className="font-sora text-lg font-bold text-red-500 mb-2">No Test Found</p>
           <p className="font-geist text-sm text-neutral-400 mb-6">This chapter does not have an associated test link.</p>
           <button 

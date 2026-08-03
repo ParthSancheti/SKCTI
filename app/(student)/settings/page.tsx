@@ -129,7 +129,7 @@ export default function Settings() {
     <div className="flex flex-col min-h-[calc(100vh-2rem)] w-full relative pb-20">
       
       {/* Floating Glass Nav Bar (Island Style) */}
-      <header className="sticky top-4 lg:top-6 mt-4 lg:mt-6 z-50 flex items-center justify-between max-w-5xl w-full bg-white/5 backdrop-blur-2xl border border-white/10 rounded-full px-4 py-3 shadow-2xl mb-8">
+      <header className="sticky top-4 lg:top-6 mt-4 lg:mt-6 z-50 flex items-center justify-between max-w-5xl w-full bg-white/5 backdrop-blur-md border border-white/10 rounded-full px-4 py-3 shadow-2xl mb-8">
         {/* Left Group: Back Button & Title strictly centered */}
         <div className="flex items-center gap-3">
           <button 
@@ -163,7 +163,7 @@ export default function Settings() {
             exit={{ opacity: 0, scale: 0.8, y: 50 }}
             className="fixed inset-0 m-auto w-max h-max z-[200] pointer-events-none"
           >
-            <div className="bg-white/10 dark:bg-black/40 backdrop-blur-[40px] border border-white/20 p-8 rounded-full shadow-2xl flex items-center gap-4">
+            <div className="bg-white/10 dark:bg-black/40 backdrop-blur-lg border border-white/20 p-8 rounded-full shadow-2xl flex items-center gap-4">
               <Sparkles size={40} className="text-yellow-400 animate-pulse" />
               <h1 className="font-sora font-black text-2xl md:text-5xl bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 bg-clip-text text-transparent">
                 🚀 God Mode Unlocked: Welcome {profile.name.split(" ")[0]}!
@@ -178,7 +178,7 @@ export default function Settings() {
         {/* Profile Card */}
         <motion.div 
           layoutId="profile-card"
-          className="bg-white/5 dark:bg-white/5 backdrop-blur-2xl border border-white/10 rounded-[24px] p-5 flex flex-col md:col-span-2 relative overflow-hidden"
+          className="bg-white/5 dark:bg-white/5 backdrop-blur-md border border-white/10 rounded-[24px] p-5 flex flex-col md:col-span-2 relative overflow-hidden"
         >
           <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/10 blur-[80px] rounded-full pointer-events-none" />
           
@@ -230,19 +230,19 @@ export default function Settings() {
 
         {/* Tracking Stats Row */}
         <div className="md:col-span-2 grid grid-cols-3 gap-4">
-          <div className="bg-white/5 dark:bg-white/5 backdrop-blur-2xl border border-white/10 rounded-[20px] p-4 flex flex-col items-center justify-center text-center shadow-sm">
+          <div className="bg-white/5 dark:bg-white/5 backdrop-blur-md border border-white/10 rounded-[20px] p-4 flex flex-col items-center justify-center text-center shadow-sm">
             <Flame size={20} className="text-orange-500 mb-2" />
             <p className="font-sora font-bold text-lg md:text-xl text-black dark:text-white">
               {config.features.streak ? `${profile.streak}d` : "—"}
             </p>
             <p className="font-geist text-[10px] uppercase font-bold tracking-widest text-neutral-500 dark:text-neutral-400 mt-1">Streak</p>
           </div>
-          <div className="bg-white/5 dark:bg-white/5 backdrop-blur-2xl border border-white/10 rounded-[20px] p-4 flex flex-col items-center justify-center text-center shadow-sm">
+          <div className="bg-white/5 dark:bg-white/5 backdrop-blur-md border border-white/10 rounded-[20px] p-4 flex flex-col items-center justify-center text-center shadow-sm">
             <Download size={20} className="text-blue-500 mb-2" />
             <p className="font-sora font-bold text-lg md:text-xl text-black dark:text-white">{profile.downloads.length}</p>
             <p className="font-geist text-[10px] uppercase font-bold tracking-widest text-neutral-500 dark:text-neutral-400 mt-1">Saved PDFs</p>
           </div>
-          <div className="bg-white/5 dark:bg-white/5 backdrop-blur-2xl border border-white/10 rounded-[20px] p-4 flex flex-col items-center justify-center text-center shadow-sm">
+          <div className="bg-white/5 dark:bg-white/5 backdrop-blur-md border border-white/10 rounded-[20px] p-4 flex flex-col items-center justify-center text-center shadow-sm">
             <Shield size={20} className="text-purple-500 mb-2" />
             <p className="font-sora font-bold text-lg md:text-xl text-black dark:text-white">{profile.attempted.length}</p>
             <p className="font-geist text-[10px] uppercase font-bold tracking-widest text-neutral-500 dark:text-neutral-400 mt-1">Tests Done</p>
@@ -250,7 +250,7 @@ export default function Settings() {
         </div>
 
         {/* Theme Toggle Card */}
-        <div className="bg-white/5 dark:bg-white/5 backdrop-blur-2xl border border-white/10 rounded-[24px] p-5 flex flex-col justify-center">
+        <div className="bg-white/5 dark:bg-white/5 backdrop-blur-md border border-white/10 rounded-[24px] p-5 flex flex-col justify-center">
           <div className="flex items-center justify-between mb-3">
             {isDark ? <Moon size={22} className="text-purple-400" /> : <Sun size={22} className="text-yellow-500" />}
             <motion.button
@@ -268,7 +268,7 @@ export default function Settings() {
         </div>
 
         {/* Class / Standard Card */}
-        <div className="bg-white/5 dark:bg-white/5 backdrop-blur-2xl border border-white/10 rounded-[24px] p-5 flex flex-col justify-center">
+        <div className="bg-white/5 dark:bg-white/5 backdrop-blur-md border border-white/10 rounded-[24px] p-5 flex flex-col justify-center">
           <div className="flex items-center gap-3 mb-3">
             <GraduationCap size={22} className="text-blue-500" />
           </div>
@@ -283,7 +283,7 @@ export default function Settings() {
         </div>
 
         {/* Stream Card */}
-        <div className="bg-white/5 dark:bg-white/5 backdrop-blur-2xl border border-white/10 rounded-[24px] p-5 flex flex-col md:col-span-2">
+        <div className="bg-white/5 dark:bg-white/5 backdrop-blur-md border border-white/10 rounded-[24px] p-5 flex flex-col md:col-span-2">
           <h3 className="font-sora font-semibold text-black dark:text-white mb-1">Stream</h3>
           <p className="font-geist text-xs text-red-500 dark:text-red-400 font-bold mb-4">Switching wipes today's AI plan.</p>
           
@@ -316,7 +316,7 @@ export default function Settings() {
         </div>
 
         {/* AI Preferences */}
-        <div className="bg-white/5 dark:bg-white/5 backdrop-blur-2xl border border-white/10 rounded-[24px] p-5 flex flex-col justify-center">
+        <div className="bg-white/5 dark:bg-white/5 backdrop-blur-md border border-white/10 rounded-[24px] p-5 flex flex-col justify-center">
           <div className="flex items-center gap-3 mb-4">
             <Cpu size={22} className="text-purple-500" />
             <h3 className="font-sora font-semibold text-black dark:text-white">AI Preferences</h3>
@@ -332,7 +332,7 @@ export default function Settings() {
         </div>
 
         {/* Notifications */}
-        <div className="bg-white/5 dark:bg-white/5 backdrop-blur-2xl border border-white/10 rounded-[24px] p-5 flex flex-col justify-center">
+        <div className="bg-white/5 dark:bg-white/5 backdrop-blur-md border border-white/10 rounded-[24px] p-5 flex flex-col justify-center">
           <div className="flex items-center gap-3 mb-4">
             <Bell size={22} className="text-orange-500" />
             <h3 className="font-sora font-semibold text-black dark:text-white">Notifications</h3>
@@ -362,7 +362,7 @@ export default function Settings() {
         </div>
 
         {/* Downloaded PDFs Card */}
-        <div className="bg-white/5 dark:bg-white/5 backdrop-blur-2xl border border-white/10 rounded-[24px] p-5 flex flex-col justify-between">
+        <div className="bg-white/5 dark:bg-white/5 backdrop-blur-md border border-white/10 rounded-[24px] p-5 flex flex-col justify-between">
           <div>
             <div className="flex items-center gap-3 mb-2">
               <FileText size={22} className="text-blue-400" />
@@ -380,7 +380,7 @@ export default function Settings() {
         </div>
 
         {/* Study Tracking Details Card */}
-        <div className="bg-white/5 dark:bg-white/5 backdrop-blur-2xl border border-white/10 rounded-[24px] p-5 flex flex-col justify-between">
+        <div className="bg-white/5 dark:bg-white/5 backdrop-blur-md border border-white/10 rounded-[24px] p-5 flex flex-col justify-between">
           <div>
             <div className="flex items-center gap-3 mb-2">
               <BarChart3 size={22} className="text-green-500" />
@@ -408,7 +408,7 @@ export default function Settings() {
         {/* Sign Out Card */}
         <button
           onClick={() => { vibrate(15); void logout().then(() => router.replace("/")); }}
-          className="bg-red-500/10 dark:bg-red-500/10 backdrop-blur-2xl border border-red-500/20 rounded-[24px] p-5 flex items-center justify-center gap-3 md:col-span-2 hover:bg-red-500/20 transition-colors group"
+          className="bg-red-500/10 dark:bg-red-500/10 backdrop-blur-md border border-red-500/20 rounded-[24px] p-5 flex items-center justify-center gap-3 md:col-span-2 hover:bg-red-500/20 transition-colors group"
         >
           <LogOut size={20} className="text-red-500 group-hover:-translate-x-1 transition-transform" />
           <span className="font-sora font-bold text-red-500">Sign Out</span>

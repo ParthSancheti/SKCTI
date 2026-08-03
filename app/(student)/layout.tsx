@@ -32,13 +32,13 @@ export default function StudentLayout({ children }: { children: React.ReactNode 
       <PortalEffect />
       <CoinFlightLayer />
       <SideNav />
-      <main className={`px-6 lg:pl-[360px] lg:pr-8 min-h-screen transition-all duration-300 ${isImmersive ? "pt-0 pb-0 max-w-full" : "pt-14 lg:pt-6 pb-44 lg:pb-12 max-w-[1400px]"}`}>
+      <main className={`px-6 lg:pl-[360px] lg:pr-8 min-h-screen ${isImmersive ? "pt-0 pb-0 max-w-full" : "pt-14 lg:pt-6 pb-44 lg:pb-12 max-w-[1400px]"}`}>
         {!isImmersive && <TitleBar />}
         {children}
       </main>
       {!isImmersive && (
         <div 
-          className="lg:hidden fixed bottom-0 left-0 w-full h-48 pointer-events-none z-[40] backdrop-blur-[40px]"
+          className="lg:hidden fixed bottom-0 left-0 w-full h-48 pointer-events-none z-[40] backdrop-blur-lg"
           style={{ maskImage: 'linear-gradient(to top, black 20%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to top, black 20%, transparent 100%)' }}
         ></div>
       )}

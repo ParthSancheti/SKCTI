@@ -51,7 +51,7 @@ export default function Leads() {
         )}
       </div>
 
-      <div className="flex bg-black/5 dark:bg-white/5 backdrop-blur-3xl rounded-full p-1 border border-black/5 dark:border-white/10 shadow-xl w-full max-w-sm">
+      <div className="flex bg-black/5 dark:bg-white/5 backdrop-blur-lg rounded-full p-1 border border-black/5 dark:border-white/10 shadow-xl w-full max-w-sm">
         {(["new", "contacted", "all"] as const).map((t) => (
           <button key={t} onClick={() => { vibrate(10); setTab(t); }} className="relative flex flex-1 items-center justify-center gap-1.5 rounded-full py-2.5 font-geist text-sm font-bold transition-all hover:bg-black/10 dark:hover:bg-white/10 group">
             {tab === t && <motion.span layoutId="lead-tab" className="absolute inset-0 rounded-full bg-white dark:bg-white/20 shadow-md" />}
@@ -60,7 +60,7 @@ export default function Leads() {
         ))}
       </div>
 
-      <div className="w-full overflow-x-auto rounded-[2rem] border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 backdrop-blur-3xl shadow-xl">
+      <div className="w-full overflow-x-auto rounded-[2rem] border border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5 backdrop-blur-lg shadow-xl">
         <table className="w-full text-left whitespace-nowrap">
           <thead className="border-b border-black/5 dark:border-white/10 bg-black/5 dark:bg-white/5">
             <tr className="font-geist text-xs uppercase tracking-widest text-neutral-500 dark:text-white/50">

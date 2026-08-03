@@ -140,7 +140,7 @@ export default function ContentHub() {
 
       {/* Search & Filter Row */}
       <div className="flex w-full items-center gap-3">
-        <div className="flex-1 flex items-center gap-3 bg-black/5 dark:bg-white/5 backdrop-blur-2xl border border-black/10 dark:border-white/10 rounded-full px-5 py-3 transition-all focus-within:bg-black/10 dark:focus-within:bg-white/10 focus-within:border-purple-500 dark:focus-within:border-purple-400">
+        <div className="flex-1 flex items-center gap-3 bg-black/5 dark:bg-white/5 backdrop-blur-md border border-black/10 dark:border-white/10 rounded-full px-5 py-3 transition-all focus-within:bg-black/10 dark:focus-within:bg-white/10 focus-within:border-purple-500 dark:focus-within:border-purple-400">
           <Search size={18} className="text-neutral-900/50 dark:text-white/50" />
           <input 
             value={searchQuery}
@@ -171,7 +171,7 @@ export default function ContentHub() {
             exit={{ height: 0, opacity: 0 }}
             className="overflow-hidden"
           >
-            <div className="bg-black/5 dark:bg-white/5 backdrop-blur-2xl border border-black/10 dark:border-white/10 rounded-[2rem] p-6 grid grid-cols-1 md:grid-cols-3 gap-6 shadow-xl mb-4">
+            <div className="bg-black/5 dark:bg-white/5 backdrop-blur-md border border-black/10 dark:border-white/10 rounded-[2rem] p-6 grid grid-cols-1 md:grid-cols-3 gap-6 shadow-xl mb-4">
               <div>
                 <p className="mb-2 font-geist text-xs font-bold uppercase tracking-widest text-neutral-500">Subject</p>
                 <div className="flex flex-wrap gap-2">
@@ -212,7 +212,7 @@ export default function ContentHub() {
           </GlassCard>
         )}
         {list.map((d) => (
-          <GlassCard key={d.id} className={`flex items-center gap-3 p-5 bg-white/5 dark:bg-white/5 backdrop-blur-2xl border border-black/5 dark:border-white/10 ${d.published ? "" : "opacity-50"}`}>
+          <GlassCard key={d.id} className={`flex items-center gap-3 p-5 bg-white/5 dark:bg-white/5 backdrop-blur-md border border-black/5 dark:border-white/10 ${d.published ? "" : "opacity-50"}`}>
             <div className="min-w-0 flex-1">
               <p className="truncate font-sora font-semibold text-neutral-900 dark:text-white">{d.title}</p>
               <p className="font-geist text-label-sm text-neutral-900/40 dark:text-white/40">
@@ -245,7 +245,7 @@ export default function ContentHub() {
             <motion.div
               initial={{ scale: 0.94 }} animate={{ scale: 1 }} exit={{ scale: 0.94 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white/95 dark:bg-black/95 backdrop-blur-3xl border border-black/10 dark:border-white/10 flex h-[85vh] w-full max-w-3xl flex-col overflow-hidden rounded-[2.5rem] shadow-2xl"
+              className="bg-white/95 dark:bg-black/95 backdrop-blur-lg border border-black/10 dark:border-white/10 flex h-[85vh] w-full max-w-3xl flex-col overflow-hidden rounded-[2.5rem] shadow-2xl"
             >
               <div className="flex items-center justify-between px-6 py-4 border-b border-black/10 dark:border-white/10 bg-black/5 dark:bg-white/5">
                 <p className="truncate font-sora font-semibold text-neutral-900 dark:text-white text-lg">{viewing.title}</p>

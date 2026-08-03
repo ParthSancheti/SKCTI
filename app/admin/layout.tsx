@@ -84,7 +84,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
       <div className="pt-6 border-t border-black/10 dark:border-white/10 mt-auto">
         <Link href="/home" className="block" onClick={() => { vibrate(10); setMobileMenuOpen(false); }}>
-          <div className="w-full flex items-center gap-3 p-3 pl-4 bg-black/5 dark:bg-white/5 backdrop-blur-xl border border-black/10 dark:border-white/10 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-all shadow-md cursor-pointer group">
+          <div className="w-full flex items-center gap-3 p-3 pl-4 bg-black/5 dark:bg-white/5 backdrop-blur-md border border-black/10 dark:border-white/10 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-all shadow-md cursor-pointer group">
             {fbUser?.photoURL ? (
               <img src={fbUser.photoURL} alt="Profile" className="w-10 h-10 rounded-full object-cover shadow-inner shrink-0 border border-black/10 dark:border-white/10" />
             ) : (
@@ -115,14 +115,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
       {/* Floating Mobile Header */}
         <header className="lg:hidden fixed top-0 inset-x-0 z-50 p-4 flex justify-between items-start pointer-events-none">
-          <div className="pointer-events-auto flex items-center gap-3 bg-black/5 dark:bg-white/5 backdrop-blur-2xl border border-black/10 dark:border-white/10 rounded-full px-4 py-2 shadow-lg hover:bg-black/10 dark:hover:bg-white/10 transition-all">
+          <div className="pointer-events-auto flex items-center gap-3 bg-black/5 dark:bg-white/5 backdrop-blur-md border border-black/10 dark:border-white/10 rounded-full px-4 py-2 shadow-lg hover:bg-black/10 dark:hover:bg-white/10 transition-all">
             <img src="/src/logo.png" className="w-8 h-8 rounded-lg bg-white p-1" alt="SKCTI Logo" />
             <span className="font-sora font-bold tracking-tight text-neutral-900 dark:text-white">Admin OS</span>
           </div>
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => { triggerHaptic(); setMobileMenuOpen(!mobileMenuOpen); }}
-            className="pointer-events-auto flex items-center justify-center bg-black/5 dark:bg-white/5 backdrop-blur-2xl border border-black/10 dark:border-white/10 rounded-full h-12 w-12 shadow-lg hover:bg-black/10 dark:hover:bg-white/10 transition-all text-neutral-900 dark:text-white"
+            className="pointer-events-auto flex items-center justify-center bg-black/5 dark:bg-white/5 backdrop-blur-md border border-black/10 dark:border-white/10 rounded-full h-12 w-12 shadow-lg hover:bg-black/10 dark:hover:bg-white/10 transition-all text-neutral-900 dark:text-white"
           >
             {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </motion.button>
@@ -172,7 +172,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, y: 20 }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-lg bg-white/95 dark:bg-[#0A0A0A] backdrop-blur-3xl border border-black/10 dark:border-white/10 rounded-3xl shadow-2xl overflow-hidden"
+              className="w-full max-w-lg bg-white/95 dark:bg-[#0A0A0A] backdrop-blur-lg border border-black/10 dark:border-white/10 rounded-3xl shadow-2xl overflow-hidden"
             >
               <div className="p-4 border-b border-black/10 dark:border-white/10 flex items-center gap-3 bg-black/5 dark:bg-white/5">
                 <Search size={20} className="text-neutral-500 dark:text-white/50" />
@@ -215,20 +215,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <>
                 <motion.div initial={{ opacity: 0, y: 10, scale: 0.8 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.8 }} transition={{ delay: 0.1 }}>
                   <Link href="/admin/content/add" onClick={() => { triggerHaptic(); setFabOpen(false); }} className="flex items-center gap-3 group">
-                    <span className="bg-black/5 dark:bg-white/5 backdrop-blur-2xl border border-black/10 dark:border-white/10 text-neutral-900 dark:text-white font-geist text-sm px-3 py-1.5 rounded-lg shadow-lg">Add Content</span>
-                    <div className="w-12 h-12 rounded-full bg-black/5 dark:bg-white/10 backdrop-blur-2xl border border-black/10 dark:border-white/20 shadow-lg flex items-center justify-center text-neutral-900 dark:text-white"><UploadCloud size={20} /></div>
+                    <span className="bg-black/5 dark:bg-white/5 backdrop-blur-md border border-black/10 dark:border-white/10 text-neutral-900 dark:text-white font-geist text-sm px-3 py-1.5 rounded-lg shadow-lg">Add Content</span>
+                    <div className="w-12 h-12 rounded-full bg-black/5 dark:bg-white/10 backdrop-blur-md border border-black/10 dark:border-white/20 shadow-lg flex items-center justify-center text-neutral-900 dark:text-white"><UploadCloud size={20} /></div>
                   </Link>
                 </motion.div>
                 <motion.div initial={{ opacity: 0, y: 10, scale: 0.8 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.8 }} transition={{ delay: 0.05 }}>
                   <Link href="/admin/leads" onClick={() => { triggerHaptic(); setFabOpen(false); }} className="flex items-center gap-3 group">
-                    <span className="bg-black/5 dark:bg-white/5 backdrop-blur-2xl border border-black/10 dark:border-white/10 text-neutral-900 dark:text-white font-geist text-sm px-3 py-1.5 rounded-lg shadow-lg">Check Leads</span>
-                    <div className="w-12 h-12 rounded-full bg-black/5 dark:bg-white/10 backdrop-blur-2xl border border-black/10 dark:border-white/20 shadow-lg flex items-center justify-center text-neutral-900 dark:text-white"><Inbox size={20} /></div>
+                    <span className="bg-black/5 dark:bg-white/5 backdrop-blur-md border border-black/10 dark:border-white/10 text-neutral-900 dark:text-white font-geist text-sm px-3 py-1.5 rounded-lg shadow-lg">Check Leads</span>
+                    <div className="w-12 h-12 rounded-full bg-black/5 dark:bg-white/10 backdrop-blur-md border border-black/10 dark:border-white/20 shadow-lg flex items-center justify-center text-neutral-900 dark:text-white"><Inbox size={20} /></div>
                   </Link>
                 </motion.div>
                 <motion.div initial={{ opacity: 0, y: 10, scale: 0.8 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.8 }}>
                   <button onClick={() => { triggerHaptic(); setFabOpen(false); alert("Add Notice (Coming Soon)"); }} className="flex items-center gap-3 group">
-                    <span className="bg-black/5 dark:bg-white/5 backdrop-blur-2xl border border-black/10 dark:border-white/10 text-neutral-900 dark:text-white font-geist text-sm px-3 py-1.5 rounded-lg shadow-lg">Add Notice</span>
-                    <div className="w-12 h-12 rounded-full bg-black/5 dark:bg-white/10 backdrop-blur-2xl border border-black/10 dark:border-white/20 shadow-lg flex items-center justify-center text-neutral-900 dark:text-white"><Bell size={20} /></div>
+                    <span className="bg-black/5 dark:bg-white/5 backdrop-blur-md border border-black/10 dark:border-white/10 text-neutral-900 dark:text-white font-geist text-sm px-3 py-1.5 rounded-lg shadow-lg">Add Notice</span>
+                    <div className="w-12 h-12 rounded-full bg-black/5 dark:bg-white/10 backdrop-blur-md border border-black/10 dark:border-white/20 shadow-lg flex items-center justify-center text-neutral-900 dark:text-white"><Bell size={20} /></div>
                   </button>
                 </motion.div>
               </>
@@ -237,7 +237,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => { triggerHaptic(); setFabOpen(!fabOpen); }}
-            className={`w-14 h-14 rounded-full shadow-2xl flex items-center justify-center transition-colors z-50 border ${fabOpen ? 'bg-red-600 hover:bg-red-500 text-white border-transparent' : 'bg-black/5 dark:bg-white/10 backdrop-blur-xl hover:bg-black/10 dark:hover:bg-white/20 text-neutral-900 dark:text-white border-black/10 dark:border-white/20'}`}
+            className={`w-14 h-14 rounded-full shadow-2xl flex items-center justify-center transition-colors z-50 border ${fabOpen ? 'bg-red-600 hover:bg-red-500 text-white border-transparent' : 'bg-black/5 dark:bg-white/10 backdrop-blur-md hover:bg-black/10 dark:hover:bg-white/20 text-neutral-900 dark:text-white border-black/10 dark:border-white/20'}`}
           >
             <motion.div animate={{ rotate: fabOpen ? 45 : 0 }} transition={{ type: "spring", stiffness: 300, damping: 20 }}>
               <Plus size={24} />

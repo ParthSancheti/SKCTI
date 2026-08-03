@@ -36,17 +36,17 @@ export default function TitleBar() {
 
   return (
     <>
-      <header className="sticky top-14 lg:top-6 z-40 mx-4 lg:mx-0 mb-4 px-6 py-4 lg:px-6 lg:py-4 bg-white/5 dark:bg-white/5 backdrop-blur-3xl border border-white/10 rounded-full shadow-lg flex items-center justify-between">
+      <header className="sticky top-2 mt-[env(safe-area-inset-top,0px)] z-40 mx-4 lg:mx-0 mb-4 px-4 py-2 bg-white/5 dark:bg-white/5 backdrop-blur-3xl border border-white/10 rounded-full shadow-lg flex items-center justify-between overflow-hidden">
         <div className="flex items-center gap-3 w-full">
           {/* PC Left Side */}
           <div className="flex-1 min-w-0 hidden lg:block">
-            <h1 className="font-sora text-2xl font-extrabold tracking-tight text-neutral-900 dark:text-white truncate">{title}</h1>
+            <h1 className="font-sora text-xl font-extrabold tracking-tight text-neutral-900 dark:text-white truncate">{title}</h1>
           </div>
           
           {/* Mobile Left Side */}
-          <div className="flex-1 min-w-0 flex lg:hidden items-center gap-3">
-             <img src="/src/logo.png" className="w-11 h-11 rounded-xl bg-white p-1 shadow-lg shrink-0" alt="SKCTI Logo" />
-             <span className="font-sora font-extrabold text-3xl tracking-tight text-neutral-900 dark:text-white">SKCTI</span>
+          <div className="flex-1 min-w-0 flex lg:hidden items-center gap-2 -ml-6">
+             <img src="/src/logo.png" className="w-12 h-12 rounded-full bg-white p-1 shadow-lg shrink-0" alt="SKCTI Logo" />
+             <span className="font-sora font-extrabold text-xl tracking-tight text-neutral-900 dark:text-white pl-2">SKCTI</span>
           </div>
 
           {config.features.streak && (
@@ -60,11 +60,11 @@ export default function TitleBar() {
             <CoinPill />
           </div>
 
-          <div className="relative">
+          <div className="relative -mr-6">
             <motion.button
               whileTap={{ scale: 0.92 }}
               onClick={(e) => { vibrate(50); firePortal(e.clientX, e.clientY); setMenuOpen(!menuOpen); }}
-              className="w-11 h-11 lg:w-12 lg:h-12 rounded-full overflow-hidden glassy flex items-center justify-center border border-white/10"
+              className="w-12 h-12 rounded-full overflow-hidden glassy flex items-center justify-center border border-white/10"
               aria-label="Profile menu"
             >
               {profile.photo ? (

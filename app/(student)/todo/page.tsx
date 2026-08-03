@@ -162,7 +162,7 @@ export default function TodoApp() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
-                  className="group bg-white/5 dark:bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4 shadow-sm hover:shadow-md hover:bg-white/10 dark:hover:bg-white/10 transition-all"
+                  className="group bg-white/5 dark:bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4 shadow-sm hover:shadow-md hover:bg-white/10 dark:hover:bg-white/10 transition-all"
                 >
                   <div className="flex items-center gap-4 w-full sm:w-auto flex-1 min-w-0">
                     <button onClick={() => toggleStatus(task)} className="text-neutral-400 hover:text-purple-500 transition-colors shrink-0">
@@ -218,7 +218,7 @@ export default function TodoApp() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95 }}
-                    className="group bg-white/5 dark:bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-4 flex items-center gap-4 opacity-60 hover:opacity-100 hover:bg-white/10 dark:hover:bg-white/10 transition-all"
+                    className="group bg-white/5 dark:bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 flex items-center gap-4 opacity-60 hover:opacity-100 hover:bg-white/10 dark:hover:bg-white/10 transition-all"
                   >
                     <button onClick={() => toggleStatus(task)} className="text-green-500 hover:text-neutral-400 transition-colors shrink-0">
                       <CheckCircle2 size={24} />

@@ -170,7 +170,7 @@ export default function Home() {
             initial={{ opacity: 0, y: -20, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, height: 0 }}
-            className="bg-white/5 dark:bg-white/5 backdrop-blur-3xl rounded-[2rem] p-6 flex items-center gap-4 border border-white/10 shadow-xl"
+            className="bg-white/5 dark:bg-white/5 backdrop-blur-lg rounded-[2rem] p-6 flex items-center gap-4 border border-white/10 shadow-xl"
           >
             <PartyPopper size={26} className="text-purple-600 dark:text-purple-400 shrink-0" />
             <div className="flex-1">
@@ -203,7 +203,7 @@ export default function Home() {
 
       {chapters.length === 0 && (
         <div>
-          <div className="bg-white/5 dark:bg-white/5 backdrop-blur-3xl border border-white/10 shadow-2xl rounded-3xl p-8 text-center">
+          <div className="bg-white/5 dark:bg-white/5 backdrop-blur-lg border border-white/10 shadow-2xl rounded-3xl p-8 text-center">
             <ChevronDown size={20} className="mx-auto text-purple-600 dark:text-purple-400 mb-2 animate-bounce" />
             <p className="font-sora font-semibold">Library incoming</p>
             <p className="font-hanken text-body-md text-on-surface/50 mt-1">Your {profile.stream} content appears here the moment it&apos;s published.</p>

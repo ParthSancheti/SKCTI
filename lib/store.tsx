@@ -3,9 +3,11 @@
 import { onAuthStateChanged, signInWithPopup, signOut, signInWithCredential, GoogleAuthProvider, type User } from "firebase/auth";
 import { doc, increment, onSnapshot, serverTimestamp, setDoc } from "firebase/firestore";
 import { Capacitor } from "@capacitor/core";
+import { App as CapApp } from "@capacitor/app";
 import { GoogleAuth } from "@codetrix-studio/capacitor-google-auth";
 import { usePathname, useRouter } from "next/navigation";
 import { StatusBar } from "@capacitor/status-bar";
+import { NavigationBar } from "@capawesome/capacitor-navigation-bar";
 import { useTheme } from "next-themes";
 import React, { createContext, useContext, useEffect, useRef, useState } from "react";
 import { fbAuth, fbDb, firebaseReady, googleProvider } from "./firebase";
@@ -107,6 +109,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (Capacitor.isNativePlatform()) {
       try {
         StatusBar.setOverlaysWebView({ overlay: true }).catch(() => {});
+        NavigationBar.setTransparency({ isTransparent: true }).catch(() => {});
+        
+        CapApp.addListener('backButton', () => {
+          if (window.location.pathname.startsWith('/home') || window.location.pathname === '/') {
+            CapApp.exitApp();
+          } else {
+            window.history.back();
+          }
+        });
+
         GoogleAuth.initialize({
           clientId: "142521151624-cuv2orimqc8jn9gtjcsl9ga5cindv4j8.apps.googleusercontent.com",
           scopes: ["profile", "email"],

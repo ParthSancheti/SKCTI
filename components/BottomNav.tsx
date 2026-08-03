@@ -27,7 +27,7 @@ export default function BottomNav() {
   }
 
   return (
-    <nav className="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-[400px] h-14 rounded-full bg-white/5 dark:bg-white/5 backdrop-blur-3xl border border-white/10 z-[60] flex items-center justify-around px-1 shadow-2xl">
+    <nav className="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-[400px] h-14 rounded-full bg-white/5 dark:bg-white/5 backdrop-blur-3xl border border-white/10 z-[60] flex items-center justify-around px-4 shadow-2xl">
       {tabs.map(({ href, label, Icon }) => {
         const active = pathname.startsWith(href);
         return (

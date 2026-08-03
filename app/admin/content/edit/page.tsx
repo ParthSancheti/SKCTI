@@ -165,7 +165,7 @@ export default function ContentEditPage() {
         
         {/* Mobile Sticky Tabs */}
         <div className="lg:hidden flex justify-center w-full sticky top-[72px] z-40 -mt-4 mb-2">
-          <div className="flex p-1 mx-auto w-full max-w-sm bg-black/5 dark:bg-white/5 backdrop-blur-2xl border border-black/10 dark:border-white/10 rounded-full relative z-50 pointer-events-auto">
+          <div className="flex p-1 mx-auto w-full max-w-sm bg-black/5 dark:bg-white/5 backdrop-blur-md border border-black/10 dark:border-white/10 rounded-full relative z-50 pointer-events-auto">
             {(["editor", "preview"] as const).map((t) => (
               <button key={t} onClick={() => { vibrate(10); setMobileTab(t); }} className="relative flex flex-1 items-center justify-center gap-1.5 rounded-full py-2.5 font-geist text-sm font-bold transition-all group">
                 {mobileTab === t && <motion.span layoutId="mobileTabAdd" className="absolute inset-0 rounded-full bg-black/10 dark:bg-white/15 shadow-lg" />}
@@ -177,7 +177,7 @@ export default function ContentEditPage() {
         
         {/* Left Pane (Form) */}
         <div className={`lg:col-span-7 xl:col-span-8 space-y-6 w-full ${mobileTab !== "editor" ? "hidden lg:block" : ""}`}>
-          <GlassCard className="p-6 md:p-8 bg-black/5 dark:bg-white/5 backdrop-blur-2xl border border-black/10 dark:border-white/10 space-y-6">
+          <GlassCard className="p-6 md:p-8 bg-black/5 dark:bg-white/5 backdrop-blur-md border border-black/10 dark:border-white/10 space-y-6">
             <h2 className="font-sora font-semibold text-lg flex items-center gap-3 mb-4">
               <span className="w-7 h-7 text-sm rounded-full bg-black/10 dark:bg-white/10 border border-black/20 dark:border-white/20 text-neutral-900 dark:text-white flex items-center justify-center">1</span>
               Details & Link
@@ -223,7 +223,7 @@ export default function ContentEditPage() {
             </div>
           </GlassCard>
 
-          <GlassCard className="p-6 md:p-8 bg-black/5 dark:bg-white/5 backdrop-blur-2xl border border-black/10 dark:border-white/10 space-y-6">
+          <GlassCard className="p-6 md:p-8 bg-black/5 dark:bg-white/5 backdrop-blur-md border border-black/10 dark:border-white/10 space-y-6">
             <h2 className="font-sora font-semibold text-lg flex items-center gap-3 mb-4">
               <span className="w-7 h-7 text-sm rounded-full bg-black/10 dark:bg-white/10 border border-black/20 dark:border-white/20 text-neutral-900 dark:text-white flex items-center justify-center">2</span>
               Tags & Taxonomy

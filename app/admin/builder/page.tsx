@@ -366,7 +366,7 @@ export default function Builder() {
         
         {/* Mobile Sticky Tabs */}
         <div className="lg:hidden flex justify-center w-full sticky top-16 z-40 mb-6">
-          <div className="flex p-1 mx-auto w-full max-w-sm bg-black/5 dark:bg-white/5 backdrop-blur-2xl border border-black/10 dark:border-white/10 rounded-full relative z-50 pointer-events-auto">
+          <div className="flex p-1 mx-auto w-full max-w-sm bg-black/5 dark:bg-white/5 backdrop-blur-md border border-black/10 dark:border-white/10 rounded-full relative z-50 pointer-events-auto">
             {(["editor", "preview"] as const).map((t) => (
               <button key={t} onClick={() => { vibrate(10); setMobileTab(t); }} className="relative flex flex-1 items-center justify-center gap-1.5 rounded-full py-2.5 font-geist text-sm font-bold transition-all group">
                 {mobileTab === t && <motion.span layoutId="mobileTab" className="absolute inset-0 rounded-full bg-black/10 dark:bg-white/15 shadow-lg" />}

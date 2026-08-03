@@ -184,7 +184,7 @@ export default function AiLab() {
             initial={{ opacity: 0, x: -50 }} 
             animate={{ opacity: 1, x: 0 }} 
             exit={{ opacity: 0, x: -50 }}
-            className="lg:hidden fixed inset-0 z-[100] bg-white/10 dark:bg-black/40 backdrop-blur-[40px] flex flex-col w-full h-full p-6"
+            className="lg:hidden fixed inset-0 z-[100] bg-white/10 dark:bg-black/40 backdrop-blur-lg flex flex-col w-full h-full p-6"
           >
             <div className="flex items-center justify-between mb-8">
               <span className="font-sora font-semibold text-xl text-black dark:text-white">Chat History</span>
@@ -232,7 +232,7 @@ export default function AiLab() {
               initial={{ opacity: 0, width: 0, marginLeft: -20 }}
               animate={{ opacity: 1, width: 280, marginLeft: 0 }}
               exit={{ opacity: 0, width: 0, marginLeft: -20 }}
-              className="flex flex-col rounded-[2.5rem] bg-white/5 dark:bg-white/5 backdrop-blur-3xl border border-white/10 p-4 h-[calc(100vh-3rem)] mt-0 shadow-2xl relative z-10 overflow-hidden"
+              className="flex flex-col rounded-[2.5rem] bg-white/5 dark:bg-white/5 backdrop-blur-lg border border-white/10 p-4 h-[calc(100vh-3rem)] mt-0 shadow-2xl relative z-10 overflow-hidden"
             >
               <div className="flex items-center justify-between mb-8 w-max min-w-full">
                 <button onClick={startNewChat} className="flex items-center gap-3 bg-white/10 dark:bg-white/5 hover:bg-white/20 dark:hover:bg-white/10 transition-colors rounded-full px-5 py-3.5">
@@ -300,7 +300,7 @@ export default function AiLab() {
                     )}
                     <div className={`max-w-[85%] px-5 py-3.5 font-hanken text-body-md whitespace-pre-wrap shadow-sm ${
                       m.role === "user" 
-                        ? "text-black dark:text-white bg-white/20 dark:bg-white/10 backdrop-blur-xl rounded-[1.5rem] rounded-tr-sm border border-white/20" 
+                        ? "text-black dark:text-white bg-white/20 dark:bg-white/10 backdrop-blur-md rounded-[1.5rem] rounded-tr-sm border border-white/20" 
                         : "text-black dark:text-white bg-transparent"
                     }`}>
                       {m.image && (
@@ -309,7 +309,7 @@ export default function AiLab() {
                       {m.text}
                     </div>
                     {m.action_items && m.action_items.length > 0 && (
-                      <div className={`mt-2 ${m.role === "user" ? "mr-2" : "ml-8 lg:ml-10"} max-w-[85%] w-full bg-white/10 dark:bg-black/20 backdrop-blur-2xl border border-white/10 rounded-2xl p-4 shadow-xl`}>
+                      <div className={`mt-2 ${m.role === "user" ? "mr-2" : "ml-8 lg:ml-10"} max-w-[85%] w-full bg-white/10 dark:bg-black/20 backdrop-blur-md border border-white/10 rounded-2xl p-4 shadow-xl`}>
                         <p className="font-sora font-semibold text-sm text-black dark:text-white mb-3">Action Plan</p>
                         <div className="space-y-3">
                           {m.action_items.map((task, idx) => (
@@ -360,7 +360,7 @@ export default function AiLab() {
         {/* Image Preview Overlay */}
         {image && (
           <div className="absolute -top-20 left-6">
-            <div className="relative p-1 bg-white/10 dark:bg-black/50 backdrop-blur-2xl rounded-2xl border border-white/10 shadow-2xl">
+            <div className="relative p-1 bg-white/10 dark:bg-black/50 backdrop-blur-md rounded-2xl border border-white/10 shadow-2xl">
               <img src={image} className="w-16 h-16 object-cover rounded-xl" alt="Preview" />
               <button onClick={() => setImage(null)} className="absolute -top-2 -right-2 bg-black rounded-full p-1 text-white border border-white/20 shadow-lg hover:bg-neutral-800 transition-colors">
                 <X size={12} />
@@ -369,7 +369,7 @@ export default function AiLab() {
           </div>
         )}
 
-        <div className="bg-white/10 dark:bg-[#1a1a1f]/80 backdrop-blur-[40px] rounded-full p-2 pl-4 flex items-center gap-2 border border-white/10 shadow-2xl">
+        <div className="bg-white/10 dark:bg-[#1a1a1f]/80 backdrop-blur-lg rounded-full p-2 pl-4 flex items-center gap-2 border border-white/10 shadow-2xl">
           <input
             type="file"
             accept="image/*"

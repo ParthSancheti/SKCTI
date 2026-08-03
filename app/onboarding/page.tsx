@@ -50,7 +50,7 @@ export default function Onboarding() {
       body: (
         <>
           <div className="flex gap-3">
-            <span className="bg-white/10 dark:bg-white/5 backdrop-blur-2xl border border-black/10 dark:border-white/20 rounded-2xl h-14 px-6 flex items-center text-xl font-black text-neutral-900 dark:text-white shrink-0 shadow-inner">+91</span>
+            <span className="bg-white/10 dark:bg-white/5 backdrop-blur-md border border-black/10 dark:border-white/20 rounded-2xl h-14 px-6 flex items-center text-xl font-black text-neutral-900 dark:text-white shrink-0 shadow-inner">+91</span>
             <input
               autoFocus
               inputMode="numeric"
@@ -59,7 +59,7 @@ export default function Onboarding() {
               value={phone}
               onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
               placeholder="98765 43210"
-              className="w-full bg-white/10 dark:bg-white/5 backdrop-blur-2xl border border-black/10 dark:border-white/20 rounded-2xl px-6 py-4 text-xl font-black tracking-widest text-neutral-900 dark:text-white outline-none transition-all focus:border-purple-500 focus:ring-2 focus:ring-purple-500/50 shadow-inner"
+              className="w-full bg-white/10 dark:bg-white/5 backdrop-blur-md border border-black/10 dark:border-white/20 rounded-2xl px-6 py-4 text-xl font-black tracking-widest text-neutral-900 dark:text-white outline-none transition-all focus:border-purple-500 focus:ring-2 focus:ring-purple-500/50 shadow-inner"
             />
           </div>
           <motion.button
@@ -125,7 +125,7 @@ export default function Onboarding() {
       <MeshBackground />
       
       {/* Bento Glass Card Container */}
-      <div className="w-full max-w-5xl flex flex-col md:flex-row bg-white/20 dark:bg-white/5 backdrop-blur-3xl border border-white/30 dark:border-white/10 rounded-[2.5rem] md:rounded-[3rem] shadow-2xl relative z-10 overflow-hidden min-h-[600px]">
+      <div className="w-full max-w-5xl flex flex-col md:flex-row bg-white/20 dark:bg-white/5 backdrop-blur-lg border border-white/30 dark:border-white/10 rounded-[2.5rem] md:rounded-[3rem] shadow-2xl relative z-10 overflow-hidden min-h-[600px]">
         
         {/* Left Side (Top on Mobile): Image Visual */}
         <div className="md:w-5/12 h-56 md:h-auto relative flex flex-col justify-end p-8 md:p-10 bg-gradient-to-br from-purple-900/50 to-blue-900/50">
