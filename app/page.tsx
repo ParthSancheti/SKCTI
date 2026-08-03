@@ -7,7 +7,6 @@ import {
   MessageCircle, Phone, PlayCircle, Send, Sparkles, Trophy, Youtube, ChevronRight, X
 } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import MeshBackground from "@/components/MeshBackground";
@@ -199,29 +198,30 @@ export default function Landing() {
       {/* ==================================================== */}
       {/* 1. NATIVE MOBILE ONBOARDING (Only visible on max-md) */}
       {/* ==================================================== */}
-      <div className="flex md:hidden h-[100dvh] flex-col relative overflow-hidden z-50">
+      <div className="flex md:hidden h-[100dvh] pt-[env(safe-area-inset-top,0px)] pb-[env(safe-area-inset-bottom,0px)] flex-col relative overflow-hidden z-50">
         
         {/* Top Header */}
-        <div className="absolute top-0 inset-x-0 w-full flex items-center gap-3 px-6 pt-12 z-50">
-          <div className="bg-white rounded-full p-2 shadow-sm shrink-0">
+        <div className="absolute top-0 inset-x-0 w-full flex items-center gap-3 px-6 pt-[env(safe-area-inset-top,2rem)] z-50">
+          <div className="bg-white rounded-full p-2 shadow-md shrink-0">
             <img src="/src/logo.png" className="w-8 h-8 rounded-full" alt="SKCTI Logo" />
           </div>
-          <h1 className="font-sora text-3xl font-black text-neutral-900 dark:text-white drop-shadow-md tracking-tight">SKCTI</h1>
+          <h1 className="font-sora text-3xl font-black text-white drop-shadow-md tracking-tight">SKCTI</h1>
         </div>
         
         {/* Feature Swipe Carousel */}
-        <div 
+        <motion.div 
           ref={carouselRef}
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
-          className="flex-1 w-full h-full flex absolute inset-0 transition-transform duration-700 ease-in-out"
-          style={{ transform: `translate3d(-${activeSlide * 100}%, 0, 0)` }}
+          className="flex-1 w-full h-full flex absolute inset-0"
+          animate={{ x: `-${activeSlide * 100}%` }}
+          transition={{ type: "spring", stiffness: 300, damping: 35, mass: 1 }}
         >
             
             {/* Card 1 */}
             <div className="min-w-full relative overflow-hidden flex flex-col justify-end p-8 pb-32">
-              <Image unoptimized priority src="/src/welcome/image1.png" fill className="object-cover dark:hidden" alt="Onboarding" />
-              <Image unoptimized priority src="/src/welcome/image1_dark.png" fill className="object-cover hidden dark:block" alt="Onboarding" />
+              <img src="/src/welcome/image1.png" className="absolute inset-0 w-full h-full object-cover dark:hidden" alt="Onboarding" loading="eager" />
+              <img src="/src/welcome/image1_dark.png" className="absolute inset-0 w-full h-full object-cover hidden dark:block" alt="Onboarding" loading="eager" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
               <div className="relative z-10 flex flex-col justify-end">
                 <h3 className="font-sora text-4xl leading-tight font-black text-white mb-3 tracking-tight">Welcome to SKCTI.</h3>
@@ -231,8 +231,8 @@ export default function Landing() {
             
             {/* Card 2 */}
             <div className="min-w-full relative overflow-hidden flex flex-col justify-end p-8 pb-32">
-              <Image unoptimized priority src="/src/welcome/image2.png" fill className="object-cover dark:hidden" alt="Structured Learning" />
-              <Image unoptimized priority src="/src/welcome/image2_dark.png" fill className="object-cover hidden dark:block" alt="Structured Learning" />
+              <img src="/src/welcome/image2.png" className="absolute inset-0 w-full h-full object-cover dark:hidden" alt="Structured Learning" loading="eager" />
+              <img src="/src/welcome/image2_dark.png" className="absolute inset-0 w-full h-full object-cover hidden dark:block" alt="Structured Learning" loading="eager" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
               <div className="relative z-10 flex flex-col justify-end">
                 <h3 className="font-sora text-4xl leading-tight font-black text-white mb-3 tracking-tight">Structured Learning.</h3>
@@ -242,8 +242,8 @@ export default function Landing() {
             
             {/* Card 3 */}
             <div className="min-w-full relative overflow-hidden flex flex-col justify-end p-8 pb-32">
-              <Image unoptimized priority src="/src/welcome/image3.png" fill className="object-cover dark:hidden" alt="AI Doubt Solving" />
-              <Image unoptimized priority src="/src/welcome/image3_dark.png" fill className="object-cover hidden dark:block" alt="AI Doubt Solving" />
+              <img src="/src/welcome/image3.png" className="absolute inset-0 w-full h-full object-cover dark:hidden" alt="AI Doubt Solving" loading="eager" />
+              <img src="/src/welcome/image3_dark.png" className="absolute inset-0 w-full h-full object-cover hidden dark:block" alt="AI Doubt Solving" loading="eager" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
               <div className="relative z-10 flex flex-col justify-end">
                 <h3 className="font-sora text-4xl leading-tight font-black text-white mb-3 tracking-tight">AI Doubt Solving.</h3>
@@ -251,22 +251,26 @@ export default function Landing() {
               </div>
             </div>
             
-        </div>
+        </motion.div>
 
-        {/* Pagination Dots */}
-        <div className="absolute bottom-[calc(env(safe-area-inset-bottom)+80px)] flex gap-2 justify-center w-full z-10">
+        {/* Pagination Dots (Hardware Accelerated) */}
+        <div className="absolute bottom-[calc(env(safe-area-inset-bottom,0px)+80px)] flex gap-2 justify-center w-full z-10">
           {[0, 1, 2].map((i) => (
-            <button 
-              key={i} 
-              onClick={() => setActiveSlide(i)}
-              className={`h-2 rounded-full transition-all duration-300 ${activeSlide === i ? "w-6 bg-white" : "w-2 bg-white/50 hover:bg-white/70"}`}
-              aria-label={`Go to slide ${i + 1}`}
-            />
+            <div key={i} className="relative w-6 h-2 flex justify-center cursor-pointer" onClick={() => setActiveSlide(i)}>
+              <div className="absolute w-2 h-2 bg-white/50 hover:bg-white/70 rounded-full" />
+              {activeSlide === i && (
+                <motion.div
+                  layoutId="onboarding-dot"
+                  className="absolute w-6 h-2 bg-white rounded-full shadow-md"
+                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                />
+              )}
+            </div>
           ))}
         </div>
 
         {/* Absolute Bottom Action Bar */}
-        <div className="absolute bottom-6 w-full px-6 z-10">
+        <div className="absolute bottom-[env(safe-area-inset-bottom,1.5rem)] w-full px-6 z-10">
           <div className="flex justify-between items-center bg-white/5 dark:bg-white/5 backdrop-blur-lg border border-white/10 rounded-[2rem] p-2 pr-2 pl-6">
             <button 
               onClick={() => router.push('/home')} 
@@ -278,7 +282,7 @@ export default function Landing() {
             <motion.button 
               layoutId="auth-container"
               onClick={() => setShowLogin(true)}
-              className="flex items-center gap-2 rounded-full px-7 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold hover:scale-[1.02] shadow-xl active:scale-[0.97] transition-all"
+              className="flex items-center gap-2 rounded-full px-7 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold hover:scale-[1.02] shadow-xl active:scale-[0.97] transition-transform"
             >
               Get Started <ArrowRight size={20} strokeWidth={2.5} />
             </motion.button>
@@ -533,9 +537,11 @@ export default function Landing() {
             className="fixed inset-0 z-[100] flex flex-col md:flex-row bg-white/10 dark:bg-white/5 backdrop-blur-lg border-white/20"
           >
             {/* Top Header */}
-            <div className="absolute top-6 left-6 flex items-center gap-2 z-50">
-              <img src="/src/logo.png" className="w-10 h-10 rounded-xl bg-white p-1 shadow-lg shrink-0" alt="SKCTI Logo" />
-              <span className="font-sora font-black text-2xl tracking-tight text-neutral-900 dark:text-white">SKCTI</span>
+            <div className="absolute top-[env(safe-area-inset-top,1.5rem)] left-6 flex items-center gap-3 z-50">
+              <div className="bg-white rounded-full p-2 shadow-sm shrink-0">
+                <img src="/src/logo.png" className="w-10 h-10 rounded-full" alt="SKCTI Logo" />
+              </div>
+              <span className="font-sora font-black text-2xl tracking-tight text-white drop-shadow-md">SKCTI</span>
             </div>
             
             {/* Close Button */}
