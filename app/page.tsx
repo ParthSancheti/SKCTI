@@ -91,6 +91,7 @@ export default function Landing() {
   const [form, setForm] = useState({ name: "", phone: "", studentClass: "11th", message: "" });
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
+  const [err, setErr] = useState("");
   const [activeSlide, setActiveSlide] = useState(0);
   const carouselRef = useRef<HTMLDivElement>(null);
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
