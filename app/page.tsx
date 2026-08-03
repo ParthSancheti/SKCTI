@@ -182,6 +182,8 @@ export default function Landing() {
   const heroFade = useTransform(smooth, [0, 0.7], [1, 0]);
   const chipL = useTransform(smooth, [0, 1], [0, -220]);
   const chipR = useTransform(smooth, [0, 1], [0, 220]);
+  const chipLY = useTransform(smooth, [0, 1], [40, -60]);
+  const chipRY = useTransform(smooth, [0, 1], [90, -30]);
 
   const L = cfg.landing;
   const wa = L.whatsapp.replace(/\D/g, "");
@@ -382,7 +384,7 @@ export default function Landing() {
                 <PhoneMock appName={cfg.appName} />
               </motion.div>
 
-              <motion.div style={{ x: chipL, y: useTransform(smooth, [0, 1], [40, -60]) }} className="absolute -left-2 top-16 hidden md:block">
+              <motion.div style={{ x: chipL, y: chipLY }} className="absolute -left-2 top-16 hidden md:block">
                 <div className="glassy flex items-center gap-3 rounded-2xl px-5 py-4">
                   <Flame size={18} className="text-purple-600 dark:text-purple-400" />
                   <div>
@@ -391,7 +393,7 @@ export default function Landing() {
                   </div>
                 </div>
               </motion.div>
-              <motion.div style={{ x: chipR, y: useTransform(smooth, [0, 1], [90, -30]) }} className="absolute -right-4 top-40 hidden md:block">
+              <motion.div style={{ x: chipR, y: chipRY }} className="absolute -right-4 top-40 hidden md:block">
                 <div className="glassy flex items-center gap-3 rounded-2xl px-5 py-4">
                   <Bot size={18} className="text-purple-600 dark:text-purple-400" />
                   <div>
