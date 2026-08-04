@@ -36,7 +36,12 @@ export default function TitleBar() {
 
   return (
     <>
-      <header className="sticky top-2 mt-[env(safe-area-inset-top,0px)] z-40 mx-2 lg:mx-0 mb-4 px-4 py-2 bg-white/5 dark:bg-white/5 backdrop-blur-3xl border border-white/10 rounded-full shadow-lg flex items-center justify-between">
+      <motion.header 
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ type: "spring", stiffness: 400, damping: 30 }}
+        className="sticky top-1 mt-[env(safe-area-inset-top,0px)] lg:top-2 z-40 mx-2 lg:mx-0 mb-4 px-4 py-2 glassy rounded-full flex items-center justify-between"
+      >
         <div className="flex items-center gap-2 w-full">
           {/* PC Left Side */}
           <div className="flex-1 min-w-0 hidden lg:block">
@@ -83,7 +88,7 @@ export default function TitleBar() {
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.9, y: -6 }}
                     transition={{ type: "spring", stiffness: 420, damping: 28 }}
-                    className="fixed right-4 top-[calc(env(safe-area-inset-top,0px)+4.5rem)] w-64 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-3xl shadow-2xl p-2 origin-top-right z-50"
+                    className="fixed right-4 top-[calc(env(safe-area-inset-top,0px)+4rem)] w-56 glassy border border-white/10 rounded-3xl shadow-2xl p-2 origin-top-right z-50"
                   >
                   {[
                     { icon: "🌓", label: isDark ? "Light mode" : "Dark mode", act: () => toggleTheme() },
@@ -120,7 +125,7 @@ export default function TitleBar() {
             </AnimatePresence>
           </div>
         </div>
-      </header>
+      </motion.header>
       <ComingSoon open={comingSoonOpen} onClose={() => setComingSoonOpen(false)} title={comingSoonTitle} />
     </>
   );

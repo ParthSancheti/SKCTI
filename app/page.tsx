@@ -292,7 +292,7 @@ export default function Landing() {
 
         {/* Absolute Bottom Action Bar */}
         <div className="absolute bottom-[env(safe-area-inset-bottom,1.5rem)] w-full px-6 z-10">
-          <div className="flex justify-between items-center bg-white/5 dark:bg-white/5 backdrop-blur-lg border border-white/10 rounded-[2rem] py-4 pr-4 pl-8">
+          <div className="flex justify-between items-center bg-white/5 dark:bg-white/5 backdrop-blur-lg border border-white/10 rounded-full py-4 pr-4 pl-8">
             <button 
               onClick={() => router.push('/home')} 
               className="text-sm font-bold text-white/70 hover:text-white transition-colors"

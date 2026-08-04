@@ -10,6 +10,7 @@ import { col, snapTo } from "@/lib/db";
 import { useStore, vibrate } from "@/lib/store";
 import type { TestDoc } from "@/lib/types";
 import { formEmbedUrl } from "@/lib/types";
+import GlassCard from "@/components/GlassCard";
 
 export default function Tests() {
   const { profile, config, markAttempted } = useStore();
@@ -64,10 +65,10 @@ export default function Tests() {
         {shown.map((t) => {
           const done = profile.attempted.includes(t.id);
           return (
-            <motion.div
+            <GlassCard
               key={t.id}
-              layout
-              className="w-full bg-white/70 backdrop-blur-xl dark:backdrop-blur-none dark:bg-[#1a1c23] rounded-[1.25rem] shadow-lg border border-black/10 dark:border-white/5 p-6 text-left hover:brightness-105 dark:hover:brightness-110 transition-all flex flex-col gap-4"
+              interactive
+              className="w-full p-6 text-left flex flex-col gap-4"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">
@@ -92,14 +93,21 @@ export default function Tests() {
                   </button>
                 )}
                 <button
-                  onClick={async () => { vibrate(10); await Browser.open({ url: t.formUrl }); }}
-                  className="bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/10 dark:border-white/10 px-5 py-2.5 rounded-full font-geist text-sm font-semibold flex items-center gap-2 active:scale-95 transition-all text-black dark:text-white"
+                  onClick={async () => { 
+                    vibrate(10); 
+                    try {
+                      await Browser.open({ url: t.formUrl });
+                    } catch {
+                      window.open(t.formUrl, "_blank");
+                    }
+                  }}
+                  className="glassy hover:brightness-110 px-5 py-2.5 rounded-full font-geist text-sm font-semibold flex items-center gap-2 active:scale-95 transition-all text-black dark:text-white"
                 >
                   <PlayCircle size={16} />
                   Start Test
                 </button>
               </div>
-            </motion.div>
+            </GlassCard>
           );
         })}
       </div>

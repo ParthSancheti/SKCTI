@@ -13,7 +13,16 @@ const HapticRouterContext = createContext<HapticRouterContextType | null>(null);
 
 export function useHapticRouter() {
   const ctx = useContext(HapticRouterContext);
-  if (!ctx) throw new Error("useHapticRouter must be used within HapticRouterProvider");
+  const router = useRouter();
+  
+  if (!ctx) {
+    return {
+      navigate: (path: string, e: ReactMouseEvent | MouseEvent) => {
+        e.preventDefault();
+        router.push(path);
+      }
+    };
+  }
   return ctx;
 }
 

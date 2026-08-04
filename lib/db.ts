@@ -97,6 +97,8 @@ export const updateAiChat = (uid: string, id: string, patch: Partial<AiChatDoc>)
 
 export const createModule = (d: Omit<import("./types").ModuleDoc, "id" | "createdAt">) =>
   addDoc(col.modules(), { ...d, createdAt: serverTimestamp() });
+export const createDefaultModule = (id: string, d: Omit<import("./types").ModuleDoc, "id" | "createdAt">) =>
+  setDoc(doc(fbDb(), "modules", id), { ...d, createdAt: serverTimestamp() }, { merge: true });
 export const updateModule = (id: string, patch: Partial<import("./types").ModuleDoc>) =>
   updateDoc(doc(fbDb(), "modules", id), patch);
 export const deleteModule = (id: string) => deleteDoc(doc(fbDb(), "modules", id));

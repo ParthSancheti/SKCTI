@@ -207,10 +207,25 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   /* —— live modules —— */
   useEffect(() => {
     if (!firebaseReady) return;
+    const DEFAULT_MODULES: import("./types").ModuleDoc[] = [
+      { id: "default_physics", name: "Physics", streams: ["PCM", "PCB"], imageUrl: "https://images.unsplash.com/photo-1636819488524-1f019c4e1c44?q=80&w=1000&auto=format&fit=crop" },
+      { id: "default_chemistry", name: "Chemistry", streams: ["PCM", "PCB"], imageUrl: "https://images.unsplash.com/photo-1532094349884-543bc11b234d?q=80&w=1000&auto=format&fit=crop" },
+      { id: "default_math", name: "Math", streams: ["PCM"], imageUrl: "https://images.unsplash.com/photo-1509228468518-180dd4864904?q=80&w=1000&auto=format&fit=crop" },
+      { id: "default_biology", name: "Biology", streams: ["PCB"], imageUrl: "/images/subjects/biology.jpg" }
+    ];
+
     const unsub = onSnapshot(col.modules(), (snap) => {
       const arr: import("./types").ModuleDoc[] = [];
       snap.forEach((d) => arr.push({ id: d.id, ...d.data() } as import("./types").ModuleDoc));
-      setModules(arr);
+      
+      // Merge defaults that haven't been overridden by name
+      const finalModules = [...arr];
+      for (const def of DEFAULT_MODULES) {
+        if (!finalModules.find((m) => m.name.toLowerCase() === def.name.toLowerCase())) {
+          finalModules.push(def);
+        }
+      }
+      setModules(finalModules.sort((a, b) => (a.order ?? 999) - (b.order ?? 999)));
     });
     return unsub;
   }, []);

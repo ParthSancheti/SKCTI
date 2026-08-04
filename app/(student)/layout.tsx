@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { AnimatePresence, motion } from "framer-motion";
 import AiFab from "@/components/AiFab";
 import BottomNav from "@/components/BottomNav";
 import MaintenanceGate from "@/components/MaintenanceGate";
@@ -36,7 +37,17 @@ export default function StudentLayout({ children }: { children: React.ReactNode 
       <SideNav />
       <main className={`px-6 lg:pl-[360px] lg:pr-8 min-h-screen ${isImmersive ? "pt-0 pb-0 max-w-full" : "pt-14 lg:pt-6 pb-44 lg:pb-12 max-w-[1400px]"}`}>
         {!isImmersive && <TitleBar />}
-        {children}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={pathname}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+          >
+            {children}
+          </motion.div>
+        </AnimatePresence>
       </main>
       {!isImmersive && (
         <div 

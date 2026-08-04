@@ -57,26 +57,33 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const sidebarInner = (
     <>
-      <div className="flex items-center justify-center gap-4 pb-4 border-b border-black/10 dark:border-white/10 mb-3 shrink-0">
+      <div className="flex items-center justify-center gap-4 pb-4 border-b border-black/10 dark:border-white/10 mb-4 shrink-0">
         <img src="/src/logo.webp" className="w-14 h-14 rounded-full bg-white p-1.5 shadow-lg" alt="SKCTI Logo" />
         <span className="font-sora font-black text-3xl tracking-tight text-neutral-900 dark:text-white">SKCTI OS</span>
       </div>
       
-      <div className="flex-1 overflow-y-auto hide-scrollbar space-y-1 min-h-0 px-2 -mx-2">
+      <div className="flex-1 overflow-y-auto hide-scrollbar space-y-1.5 min-h-0 px-2 -mx-2 pb-4">
       {LINKS.map(({ href, label, Icon, exact }) => {
         const active = exact ? pathname === href : pathname.startsWith(href);
         return (
-          <Link key={href} href={href} onClick={() => { vibrate(10); setMobileMenuOpen(false); }}>
+          <Link key={href} href={href} onClick={() => { vibrate(10); setMobileMenuOpen(false); }} className="relative block">
+            {active && (
+              <motion.span
+                layoutId="sidebarActiveTab"
+                className="absolute inset-0 rounded-full bg-white dark:bg-white/15 shadow-md border border-black/5 dark:border-white/10"
+                transition={{ type: "spring", stiffness: 400, damping: 30 }}
+              />
+            )}
             <motion.div
               whileTap={{ scale: 0.95 }}
-              className={`flex items-center gap-3 px-5 py-2.5 rounded-full font-geist text-sm font-semibold transition-all relative ${
+              className={`flex items-center gap-3 px-5 py-3.5 rounded-full font-geist text-body-md font-semibold transition-all relative z-10 ${
                 active
-                  ? "bg-black/10 dark:bg-white/20 text-neutral-900 dark:text-white shadow-md border border-black/10 dark:border-white/20"
+                  ? "text-neutral-900 dark:text-white"
                   : "text-neutral-600 dark:text-neutral-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-neutral-900 dark:hover:text-white"
               }`}
             >
               <Icon size={20} className={active ? "text-purple-600 dark:text-purple-400" : ""} />
-              <span className="">{label}</span>
+              <span>{label}</span>
             </motion.div>
           </Link>
         );
@@ -113,21 +120,21 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <div className="min-h-screen flex flex-col lg:flex-row relative">
       
       {/* Floating Mobile Header */}
-        <header className="lg:hidden fixed top-0 inset-x-0 z-50 p-4 flex justify-between items-start pointer-events-none">
-          <div className="pointer-events-auto flex items-center gap-3 bg-black/5 dark:bg-white/5 backdrop-blur-md border border-black/10 dark:border-white/10 rounded-full px-4 py-2 shadow-lg hover:bg-black/10 dark:hover:bg-white/10 transition-all">
+        <header className="lg:hidden fixed top-0 inset-x-0 z-50 p-4 pt-[max(env(safe-area-inset-top),1rem)] flex justify-between items-start pointer-events-none">
+          <div className="pointer-events-auto flex items-center gap-3 glassy rounded-full px-4 py-2 shadow-lg hover:bg-black/5 dark:hover:bg-white/5 transition-all">
             <img src="/src/logo.webp" className="w-8 h-8 rounded-full bg-white p-1" alt="SKCTI Logo" />
             <span className="font-sora font-bold tracking-tight text-neutral-900 dark:text-white">Admin OS</span>
           </div>
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => { triggerHaptic(); setMobileMenuOpen(!mobileMenuOpen); }}
-            className="pointer-events-auto flex items-center justify-center bg-black/5 dark:bg-white/5 backdrop-blur-md border border-black/10 dark:border-white/10 rounded-full h-12 w-12 shadow-lg hover:bg-black/10 dark:hover:bg-white/10 transition-all text-neutral-900 dark:text-white"
+            className="pointer-events-auto flex items-center justify-center glassy rounded-full h-12 w-12 shadow-lg hover:bg-black/5 dark:hover:bg-white/5 transition-all text-neutral-900 dark:text-white"
           >
             {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </motion.button>
         </header>
 
-        <aside className="hidden lg:flex flex-col fixed left-6 top-6 bottom-6 w-[280px] rounded-[2.5rem] glassy shadow-2xl px-6 py-8 z-50">
+        <aside className="hidden lg:flex flex-col fixed left-6 top-6 bottom-6 w-[280px] rounded-[2.5rem] glassy shadow-2xl px-6 pt-8 pb-10 z-50">
           {sidebarInner}
         </aside>
 
@@ -146,7 +153,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               animate={{ opacity: 1, scale: 1, x: 0 }}
               exit={{ opacity: 0, scale: 0.95, x: -20 }}
               transition={{ type: "spring", stiffness: 400, damping: 30 }}
-              className="lg:hidden flex flex-col fixed left-4 top-4 bottom-4 w-[280px] rounded-[2.5rem] glassy shadow-2xl px-6 py-8 z-[60]"
+              className="lg:hidden flex flex-col fixed left-4 top-4 bottom-4 w-[280px] rounded-[2.5rem] glassy shadow-2xl px-6 pt-8 pb-10 z-[60]"
             >
               {sidebarInner}
             </motion.aside>
@@ -154,7 +161,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         )}
       </AnimatePresence>
 
-      <main className={`flex-1 min-w-0 overflow-y-auto relative lg:ml-[360px] lg:pr-8 p-4 pt-28 lg:pt-8 lg:py-8`}>{children}</main>
+      <main className={`flex-1 min-w-0 overflow-y-auto relative lg:ml-[360px] lg:pr-8 p-4 pt-[calc(env(safe-area-inset-top,1rem)+6rem)] lg:pt-8 lg:py-8`}>{children}</main>
 
       {/* Omni-Command Palette */}
       <AnimatePresence>

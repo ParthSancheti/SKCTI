@@ -271,6 +271,7 @@ export interface ModuleDoc {
   name: string;
   streams: Stream[];
   imageUrl: string;
+  order?: number;
   createdAt?: Timestamp;
 }
 

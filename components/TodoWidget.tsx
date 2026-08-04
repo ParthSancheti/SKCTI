@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { updateDoc, doc } from "firebase/firestore";
 import { col } from "@/lib/db";
 import { TodoTask } from "@/lib/types";
+import GlassCard from "@/components/GlassCard";
 
 export default function TodoWidget() {
   const { todos, profile } = useStore();
@@ -34,14 +35,13 @@ export default function TodoWidget() {
 
   return (
     <div className="block outline-none">
-      <motion.div 
+      <GlassCard 
+        interactive
         onClick={() => { vibrate(10); router.push("/todo"); }}
-        whileHover={{ scale: 0.99, y: -2 }}
-        whileTap={{ scale: 0.97 }}
-        className="relative bg-white/5 dark:bg-white/5 rounded-[2.5rem] p-6 lg:p-8 w-full shadow-2xl border border-white/10 backdrop-blur-3xl overflow-hidden cursor-pointer transition-all"
+        className="relative p-6 lg:p-8 w-full cursor-pointer transition-all overflow-hidden group"
       >
-        <div className="absolute -top-32 -right-32 w-64 h-64 bg-purple-500/20 blur-[100px] rounded-full pointer-events-none" />
-        <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-blue-500/20 blur-[100px] rounded-full pointer-events-none" />
+        <div className="absolute -top-32 -right-32 w-64 h-64 bg-purple-500/20 blur-[100px] rounded-full pointer-events-none group-hover:bg-purple-500/30 transition-colors duration-500" />
+        <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-blue-500/20 blur-[100px] rounded-full pointer-events-none group-hover:bg-blue-500/30 transition-colors duration-500" />
 
         <div className="flex items-center justify-between mb-8 relative z-10">
           <h2 className="font-sora text-2xl font-bold text-black dark:text-white flex items-center gap-2">
@@ -125,7 +125,7 @@ export default function TodoWidget() {
 
           </div>
         )}
-      </motion.div>
+      </GlassCard>
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useHapticRouter } from "@/components/HapticRouter";
 import { Atom, Compass, Cpu, Dna, FlaskConical, Pi } from "lucide-react";
 import { ReactNode } from "react";
+import GlassCard from "@/components/GlassCard";
 
 const SUBJECT_ICONS: Record<string, ReactNode> = {
   Physics: <Atom size={20} />,
@@ -18,10 +19,10 @@ export default function SubjectCard({ subject, count, imageUrl }: { subject: str
   
   return (
     <button onClick={(e) => navigate(`/learn?subject=${subject}`, e)} className="w-full text-left cursor-pointer">
-      <motion.div 
+      <GlassCard 
         layoutId={`subject-${subject}`}
-        whileTap={{ scale: 0.95 }} 
-        className="relative bg-white/70 backdrop-blur-xl dark:backdrop-blur-none dark:bg-[#1a1c23] rounded-[1.25rem] p-5 w-full shadow-lg border border-black/10 dark:border-white/5 overflow-hidden transition-all flex flex-col justify-center h-[120px] hover:brightness-105 dark:hover:brightness-110 group"
+        interactive
+        className="relative p-5 w-full overflow-hidden flex flex-col justify-center h-[120px] group"
       >
         {/* Edge-to-Edge Image with Gradient Mask */}
         <div className="absolute inset-y-0 right-0 w-[60%] md:w-[65%] pointer-events-none z-0">
@@ -46,7 +47,7 @@ export default function SubjectCard({ subject, count, imageUrl }: { subject: str
           <span className="font-sora font-bold text-lg text-neutral-900 dark:text-white block tracking-tight">{subject}</span>
           <span className="font-geist text-xs text-neutral-600 dark:text-neutral-400 mt-1 block">{count} Chapter{count === 1 ? '' : 's'}</span>
         </div>
-      </motion.div>
+      </GlassCard>
     </button>
   );
 }

@@ -123,16 +123,16 @@ export default function Home() {
     notice: config.features.notices && notices.length > 0 ? (
       <div key="notice" className="space-y-2">
         {notices.map((n, i) => (
-          <motion.div
+          <GlassCard
             key={n.id}
             initial={{ opacity: 0, x: -12 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: i * 0.06 }}
-            className="bg-white/5 dark:bg-white/5 backdrop-blur-md flex items-start gap-3 rounded-2xl border-l-4 border-purple-600 dark:border-purple-400 px-4 py-3.5 shadow-sm"
+            className="flex items-start gap-3 !border-l-4 !border-l-purple-600 px-4 py-3.5"
           >
             <Megaphone size={16} className="mt-0.5 shrink-0 text-purple-600 dark:text-purple-400" />
             <p className="font-hanken text-body-md leading-snug">{n.text}</p>
-          </motion.div>
+          </GlassCard>
         ))}
       </div>
     ) : null,
@@ -166,26 +166,26 @@ export default function Home() {
       {/* ————— grade upgrade celebration ————— */}
       <AnimatePresence>
         {profile.justUpgraded && (
-          <motion.div
+          <GlassCard
             initial={{ opacity: 0, y: -20, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, height: 0 }}
-            className="bg-white/5 dark:bg-white/5 backdrop-blur-lg rounded-[2rem] p-6 flex items-center gap-4 border border-white/10 shadow-xl"
+            className="p-6 flex items-center gap-4"
           >
             <PartyPopper size={26} className="text-purple-600 dark:text-purple-400 shrink-0" />
             <div className="flex-1">
               <p className="font-sora font-semibold text-neutral-900 dark:text-white">Welcome to 12th standard! 🎉</p>
               <p className="font-hanken text-body-md text-neutral-600 dark:text-neutral-400">Your content library just leveled up.</p>
             </div>
-            <button onClick={() => { vibrate(50); void dismissUpgrade(); }} aria-label="Dismiss" className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center shrink-0 text-neutral-900 dark:text-white">
+            <button onClick={() => { vibrate(50); void dismissUpgrade(); }} aria-label="Dismiss" className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center shrink-0 text-neutral-900 dark:text-white transition-colors">
               <X size={15} />
             </button>
-          </motion.div>
+          </GlassCard>
         )}
       </AnimatePresence>
 
       <motion.div layoutId="search-bar">
-        <button onClick={() => { vibrate(50); router.push("/learn"); }} className="w-full bg-white/10 dark:bg-white/5 backdrop-blur-lg border border-white/20 shadow-lg rounded-full px-6 py-4 flex items-center gap-4 text-left transition-transform hover:scale-[0.99] active:scale-[0.97]">
+        <button onClick={() => { vibrate(50); router.push("/learn"); }} className="w-full glassy rounded-full px-6 py-4 flex items-center gap-4 text-left transition-transform hover:scale-[0.99] active:scale-[0.97]">
           <Search size={22} className="text-purple-500" />
           <span className="font-hanken text-body-lg text-black dark:text-neutral-400">Search chapters, topics...</span>
         </button>
@@ -203,11 +203,11 @@ export default function Home() {
 
       {chapters.length === 0 && (
         <div>
-          <div className="bg-white/5 dark:bg-white/5 backdrop-blur-lg border border-white/10 shadow-2xl rounded-3xl p-8 text-center">
+          <GlassCard className="p-8 text-center">
             <ChevronDown size={20} className="mx-auto text-purple-600 dark:text-purple-400 mb-2 animate-bounce" />
             <p className="font-sora font-semibold">Library incoming</p>
             <p className="font-hanken text-body-md text-on-surface/50 mt-1">Your {profile.stream} content appears here the moment it&apos;s published.</p>
-          </div>
+          </GlassCard>
         </div>
       )}
 

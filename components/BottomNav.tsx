@@ -57,10 +57,13 @@ function BottomNavInner() {
   }
 
   return (
-    <nav
+    <motion.nav
+      initial={{ y: 20, opacity: 0, x: "-50%" }}
+      animate={{ y: 0, opacity: 1, x: "-50%" }}
+      transition={{ type: "spring", stiffness: 400, damping: 30 }}
       aria-label="Main"
-      className="lg:hidden fixed left-1/2 -translate-x-1/2 w-[90%] max-w-[400px] h-14 rounded-full bg-white/5 dark:bg-white/5 backdrop-blur-3xl border border-white/10 z-[60] flex items-center justify-around px-4 shadow-2xl"
-      style={{ bottom: "calc(1.5rem + env(safe-area-inset-bottom, 0px))" }}
+      className="lg:hidden fixed left-1/2 w-[90%] max-w-[400px] h-14 rounded-full glassy z-[60] flex items-center justify-around px-4"
+      style={{ bottom: "calc(1rem + env(safe-area-inset-bottom, 0px))" }}
     >
       {tabs.map(({ href, label, Icon }) => {
         const active = pathname.startsWith(href);
@@ -103,7 +106,7 @@ function BottomNavInner() {
           </Link>
         );
       })}
-    </nav>
+    </motion.nav>
   );
 }
 

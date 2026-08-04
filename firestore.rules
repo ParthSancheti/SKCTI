@@ -90,6 +90,7 @@ service cloud.firestore {
     match /banners/{id}      { allow read: if signedIn(); allow write: if isAdmin(); }
     match /videos/{id}       { allow read: if signedIn(); allow write: if isAdmin(); }
     match /announcements/{id}{ allow read: if signedIn(); allow write: if isAdmin(); }
+    match /modules/{id}      { allow read: if signedIn(); allow write: if isAdmin(); }
 
     /* =====================================================
        LEADS

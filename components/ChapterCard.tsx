@@ -7,6 +7,7 @@ import type { ContentDoc } from "@/lib/types";
 import { useStore, vibrate } from "@/lib/store";
 import { useHapticRouter } from "./HapticRouter";
 import { Browser } from "@capacitor/browser";
+import GlassCard from "@/components/GlassCard";
 
 export default function ChapterCard({ chapter, onOpen }: { chapter: ContentDoc; onOpen: () => void }) {
   const [expanded, setExpanded] = useState(false);
@@ -32,12 +33,16 @@ export default function ChapterCard({ chapter, onOpen }: { chapter: ContentDoc; 
     e.stopPropagation();
     vibrate(10);
     if (chapter.testLink) {
-      await Browser.open({ url: chapter.testLink });
+      try {
+        await Browser.open({ url: chapter.testLink });
+      } catch (err) {
+        window.open(chapter.testLink, "_blank");
+      }
     }
   };
 
   return (
-    <div className="bg-white/70 backdrop-blur-xl dark:backdrop-blur-none dark:bg-[#1a1c23] rounded-[1.25rem] shadow-lg border border-black/10 dark:border-white/5 overflow-hidden transition-all hover:brightness-105 dark:hover:brightness-110 cursor-pointer">
+    <GlassCard interactive className="overflow-hidden flex flex-col">
       <motion.div 
         onClick={() => { vibrate(10); setExpanded(!expanded); }}
         className="p-5 flex items-center justify-between gap-4"
@@ -71,13 +76,13 @@ export default function ChapterCard({ chapter, onOpen }: { chapter: ContentDoc; 
             className="px-5 pb-5 overflow-hidden"
           >
             <div className="grid grid-cols-2 gap-3 mt-4 pt-4 border-t border-black/10 dark:border-white/10">
-              <button onClick={handleViewPDF} className={`flex items-center justify-center gap-2 py-3 px-4 rounded-full bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-sm font-medium text-black dark:text-white transition-all active:scale-95 ${!chapter.youtubeUrl ? 'col-span-2' : ''}`}>
+              <button onClick={handleViewPDF} className={`flex items-center justify-center gap-2 py-3 px-4 rounded-full glassy hover:brightness-110 text-sm font-medium text-black dark:text-white transition-all active:scale-95 ${!chapter.youtubeUrl ? 'col-span-2' : ''}`}>
                 <Eye size={16} />
                 <span>View PDF</span>
               </button>
 
               {chapter.youtubeUrl && (
-                <button onClick={handleViewVideo} className="flex items-center justify-center gap-2 py-3 px-4 rounded-full bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-sm font-medium text-black dark:text-white transition-all active:scale-95">
+                <button onClick={handleViewVideo} className="flex items-center justify-center gap-2 py-3 px-4 rounded-full glassy hover:brightness-110 text-sm font-medium text-black dark:text-white transition-all active:scale-95">
                   <PlayCircle size={16} />
                   <span>Watch Video</span>
                 </button>
@@ -104,7 +109,7 @@ export default function ChapterCard({ chapter, onOpen }: { chapter: ContentDoc; 
                   (!chapter.testLink || done) ? "col-span-2" : ""
                 } ${
                   chapter.testLink 
-                    ? "bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-black dark:text-white active:scale-95" 
+                    ? "glassy hover:brightness-110 text-black dark:text-white active:scale-95" 
                     : "bg-transparent border border-black/10 dark:border-white/10 text-black/30 dark:text-white/30 cursor-not-allowed"
                 }`}
               >
@@ -115,6 +120,6 @@ export default function ChapterCard({ chapter, onOpen }: { chapter: ContentDoc; 
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </GlassCard>
   );
 }

@@ -132,7 +132,7 @@ function LearnInner() {
         </div>
         
         {/* Massive Search Bar (liquid glass) */}
-        <div className="w-full flex items-center gap-3 bg-white/10 dark:bg-white/5 backdrop-blur-xl border border-black/10 dark:border-white/10 shadow-lg rounded-full px-5 py-3 transition-all focus-within:border-purple-500/50">
+        <div className="w-full flex items-center gap-3 glassy rounded-full px-5 py-3 transition-all focus-within:!border-purple-500/50">
           <Search size={20} className="shrink-0 text-[#9d72ff]" />
           <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search chapters, topics..."
             className="w-full bg-transparent font-hanken text-base outline-none text-black dark:text-white placeholder:text-neutral-500 dark:placeholder:text-neutral-500" />
@@ -188,14 +188,24 @@ function LearnInner() {
             </motion.div>
           ) : (
             /* ————— level 2: topic-wise ————— */
-            <motion.div key={subject} initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 24 }} className="space-y-4 pt-4">
-              <div className="flex items-center gap-3">
-                <button onClick={(e) => { vibrate(10); navigate("/learn", e); }} className="glassy w-10 h-10 flex items-center justify-center rounded-full text-black dark:text-white hover:brightness-110 transition-all">
-                  <ChevronLeft size={17} />
+            <motion.div key={subject} initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 24 }} className="space-y-4 pt-16 lg:pt-4 relative">
+              <button 
+                onClick={(e) => { vibrate(10); navigate("/learn", e); }} 
+                className="lg:hidden fixed top-[env(safe-area-inset-top,1rem)] mt-2 left-4 z-50 w-10 h-10 flex items-center justify-center rounded-full glassy text-black dark:text-white pointer-events-auto hover:brightness-110 transition-colors"
+              >
+                <ChevronLeft size={20} />
+              </button>
+
+              <div className="flex items-center gap-4 mb-4">
+                <button 
+                  onClick={(e) => { vibrate(10); navigate("/learn", e); }} 
+                  className="hidden lg:flex w-10 h-10 items-center justify-center rounded-full glassy text-black dark:text-white hover:brightness-110 transition-all"
+                >
+                  <ChevronLeft size={20} />
                 </button>
                 <div>
-                  <h2 className="font-sora text-headline-lg font-black tracking-tight text-black dark:text-white">{subject}</h2>
-                  <p className="font-geist text-label-sm text-black dark:text-neutral-400">{subjectItems.length} topics</p>
+                  <h1 className="text-4xl md:text-5xl font-black text-neutral-900 dark:text-white tracking-tight">{subject}</h1>
+                  <p className="font-geist text-sm font-bold uppercase tracking-widest text-purple-600 dark:text-purple-400 mt-1">{subjectItems.length} topics</p>
                 </div>
               </div>
 

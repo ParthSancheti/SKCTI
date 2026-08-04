@@ -21,7 +21,7 @@ export default function AuditLog() {
       {rows.length === 0 ? (
         <p className="font-hanken text-body-md text-neutral-500 dark:text-neutral-400">No admin actions yet — publish something and it lands here.</p>
       ) : (
-        <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
+        <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-black/10 dark:[&::-webkit-scrollbar-thumb]:bg-white/10">
           {rows.map((r) => (
             <div key={r.id} className="flex items-start gap-3 border-t border-black/5 dark:border-white/5 pt-4 first:border-0 first:pt-0">
               <span className="w-2 h-2 rounded-full bg-purple-600 dark:bg-purple-400 mt-2 shrink-0" />

@@ -18,7 +18,6 @@ import {
 } from "@/lib/types";
 
 const STREAMS: Stream[] = ["PCM", "PCB"];
-const SUBJECTS = ["Physics", "Chemistry", "Math", "Biology"];
 const TYPES = ["Notes PDF", "DPP", "Formula Sheet", "PYQ Pack"];
 const WEIGHTS: Weightage[] = ["High", "Medium", "Low"];
 
@@ -46,6 +45,7 @@ export default function ContentEditPage() {
 
   const [mode, setMode] = useState<"pdf" | "test" | "video">(initMode || "pdf");
   const [url, setUrl] = useState("");
+  const { modules } = useStore();
   const [title, setTitle] = useState("");
   const [topic, setTopic] = useState("");
   const [streams, setStreams] = useState<Stream[]>([]);
@@ -230,7 +230,7 @@ export default function ContentEditPage() {
             </h2>
             <div>
               <p className="mb-2 font-geist text-xs font-bold uppercase tracking-widest text-neutral-500">Subject</p>
-              <div className="flex flex-wrap gap-2">{SUBJECTS.map((s) => <Chip key={s} label={s} active={subject === s} onClick={() => setSubject(s)} />)}</div>
+              <div className="flex flex-wrap gap-2">{modules.map((m) => <Chip key={m.id} label={m.name} active={subject === m.name} onClick={() => setSubject(m.name)} />)}</div>
             </div>
             <div>
               <p className="mb-2 font-geist text-xs font-bold uppercase tracking-widest text-neutral-500">Stream</p>

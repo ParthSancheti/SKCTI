@@ -9,6 +9,7 @@ import { col } from "@/lib/db";
 import { addDoc, deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { fbDb } from "@/lib/firebase";
 import type { TodoTask } from "@/lib/types";
+import GlassCard from "@/components/GlassCard";
 
 const CATEGORIES = ["All", "Physics", "Chemistry", "Math", "Biology", "General"];
 const URGENCIES = ["High", "Medium", "Low"];
@@ -88,22 +89,21 @@ export default function TodoApp() {
   return (
     <div className="flex h-[100dvh] lg:h-auto min-h-[calc(100vh-4rem)] w-full gap-6 relative py-0">
 
-      {/* Mobile Floating Back Button */}
       <button 
         onClick={() => { vibrate(10); router.push("/home"); }} 
-        className="lg:hidden absolute top-[env(safe-area-inset-top,1rem)] mt-2 left-0 z-50 w-10 h-10 flex items-center justify-center rounded-full bg-white/10 dark:bg-white/5 backdrop-blur-md border border-white/20 text-black dark:text-white pointer-events-auto shadow-lg hover:bg-white/20 transition-colors"
+        className="lg:hidden fixed top-[env(safe-area-inset-top,1rem)] mt-2 left-4 z-50 w-10 h-10 flex items-center justify-center rounded-full glassy text-black dark:text-white pointer-events-auto hover:brightness-110 transition-colors"
       >
         <ChevronLeft size={20} />
       </button>
 
-      <div className="w-full max-w-4xl flex flex-col h-full pt-20 lg:pt-14">
+      <div className="w-full max-w-4xl flex flex-col h-full pt-[calc(env(safe-area-inset-top,1rem)+4rem)] lg:pt-14">
         
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
           <div className="flex items-center gap-4">
             <button 
               onClick={() => { vibrate(10); router.push("/home"); }} 
-              className="hidden lg:flex w-10 h-10 items-center justify-center rounded-full bg-white/10 dark:bg-white/5 backdrop-blur-md border border-white/20 text-black dark:text-white pointer-events-auto shadow-lg shrink-0 hover:bg-white/20 transition-colors"
+              className="hidden lg:flex w-10 h-10 items-center justify-center rounded-full glassy text-black dark:text-white pointer-events-auto shrink-0 hover:brightness-110 transition-colors"
             >
               <ChevronLeft size={20} />
             </button>
@@ -141,7 +141,7 @@ export default function TodoApp() {
               className={`px-5 py-2.5 rounded-full font-geist text-sm font-bold whitespace-nowrap transition-all border ${
                 filterCat === cat 
                   ? "bg-purple-600 text-white border-purple-500" 
-                  : "bg-white/10 dark:bg-white/5 text-black dark:text-white border-white/20 hover:bg-white/20"
+                  : "glassy text-black dark:text-white border-transparent hover:brightness-110"
               }`}
             >
               {cat}
@@ -157,12 +157,12 @@ export default function TodoApp() {
             <h2 className="font-sora text-sm font-bold text-black/40 dark:text-white/40 uppercase tracking-widest px-2">Pending ({pendingTodos.length})</h2>
             <AnimatePresence>
               {pendingTodos.map(task => (
-                <motion.div
+                <GlassCard
                   key={task.id}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
-                  className="group bg-white/5 dark:bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4 shadow-sm hover:shadow-md hover:bg-white/10 dark:hover:bg-white/10 transition-all"
+                  className="group p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4 hover:shadow-md hover:brightness-105 transition-all"
                 >
                   <div className="flex items-center gap-4 w-full sm:w-auto flex-1 min-w-0">
                     <button onClick={() => toggleStatus(task)} className="text-neutral-400 hover:text-purple-500 transition-colors shrink-0">
@@ -197,7 +197,7 @@ export default function TodoApp() {
                       <Trash2 size={16} /> <span className="sm:hidden font-geist text-xs font-bold uppercase">Delete</span>
                     </button>
                   </div>
-                </motion.div>
+                </GlassCard>
               ))}
             </AnimatePresence>
             {pendingTodos.length === 0 && (
@@ -213,12 +213,12 @@ export default function TodoApp() {
               <h2 className="font-sora text-sm font-bold text-black/40 dark:text-white/40 uppercase tracking-widest px-2">Completed ({completedTodos.length})</h2>
               <AnimatePresence>
                 {completedTodos.map(task => (
-                  <motion.div
+                  <GlassCard
                     key={task.id}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95 }}
-                    className="group bg-white/5 dark:bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4 flex items-center gap-4 opacity-60 hover:opacity-100 hover:bg-white/10 dark:hover:bg-white/10 transition-all"
+                    className="group p-4 flex items-center gap-4 opacity-60 hover:opacity-100 hover:brightness-105 transition-all"
                   >
                     <button onClick={() => toggleStatus(task)} className="text-green-500 hover:text-neutral-400 transition-colors shrink-0">
                       <CheckCircle2 size={24} />
@@ -229,7 +229,7 @@ export default function TodoApp() {
                     <button onClick={() => deleteTask(task.id)} className="p-2 text-black/40 dark:text-white/40 hover:text-red-500 transition-colors opacity-100 sm:opacity-0 group-hover:opacity-100">
                       <Trash2 size={18} />
                     </button>
-                  </motion.div>
+                  </GlassCard>
                 ))}
               </AnimatePresence>
             </div>
@@ -246,11 +246,12 @@ export default function TodoApp() {
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[100] bg-white/20 dark:bg-black/60 backdrop-blur-md flex items-center justify-center p-0 lg:p-4"
           >
-            <motion.div 
+            <GlassCard 
+              strong
               initial={{ scale: 0.95, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, y: 20 }}
-              className="bg-white/90 dark:bg-[#1a1a1f] border border-white/20 dark:border-white/10 lg:shadow-2xl rounded-none lg:rounded-[2rem] w-full h-full lg:h-auto max-w-lg p-6 pt-16 lg:pt-8 lg:p-8 flex flex-col"
+              className="rounded-none lg:rounded-[2rem] w-full h-full lg:h-auto max-w-lg p-6 pt-16 lg:pt-8 lg:p-8 flex flex-col"
             >
               <div className="flex items-center justify-between mb-6">
                 <h2 className="font-sora text-2xl font-bold text-black dark:text-white">
@@ -315,7 +316,7 @@ export default function TodoApp() {
                   Save Task
                 </button>
               </div>
-            </motion.div>
+            </GlassCard>
           </motion.div>
         )}
       </AnimatePresence>

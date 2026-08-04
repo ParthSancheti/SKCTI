@@ -78,6 +78,7 @@ export default function AdminDashboard() {
   const [counts, setCounts] = useState({ content: 0, tests: 0, banners: 0 });
   const [seeding, setSeeding] = useState(false);
   const [expandingCard, setExpandingCard] = useState<string | null>(null);
+  const [aiLimit, setAiLimit] = useState(1000);
 
   const expandNavigate = (id: string, path: string) => {
     triggerHaptic();
@@ -198,7 +199,7 @@ export default function AdminDashboard() {
               </div>
             )}
             {top.length > 0 && (
-              <motion.button whileTap={{ scale: 0.95 }} onClick={() => expandNavigate("card-leaderboard", "/admin/users")} className="mt-6 w-full flex items-center justify-center gap-2 py-3 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/10 dark:border-white/10 rounded-xl transition-colors font-geist text-sm text-neutral-900 dark:text-white">
+              <motion.button whileTap={{ scale: 0.95 }} onClick={() => expandNavigate("card-leaderboard", "/admin/users")} className="mt-6 w-full flex items-center justify-center gap-2 py-3 glassy hover:bg-black/5 dark:hover:bg-white/10 border border-black/10 dark:border-white/10 rounded-full transition-colors font-geist text-sm font-bold text-neutral-900 dark:text-white shadow-sm">
                 Expand List <Sparkles size={14} />
               </motion.button>
             )}
@@ -230,10 +231,10 @@ export default function AdminDashboard() {
           <div className="space-y-4">
             <div onClick={(e) => e.stopPropagation()}>
               <label className="font-geist text-xs text-neutral-500 dark:text-neutral-400 block mb-1">Set Global Daily Limit</label>
-              <div className="flex items-center bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl overflow-hidden focus-within:border-purple-500 transition-colors">
-                <button className="px-4 py-2 text-neutral-500 dark:text-neutral-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-black/10 dark:hover:bg-white/10 transition-colors font-sora font-bold text-lg leading-none">-</button>
-                <input type="number" placeholder="" className="w-full bg-transparent px-2 py-2 font-geist text-sm text-center text-neutral-900 dark:text-white outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [-moz-appearance:textfield]" />
-                <button className="px-4 py-2 text-neutral-500 dark:text-neutral-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-black/10 dark:hover:bg-white/10 transition-colors font-sora font-bold text-lg leading-none">+</button>
+              <div className="flex items-center glassy border border-black/10 dark:border-white/10 rounded-full overflow-hidden focus-within:border-purple-500 transition-colors shadow-sm">
+                <button onClick={() => setAiLimit(prev => Math.max(0, prev - 100))} className="px-4 py-2 text-neutral-500 dark:text-neutral-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-black/5 dark:hover:bg-white/10 transition-colors font-sora font-bold text-lg leading-none">-</button>
+                <input type="number" value={aiLimit} onChange={(e) => setAiLimit(parseInt(e.target.value) || 0)} className="w-full bg-transparent px-2 py-2 font-geist text-sm font-bold text-center text-neutral-900 dark:text-white outline-none [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none [-moz-appearance:textfield]" />
+                <button onClick={() => setAiLimit(prev => prev + 100)} className="px-4 py-2 text-neutral-500 dark:text-neutral-400 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-black/5 dark:hover:bg-white/10 transition-colors font-sora font-bold text-lg leading-none">+</button>
               </div>
             </div>
             <div className="flex items-center justify-between bg-red-500/10 border border-red-500/20 p-4 rounded-xl" onClick={(e) => e.stopPropagation()}>

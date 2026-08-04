@@ -21,7 +21,6 @@ type Mode = "pdf" | "test" | "video";
 type AnyDoc = ContentDoc | TestDoc | VideoDoc;
 
 const STREAMS: Stream[] = ["PCM", "PCB"];
-const SUBJECTS = ["Physics", "Chemistry", "Math", "Biology"];
 const TYPES = ["Notes PDF", "DPP", "Formula Sheet", "PYQ Pack"];
 const WEIGHTS: Weightage[] = ["High", "Medium", "Low"];
 
@@ -40,7 +39,7 @@ function Chip({ label, active, onClick }: { label: string; active: boolean; onCl
 const modeOf = (d: AnyDoc): Mode => ("driveId" in d ? "pdf" : "youtubeId" in d ? "video" : "test");
 
 export default function ContentHub() {
-  const { fbUser, configLoaded, isAdmin } = useStore();
+  const { fbUser, configLoaded, isAdmin, modules } = useStore();
   const router = useRouter();
   const me = fbUser?.email ?? "admin";
 
@@ -120,19 +119,19 @@ export default function ContentHub() {
   };
 
   return (
-    <div className="max-w-container space-y-7">
+    <div className="w-full max-w-[100vw] overflow-x-hidden px-4 sm:px-6 flex flex-col gap-6 pt-2 pb-12">
       {/* Page Title */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
         <div>
-          <h1 className="font-sora text-headline-xl">Content Hub</h1>
-          <p className="mt-1 font-hanken text-body-md text-neutral-900/60 dark:text-white/60">Your Drive, Forms & YouTube — organised, tagged, live.</p>
+          <h1 className="font-sora text-3xl font-black tracking-tight text-neutral-900 dark:text-white">Content Hub</h1>
+          <p className="mt-1 font-geist text-body-md text-neutral-500 dark:text-white/60">Your Drive, Forms & YouTube — organised, tagged, live.</p>
         </div>
         
         {/* Add Content Button */}
         <motion.button
           whileTap={{ scale: 0.95 }}
           onClick={() => { vibrate(10); router.push("/admin/content/add"); }}
-          className="w-full md:w-auto flex items-center justify-center gap-2 rounded-full bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 border border-black/10 dark:border-white/10 px-6 py-3 font-geist text-sm font-bold text-neutral-900 dark:text-white transition-all shadow-lg"
+          className="w-full md:w-auto flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-xl shadow-purple-600/20 px-6 py-3.5 font-geist text-sm font-bold transition-all"
         >
           <Plus size={17} /> Add content
         </motion.button>
@@ -140,26 +139,26 @@ export default function ContentHub() {
 
       {/* Search & Filter Row */}
       <div className="flex w-full items-center gap-3">
-        <div className="flex-1 flex items-center gap-3 bg-black/5 dark:bg-white/5 backdrop-blur-md border border-black/10 dark:border-white/10 rounded-full px-5 py-3 transition-all focus-within:bg-black/10 dark:focus-within:bg-white/10 focus-within:border-purple-500 dark:focus-within:border-purple-400">
-          <Search size={18} className="text-neutral-900/50 dark:text-white/50" />
+        <div className="flex-1 flex items-center gap-3 w-full rounded-full border border-outline/30 glassy px-4 py-3 focus-within:border-primary transition-colors">
+          <Search size={18} className="text-neutral-500 dark:text-white/50" />
           <input 
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             placeholder="Search content..."
-            className="bg-transparent border-none outline-none font-geist text-sm text-neutral-900 dark:text-white w-full placeholder:text-neutral-900/40 dark:placeholder:text-white/40"
+            className="bg-transparent border-none outline-none font-geist text-body-md text-neutral-900 dark:text-white w-full placeholder:text-neutral-500 dark:placeholder:text-white/50"
           />
         </div>
         
         <motion.button 
           whileTap={{ scale: 0.95 }}
           onClick={() => { vibrate(10); setFiltersOpen(!filtersOpen); }}
-          className={`flex items-center justify-center h-[48px] w-[48px] md:w-auto md:px-5 gap-2 rounded-full font-geist text-xs font-bold transition-all border shrink-0 ${
+          className={`flex items-center justify-center gap-2 rounded-full border px-6 py-3.5 font-geist text-sm font-bold transition-all shadow-lg shrink-0 ${
             filtersOpen 
-              ? "bg-gradient-to-r from-purple-600 to-blue-600 border-transparent text-white shadow-lg" 
-              : "bg-black/5 dark:bg-white/5 border-black/10 dark:border-white/10 text-neutral-900 dark:text-white hover:bg-black/10 dark:hover:bg-white/10"
+              ? "bg-purple-600 text-white border-transparent" 
+              : "glassy border-black/10 dark:border-white/10 text-neutral-900 dark:text-white hover:bg-black/5 dark:hover:bg-white/10"
           }`}
         >
-          <Filter size={16} /> <span className="hidden md:inline">Advanced Filters</span>
+          <Filter size={16} /> <span>Advanced Filters</span>
         </motion.button>
       </div>
 
@@ -171,11 +170,11 @@ export default function ContentHub() {
             exit={{ height: 0, opacity: 0 }}
             className="overflow-hidden"
           >
-            <div className="bg-black/5 dark:bg-white/5 backdrop-blur-md border border-black/10 dark:border-white/10 rounded-[2rem] p-6 grid grid-cols-1 md:grid-cols-3 gap-6 shadow-xl mb-4">
+            <GlassCard className="p-4 md:p-5 w-full block box-border mb-4 grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
                 <p className="mb-2 font-geist text-xs font-bold uppercase tracking-widest text-neutral-500">Subject</p>
                 <div className="flex flex-wrap gap-2">
-                  {["All", ...SUBJECTS].map(s => (
+                  {["All", ...modules.map(m => m.name)].map(s => (
                     <Chip key={s} label={s} active={filterSubject === s} onClick={() => setFilterSubject(s)} />
                   ))}
                 </div>
@@ -198,7 +197,7 @@ export default function ContentHub() {
                   ))}
                 </div>
               </div>
-            </div>
+            </GlassCard>
           </motion.div>
         )}
       </AnimatePresence>
@@ -212,23 +211,29 @@ export default function ContentHub() {
           </GlassCard>
         )}
         {list.map((d) => (
-          <GlassCard key={d.id} className={`flex items-center gap-3 p-5 bg-white/5 dark:bg-white/5 backdrop-blur-md border border-black/5 dark:border-white/10 ${d.published ? "" : "opacity-50"}`}>
+          <GlassCard key={d.id} className={`flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 md:p-5 w-full block box-border ${d.published ? "" : "opacity-50"}`}>
             <div className="min-w-0 flex-1">
-              <p className="truncate font-sora font-semibold text-neutral-900 dark:text-white">{d.title}</p>
-              <p className="font-geist text-label-sm text-neutral-900/40 dark:text-white/40">
+              <p className="truncate font-geist text-body-md font-semibold text-neutral-900 dark:text-white">{d.title}</p>
+              <p className="font-geist text-sm text-neutral-500 dark:text-white/50 mt-1">
                 {d.subject} · {d.streams.join("+")}
                 {"weightage" in d ? ` · ${(d as ContentDoc).weightage} · ${(d as ContentDoc).type}` : "kind" in d ? ` · ${(d as TestDoc).kind} · ${(d as TestDoc).durationMin} min` : " · Video"}
                 {!d.published && " · Hidden"}
               </p>
             </div>
-            <motion.button whileTap={{ scale: 0.95 }} onClick={() => { vibrate(10); setViewing(d); }} className="bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/10 dark:border-white/10 px-4 py-2 shrink-0 rounded-full font-geist text-xs font-bold text-neutral-900 dark:text-white transition-colors">View</motion.button>
-            <motion.button whileTap={{ scale: 0.95 }} onClick={() => openEdit(d)} className="bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/10 dark:border-white/10 px-4 py-2 shrink-0 rounded-full font-geist text-xs font-bold text-neutral-900 dark:text-white transition-colors">Edit</motion.button>
-            <motion.button whileTap={{ scale: 0.95 }} onClick={() => void togglePub(d)} className="bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/10 dark:border-white/10 px-4 py-2 shrink-0 rounded-full font-geist text-xs font-bold text-neutral-900 dark:text-white transition-colors">
-              {d.published ? "Draft" : "Publish"}
-            </motion.button>
-            <motion.button whileTap={{ scale: 0.95 }} onClick={() => void remove(d)} aria-label="Delete" className="bg-black/5 dark:bg-white/5 hover:bg-red-500/20 border border-black/10 dark:border-white/10 grid h-10 w-10 shrink-0 place-items-center rounded-full transition-colors">
-              <Trash2 size={16} className="text-neutral-900 dark:text-white hover:text-red-600 dark:hover:text-red-400 transition-colors" />
-            </motion.button>
+            <div className="flex items-center gap-2 shrink-0">
+              <motion.button whileTap={{ scale: 0.95 }} onClick={() => { vibrate(10); setViewing(d); }} aria-label="View" title="Preview" className="w-9 h-9 flex items-center justify-center rounded-full glassy hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-neutral-600 dark:text-neutral-400">
+                <PlayCircle size={14} />
+              </motion.button>
+              <motion.button whileTap={{ scale: 0.95 }} onClick={() => openEdit(d)} aria-label="Edit" title="Edit" className="w-9 h-9 flex items-center justify-center rounded-full glassy hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-purple-600 dark:text-purple-400">
+                <Pencil size={14} />
+              </motion.button>
+              <motion.button whileTap={{ scale: 0.95 }} onClick={() => void togglePub(d)} aria-label="Toggle Publish" title={d.published ? "Unpublish" : "Publish"} className="w-9 h-9 flex items-center justify-center rounded-full glassy hover:bg-black/5 dark:hover:bg-white/10 transition-colors">
+                {d.published ? <Eye size={14} className="text-purple-600 dark:text-purple-400" /> : <EyeOff size={14} className="text-neutral-500 dark:text-white/50" />}
+              </motion.button>
+              <motion.button whileTap={{ scale: 0.95 }} onClick={() => void remove(d)} aria-label="Delete" title="Delete" className="w-9 h-9 flex items-center justify-center rounded-full bg-red-500/10 text-red-600 dark:text-red-500 hover:bg-red-500 hover:text-white transition-colors">
+                <Trash2 size={14} />
+              </motion.button>
+            </div>
           </GlassCard>
         ))}
       </div>

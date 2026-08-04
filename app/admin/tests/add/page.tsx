@@ -20,8 +20,8 @@ function Chip({ label, active, onClick }: { label: string; active: boolean; onCl
       onClick={() => { vibrate(10); onClick(); }}
       className={`rounded-full px-4 py-2 font-geist text-xs font-bold transition-all ${
         active 
-          ? "bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg" 
-          : "bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-neutral-600 dark:text-neutral-400 hover:bg-black/10 dark:hover:bg-white/10"
+          ? "bg-purple-600 text-white shadow-lg border-transparent" 
+          : "glassy border-black/10 dark:border-white/10 text-neutral-600 dark:text-neutral-400 hover:bg-black/5 dark:hover:bg-white/10"
       }`}
     >
       {label}
@@ -31,7 +31,7 @@ function Chip({ label, active, onClick }: { label: string; active: boolean; onCl
 
 export default function AddTestStudio() {
   const router = useRouter();
-  const { fbUser, modules } = useStore();
+  const { fbUser, isAdmin, modules } = useStore();
   const searchParams = useSearchParams();
   
   const [url, setUrl] = useState("");
@@ -89,17 +89,17 @@ export default function AddTestStudio() {
           <motion.button 
             whileTap={{ scale: 0.95 }}
             onClick={() => { vibrate(10); router.back(); }}
-            className="w-10 h-10 flex items-center justify-center rounded-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 hover:bg-black/10 dark:hover:bg-white/10 transition-colors text-neutral-900 dark:text-white"
+            className="w-10 h-10 flex items-center justify-center rounded-full glassy border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-neutral-900 dark:text-white shadow-sm"
           >
             <ChevronLeft size={20} />
           </motion.button>
-          <h1 className="font-sora text-headline-xl">Test Uploader</h1>
+          <h1 className="font-sora text-3xl font-black tracking-tight text-neutral-900 dark:text-white">Test Uploader</h1>
         </div>
         <motion.button
           whileTap={{ scale: 0.95 }}
           onClick={handleSave}
           disabled={saving}
-          className="hidden lg:flex items-center gap-2 rounded-full bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 border border-black/10 dark:border-white/10 px-6 py-3 font-geist text-sm font-bold text-neutral-900 dark:text-white transition-all shadow-lg disabled:opacity-50"
+          className="hidden lg:flex items-center gap-2 rounded-full bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-xl shadow-purple-600/20 px-6 py-3 font-geist text-sm font-bold transition-all disabled:opacity-50"
         >
           <Save size={16} /> {saving ? "Saving..." : "Publish Test"}
         </motion.button>
@@ -107,11 +107,11 @@ export default function AddTestStudio() {
       <div className="max-w-7xl mx-auto px-4 md:px-8 flex flex-col lg:grid lg:grid-cols-12 gap-8 items-start">
         
         {/* Mobile Sticky Tabs */}
-        <div className="lg:hidden flex justify-center w-full sticky top-[72px] z-40 -mt-4 mb-2">
-          <div className="flex p-1 mx-auto w-full max-w-sm bg-white/5 backdrop-blur-md border border-white/10 rounded-full relative z-50 pointer-events-auto">
+        <div className="lg:hidden flex justify-center w-full sticky top-[72px] z-40 -mt-4 mb-2 pointer-events-none">
+          <div className="flex p-1 mx-auto w-full max-w-sm glassy rounded-full relative z-50 pointer-events-auto">
             {(["editor", "preview"] as const).map((t) => (
-              <button key={t} onClick={() => { vibrate(10); setMobileTab(t); }} className="relative flex flex-1 items-center justify-center gap-1.5 rounded-full py-2.5 font-geist text-sm font-bold transition-all group">
-                {mobileTab === t && <motion.span layoutId="mobileTabAdd" className="absolute inset-0 rounded-full bg-white/15 shadow-lg" />}
+              <button key={t} onClick={() => { vibrate(10); setMobileTab(t); }} className="relative flex flex-1 items-center justify-center gap-1.5 rounded-full py-2.5 font-geist text-sm font-bold transition-all group z-10">
+                {mobileTab === t && <motion.span layoutId="mobileTabAdd" className="absolute inset-0 rounded-full bg-white dark:bg-white/15 shadow-md border border-black/5 dark:border-white/10 -z-10" />}
                 <span className={`relative z-10 capitalize ${mobileTab === t ? "text-neutral-900 dark:text-white" : "bg-transparent text-neutral-500 dark:text-white/50 group-hover:text-neutral-900 dark:group-hover:text-white"}`}>{t}</span>
               </button>
             ))}
@@ -120,9 +120,9 @@ export default function AddTestStudio() {
         
         {/* Left Pane (Form) */}
         <div className={`lg:col-span-7 xl:col-span-8 space-y-6 w-full ${mobileTab !== "editor" ? "hidden lg:block" : ""}`}>
-          <GlassCard className="p-6 md:p-8 bg-white/5 backdrop-blur-md border border-white/10 space-y-6">
+          <GlassCard className="p-6 md:p-8 space-y-6">
             <h2 className="font-sora font-semibold text-lg flex items-center gap-3 mb-4">
-              <span className="w-7 h-7 text-sm rounded-full bg-black/10 dark:bg-white/10 border border-black/20 dark:border-white/20 text-neutral-900 dark:text-white flex items-center justify-center">1</span>
+              <span className="w-7 h-7 text-sm rounded-full glassy border border-black/20 dark:border-white/20 text-neutral-900 dark:text-white flex items-center justify-center">1</span>
               Test Details & Link
             </h2>
             
@@ -133,25 +133,25 @@ export default function AddTestStudio() {
                 </p>
                 <input value={url} onChange={(e) => setUrl(e.target.value)}
                   placeholder={"https://docs.google.com/forms/..."}
-                  className={`w-full bg-black/5 dark:bg-white/5 border ${url && !urlOk ? "border-red-500" : "border-black/10 dark:border-white/10"} rounded-xl px-4 py-3 font-geist text-sm outline-none focus:border-purple-500 transition-colors backdrop-blur-md text-neutral-900 dark:text-white`} />
+                  className={`w-full glassy border ${url && !urlOk ? "border-red-500" : "border-outline/30"} rounded-2xl px-4 py-3 font-geist text-sm outline-none focus:border-purple-500 transition-colors text-neutral-900 dark:text-white`} />
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <p className="mb-2 font-geist text-xs font-bold uppercase tracking-widest text-neutral-500">Test Title <span className="text-red-500">*</span></p>
-                <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Mock Test 4: Rotational Motion" className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 font-geist text-sm outline-none focus:border-purple-500 transition-colors backdrop-blur-md text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-white/30" />
+                <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Mock Test 4: Rotational Motion" className="w-full glassy border border-outline/30 rounded-2xl px-4 py-3 font-geist text-sm outline-none focus:border-purple-500 transition-colors text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-white/30" />
               </div>
               <div>
                 <p className="mb-2 font-geist text-xs font-bold uppercase tracking-widest text-neutral-500">Chapter <span className="text-red-500">*</span></p>
-                <input value={topic} onChange={(e) => setTopic(e.target.value)} placeholder="Rotational Motion" className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 font-geist text-sm outline-none focus:border-purple-500 transition-colors backdrop-blur-md text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-white/30" />
+                <input value={topic} onChange={(e) => setTopic(e.target.value)} placeholder="Rotational Motion" className="w-full glassy border border-outline/30 rounded-2xl px-4 py-3 font-geist text-sm outline-none focus:border-purple-500 transition-colors text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-white/30" />
               </div>
             </div>
           </GlassCard>
 
-          <GlassCard className="p-6 md:p-8 bg-black/5 dark:bg-white/5 backdrop-blur-md border border-black/10 dark:border-white/10 space-y-6">
+          <GlassCard className="p-6 md:p-8 space-y-6">
             <h2 className="font-sora font-semibold text-lg flex items-center gap-3 mb-4">
-              <span className="w-7 h-7 text-sm rounded-full bg-black/10 dark:bg-white/10 border border-black/20 dark:border-white/20 text-neutral-900 dark:text-white flex items-center justify-center">2</span>
+              <span className="w-7 h-7 text-sm rounded-full glassy border border-black/20 dark:border-white/20 text-neutral-900 dark:text-white flex items-center justify-center">2</span>
               Telemetry
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -159,20 +159,20 @@ export default function AddTestStudio() {
                 <p className="mb-2 flex items-center gap-2 font-geist text-xs font-bold uppercase tracking-widest text-neutral-500">
                   <Clock size={12} /> Duration (mins) <span className="text-red-500">*</span>
                 </p>
-                <input type="number" value={duration} onChange={(e) => setDuration(e.target.value)} placeholder="180" className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 font-geist text-sm outline-none focus:border-purple-500 transition-colors backdrop-blur-md text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-white/30" />
+                <input type="number" value={duration} onChange={(e) => setDuration(e.target.value)} placeholder="180" className="w-full glassy border border-outline/30 rounded-2xl px-4 py-3 font-geist text-sm outline-none focus:border-purple-500 transition-colors text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-white/30" />
               </div>
               <div>
                 <p className="mb-2 flex items-center gap-2 font-geist text-xs font-bold uppercase tracking-widest text-neutral-500">
                   <Target size={12} /> Total Marks <span className="text-red-500">*</span>
                 </p>
-                <input type="number" value={marks} onChange={(e) => setMarks(e.target.value)} placeholder="300" className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 font-geist text-sm outline-none focus:border-purple-500 transition-colors backdrop-blur-md text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-white/30" />
+                <input type="number" value={marks} onChange={(e) => setMarks(e.target.value)} placeholder="300" className="w-full glassy border border-outline/30 rounded-2xl px-4 py-3 font-geist text-sm outline-none focus:border-purple-500 transition-colors text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-white/30" />
               </div>
             </div>
           </GlassCard>
 
-          <GlassCard className="p-6 md:p-8 bg-black/5 dark:bg-white/5 backdrop-blur-md border border-black/10 dark:border-white/10 space-y-6">
+          <GlassCard className="p-6 md:p-8 space-y-6">
             <h2 className="font-sora font-semibold text-lg flex items-center gap-3 mb-4">
-              <span className="w-7 h-7 text-sm rounded-full bg-black/10 dark:bg-white/10 border border-black/20 dark:border-white/20 text-neutral-900 dark:text-white flex items-center justify-center">3</span>
+              <span className="w-7 h-7 text-sm rounded-full glassy border border-black/20 dark:border-white/20 text-neutral-900 dark:text-white flex items-center justify-center">3</span>
               Tags & Taxonomy
             </h2>
             <div>
@@ -191,7 +191,7 @@ export default function AddTestStudio() {
               whileTap={{ scale: 0.95 }}
               onClick={handleSave}
               disabled={saving}
-              className="w-full flex items-center justify-center gap-2 bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 border border-black/10 dark:border-white/10 text-neutral-900 dark:text-white shadow-lg shadow-black/20 py-4 rounded-2xl font-bold text-sm transition-all disabled:opacity-50"
+              className="w-full flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-xl shadow-purple-600/20 py-4 font-bold text-sm transition-all disabled:opacity-50"
             >
               <Save size={18} /> {saving ? "Saving..." : "Publish Test"}
             </motion.button>

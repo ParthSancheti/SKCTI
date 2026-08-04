@@ -3,6 +3,7 @@
 import { Home, BookOpen, ClipboardList, Trophy, LogOut, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
+import { motion } from "framer-motion";
 import { useStore, vibrate } from "@/lib/store";
 import { useHapticRouter } from "@/components/HapticRouter";
 
@@ -30,7 +31,7 @@ export default function SideNav() {
   const grade = profile?.grade ?? "11th";
 
   return (
-    <aside className="hidden lg:flex flex-col fixed left-6 top-6 bottom-6 w-[280px] rounded-[2.5rem] bg-white/5 dark:bg-white/5 backdrop-blur-3xl border border-white/10 shadow-2xl p-6 z-40">
+    <aside className="hidden lg:flex flex-col fixed left-6 top-6 bottom-6 w-[280px] rounded-[2.5rem] glassy p-6 z-40">
       <div className="flex items-center justify-center gap-4 py-2 pb-8 border-b border-black/10 dark:border-white/10">
         <img src="/src/logo.png" className="w-14 h-14 rounded-full bg-white p-1.5 shadow-lg" alt="SKCTI Logo" />
         <span className="font-sora font-black text-3xl tracking-tight text-neutral-900 dark:text-white">SKCTI</span>
@@ -43,14 +44,23 @@ export default function SideNav() {
             <button
               key={href}
               onClick={(e) => navigate(href, e)}
-              className={`w-full flex items-center gap-3 px-5 py-4 rounded-full font-geist text-body-md font-semibold transition-all relative ${
+              className={`w-full flex items-center gap-3 px-5 py-4 rounded-full font-geist text-body-md font-semibold transition-all relative z-10 ${
                 active 
-                  ? "bg-white/30 dark:bg-white/20 text-black dark:text-white shadow-md border border-white/20" 
+                  ? "text-black dark:text-white" 
                   : "text-black dark:text-neutral-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-neutral-900 dark:hover:text-white"
               }`}
             >
-              <Icon size={20} className={active ? "text-purple-600 dark:text-purple-400" : ""} />
-              {label}
+              {active && (
+                <motion.span
+                  layoutId="sidebarActiveTab"
+                  className="absolute inset-0 rounded-full bg-white/30 dark:bg-white/20 shadow-md border border-white/20"
+                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                />
+              )}
+              <div className="relative z-10 flex items-center gap-3">
+                <Icon size={20} className={active ? "text-purple-600 dark:text-purple-400" : ""} />
+                {label}
+              </div>
             </button>
           );
         })}

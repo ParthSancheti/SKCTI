@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { onSnapshot, orderBy, query } from "firebase/firestore";
-import { Activity, ArrowUpDown, Coins, Download, FileCheck, Flame, Phone, Search, Users } from "lucide-react";
+import { Activity, ArrowUpDown, Coins, Download, DownloadCloud, FileCheck, Flame, Phone, Search, Users } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import GlassCard from "@/components/GlassCard";
 import { col, snapTo } from "@/lib/db";
@@ -13,7 +13,7 @@ export default function UserMatrix() {
   const [rows, setRows] = useState<UserDoc[] | null>(null);
   const [expandedUserId, setExpandedUserId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [streamFilter, setStreamFilter] = useState<Stream | "All">("All");
+  const [streamFilter, setStreamFilter] = useState<string>("All Streams");
   const [sortConfig, setSortConfig] = useState<"coins" | "streak" | "recent">("coins");
 
   const { configLoaded, isAdmin } = useStore();
@@ -40,7 +40,7 @@ export default function UserMatrix() {
 
   const filteredUsers = useMemo(() => {
     let list = rows ?? [];
-    if (streamFilter !== "All") list = list.filter((user) => user.stream === streamFilter);
+    if (streamFilter !== "All Streams") list = list.filter((user) => user.stream === streamFilter);
     if (searchQuery.trim()) {
       const searchLower = searchQuery.trim().toLowerCase();
       list = list.filter((user) => `${user.name || ""} ${user.email || ""} ${user.phone || ""}`.toLowerCase().includes(searchLower));
@@ -62,58 +62,67 @@ export default function UserMatrix() {
   const today = new Date().toISOString().slice(0, 10);
 
   return (
-    <div className="space-y-8 max-w-container">
+    <div className="w-full max-w-[100vw] overflow-x-hidden px-4 sm:px-6 flex flex-col gap-6 pt-2 pb-12">
       <div>
-        <h1 className="font-sora text-headline-xl">User Matrix</h1>
-        <p className="font-hanken text-body-md text-neutral-500 dark:text-white/60 mt-1">{rows?.length ?? "…"} students · tap a row for full telemetry</p>
+        <h1 className="font-sora text-3xl font-black tracking-tight text-neutral-900 dark:text-white">User Matrix</h1>
+        <p className="mt-1 font-geist text-body-md text-neutral-500 dark:text-white/60">{rows?.length ?? "…"} students · tap a row for full telemetry</p>
       </div>
 
       <div className="flex flex-col xl:flex-row gap-3">
-        <div className="glassy rounded-full flex-1 flex items-center gap-3 px-5 border border-black/10 dark:border-white/10">
-          <Search size={16} className="text-purple-600 dark:text-purple-400 shrink-0" />
-          <input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} autoComplete="off" spellCheck={false} placeholder="Search name, email, phone…" className="outline-none focus:ring-0 bg-transparent w-full text-neutral-900 dark:text-white placeholder:text-neutral-900/50 dark:placeholder:text-white/50 autofill:bg-transparent [&:-webkit-autofill]:bg-transparent [&:-webkit-autofill]:text-neutral-900 dark:[&:-webkit-autofill]:text-white py-3 font-hanken text-body-md" />
+        {/* Search */}
+        <div className="flex-1 min-w-0 relative">
+          <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400 dark:text-white/40 z-10 pointer-events-none" />
+          <input
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search by name, email, or phone…"
+            className="w-full pl-11 pr-4 py-3 glassy rounded-full border border-black/10 dark:border-white/10 font-geist text-body-md text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-white/40 outline-none focus:border-purple-500 dark:focus:border-purple-400 transition-colors"
+          />
         </div>
-        
-        <div className="flex gap-2 shrink-0 overflow-x-auto w-full sm:w-auto pb-2 sm:pb-0 -mb-2 sm:mb-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-          <div className="glassy rounded-full p-1.5 flex border border-black/10 dark:border-white/10 shrink-0">
-            {(["All", "PCM", "PCB"] as const).map((s) => (
-              <button key={s} onClick={() => setStreamFilter(s)} className={`px-4 py-2 rounded-full font-geist text-label-sm ${streamFilter === s ? "bg-black/10 dark:bg-white/20 text-neutral-900 dark:text-white shadow-sm" : "text-neutral-500 dark:text-white/60 hover:text-neutral-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5"}`}>
-                {s}
-              </button>
-            ))}
-          </div>
 
-          <div className="glassy rounded-full flex items-center border border-black/10 dark:border-white/10 relative h-full min-h-[44px] shrink-0">
-             <select 
-                value={sortConfig} 
-                onChange={(e) => setSortConfig(e.target.value as any)}
-                className="appearance-none bg-transparent pl-5 pr-10 py-2 outline-none font-geist text-label-sm text-neutral-900/80 dark:text-white/80 cursor-pointer h-full"
-             >
-                <option value="coins" className="bg-white dark:bg-[#0A0A0A] text-neutral-900 dark:text-white">Top Coins</option>
-                <option value="streak" className="bg-white dark:bg-[#0A0A0A] text-neutral-900 dark:text-white">Top Streak</option>
-                <option value="recent" className="bg-white dark:bg-[#0A0A0A] text-neutral-900 dark:text-white">Recently Active</option>
-             </select>
-             <ArrowUpDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 dark:text-white/40 pointer-events-none" />
+        {/* Tab filters */}
+        <div className="flex p-1 glassy rounded-full relative overflow-x-auto hide-scrollbar shrink-0">
+          {(["All Streams", "PCM", "PCB"] as const).map((t) => (
+            <button key={t} onClick={() => { vibrate(); setStreamFilter(t); }} className="relative px-5 py-2 font-geist text-sm font-bold whitespace-nowrap transition-colors z-10">
+              {streamFilter === t && (
+                <motion.span layoutId="userStreamTab" className="absolute inset-0 rounded-full bg-white dark:bg-white/15 shadow-md border border-black/5 dark:border-white/10 -z-10" />
+              )}
+              <span className={streamFilter === t ? "text-neutral-900 dark:text-white" : "text-neutral-500 dark:text-white/50 hover:text-neutral-900 dark:hover:text-white"}>{t}</span>
+            </button>
+          ))}
+        </div>
+
+        {/* Controls */}
+        <div className="flex items-center gap-2 shrink-0 overflow-x-auto hide-scrollbar">
+          <div className="relative">
+            <select
+              value={sortConfig}
+              onChange={(e) => setSortConfig(e.target.value as any)}
+              className="glassy rounded-full pl-4 pr-10 py-3 font-geist text-sm font-bold text-neutral-900 dark:text-white outline-none border border-black/10 dark:border-white/10 appearance-none bg-transparent cursor-pointer"
+            >
+              <option className="bg-white dark:bg-black" value="coins">Top Coins</option>
+              <option className="bg-white dark:bg-black" value="streak">Top Streak</option>
+              <option className="bg-white dark:bg-black" value="recent">Recent Active</option>
+            </select>
+            <ArrowUpDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-500 dark:text-white/50 pointer-events-none" />
           </div>
 
           <button
             onClick={() => {
               if (!rows || rows.length === 0) return;
-              const headers = ["Name", "Email", "Phone", "Stream", "Grade", "Coins", "Streak", "Last Active"];
+              vibrate();
               const csv = [
-                headers.join(","),
-                ...rows.map((r) => [r.name, r.email, r.phone, r.stream, r.grade, r.coins, r.streak, r.lastActiveDate].map(v => `"${v}"`).join(","))
+                "Name,Email,Phone,Stream,Coins,Streak,Joined",
+                ...filteredUsers.map(u => `"${u.name}","${u.email}","${u.phone || ''}","${u.stream || ''}",${u.coins},${u.streak},"${u.createdAt ? u.createdAt.toDate().toISOString() : ''}"`)
               ].join("\n");
               const blob = new Blob([csv], { type: "text/csv" });
               const url = URL.createObjectURL(blob);
               const a = document.createElement("a");
-              a.href = url;
-              a.download = `users_export_${new Date().toISOString().slice(0, 10)}.csv`;
-              a.click();
+              a.href = url; a.download = `skcti_users_${today}.csv`; a.click();
             }}
-            className="flex h-full min-h-[44px] items-center gap-2 glassy rounded-full px-5 py-2 font-geist text-label-sm font-semibold text-neutral-900 dark:text-white bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 border border-black/10 dark:border-white/10 transition-colors shrink-0"
+            className="flex items-center gap-2 glassy rounded-full px-5 py-3 font-geist text-sm font-bold text-neutral-900 dark:text-white border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/10 transition-colors shadow-sm"
           >
-            <Download size={16} /> Export
+            <DownloadCloud size={16} /> <span className="hidden sm:inline">Export CSV</span>
           </button>
         </div>
       </div>

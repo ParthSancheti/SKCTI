@@ -154,18 +154,18 @@ function MissionControlContent() {
   return (
     <div className="w-full max-w-[100vw] overflow-x-hidden px-4 sm:px-6 flex flex-col gap-6 pt-2 pb-12">
       <div>
-        <h1 className="font-sora text-headline-lg text-neutral-900 dark:text-white">Mission Control</h1>
+        <h1 className="font-sora text-3xl font-black tracking-tight text-neutral-900 dark:text-white">Mission Control</h1>
         <p className="mt-1 font-geist text-body-md text-neutral-500 dark:text-white/60">
           Every switch here writes live to Firestore — students see it instantly.
         </p>
       </div>
 
       {/* Mobile Sticky Tabs */}
-      <div className="xl:hidden flex justify-center w-full sticky top-[72px] z-40 -mt-2 mb-2">
-        <div className="flex p-1 mx-auto w-[calc(100%-1rem)] sm:w-full max-w-sm bg-black/5 dark:bg-white/5 backdrop-blur-md border border-black/10 dark:border-white/10 rounded-full relative z-50 pointer-events-auto">
+      <div className="xl:hidden flex justify-center w-full sticky top-[100px] z-40 -mt-2 mb-2 pointer-events-none">
+        <div className="flex p-1 mx-auto w-[calc(100%-1rem)] sm:w-full max-w-sm glassy rounded-full relative z-50 pointer-events-auto">
           {(["editor", "preview"] as const).map((t) => (
-            <button key={t} onClick={() => { vibrate(10); setMobileTab(t); }} className="relative flex flex-1 items-center justify-center gap-1.5 rounded-full py-2.5 font-geist text-sm font-bold transition-all group">
-              {mobileTab === t && <motion.span layoutId="mobileTabSettings" className="absolute inset-0 rounded-full bg-black/10 dark:bg-white/15 shadow-lg" />}
+            <button key={t} onClick={() => { vibrate(10); setMobileTab(t); }} className="relative flex flex-1 items-center justify-center gap-1.5 rounded-full py-2.5 font-geist text-sm font-bold transition-all group z-10">
+              {mobileTab === t && <motion.span layoutId="mobileTabSettings" className="absolute inset-0 rounded-full bg-white dark:bg-white/15 shadow-md border border-black/5 dark:border-white/10 -z-10" />}
               <span className={`relative z-10 capitalize ${mobileTab === t ? "text-neutral-900 dark:text-white" : "bg-transparent text-neutral-500 dark:text-white/50 group-hover:text-neutral-900 dark:group-hover:text-white"}`}>{t}</span>
             </button>
           ))}
@@ -517,9 +517,9 @@ function MissionControlContent() {
           </div>
 
       {/* Live preview */}
-      <div className={`w-full pt-4 xl:pt-0 ${mobileTab !== "preview" ? "hidden xl:block" : ""}`}>
-        <div className="sticky top-6">
-          <p className="mb-3 text-center font-geist text-label-sm text-neutral-500 dark:text-white/50">Live student preview</p>
+      <div className={`w-full pt-4 xl:pt-0 h-full ${mobileTab !== "preview" ? "hidden xl:block" : ""}`}>
+        <div className="sticky top-[100px]">
+          <p className="mb-3 text-center font-geist text-label-sm text-neutral-500 dark:text-white/50 tracking-widest uppercase font-bold">Live home preview</p>
           <PhonePreviewFrame>
             <div className="space-y-3 p-4">
               <div className="flex items-center justify-between gap-2">

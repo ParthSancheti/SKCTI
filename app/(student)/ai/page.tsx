@@ -9,6 +9,7 @@ import { fbDb } from "@/lib/firebase";
 import { addDoc, onSnapshot, query, orderBy, doc } from "firebase/firestore";
 import { col, createAiChat, updateAiChat } from "@/lib/db";
 import { AiChatMsg, AiChatDoc, ActionItem } from "@/lib/types";
+import GlassCard from "@/components/GlassCard";
 
 export default function AiLab() {
   const { profile, config, todos } = useStore();
@@ -300,7 +301,7 @@ export default function AiLab() {
                     )}
                     <div className={`max-w-[85%] px-5 py-3.5 font-hanken text-body-md whitespace-pre-wrap shadow-sm ${
                       m.role === "user" 
-                        ? "text-black dark:text-white bg-white/20 dark:bg-white/10 backdrop-blur-md rounded-[1.5rem] rounded-tr-sm border border-white/20" 
+                        ? "text-black dark:text-white glassy rounded-[1.5rem] rounded-tr-sm" 
                         : "text-black dark:text-white bg-transparent"
                     }`}>
                       {m.image && (
@@ -309,7 +310,7 @@ export default function AiLab() {
                       {m.text}
                     </div>
                     {m.action_items && m.action_items.length > 0 && (
-                      <div className={`mt-2 ${m.role === "user" ? "mr-2" : "ml-8 lg:ml-10"} max-w-[85%] w-full bg-white/10 dark:bg-black/20 backdrop-blur-md border border-white/10 rounded-2xl p-4 shadow-xl`}>
+                      <GlassCard className={`mt-2 ${m.role === "user" ? "mr-2" : "ml-8 lg:ml-10"} max-w-[85%] w-full rounded-2xl p-4 shadow-xl`}>
                         <p className="font-sora font-semibold text-sm text-black dark:text-white mb-3">Action Plan</p>
                         <div className="space-y-3">
                           {m.action_items.map((task, idx) => (
@@ -335,7 +336,7 @@ export default function AiLab() {
                             </div>
                           ))}
                         </div>
-                      </div>
+                      </GlassCard>
                     )}
                   </motion.div>
                 ))}
@@ -369,7 +370,7 @@ export default function AiLab() {
           </div>
         )}
 
-        <div className="bg-white/10 dark:bg-[#1a1a1f]/80 backdrop-blur-lg rounded-full p-2 pl-4 flex items-center gap-2 border border-white/10 shadow-2xl">
+        <div className="glassy rounded-full p-2 pl-4 flex items-center gap-2 shadow-2xl">
           <input
             type="file"
             accept="image/*"

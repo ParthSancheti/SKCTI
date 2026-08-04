@@ -217,7 +217,7 @@ export default function Builder() {
                 whileTap={{ scale: 0.96 }}
                 disabled={!bTitle.trim() || bStreams.length === 0 || busy}
                 onClick={() => void addBanner()}
-                className={`w-full rounded-full py-3.5 font-geist text-sm font-bold flex items-center justify-center gap-2 transition-all ${bTitle.trim() && bStreams.length ? "bg-purple-600 dark:bg-white text-white dark:text-black shadow-lg shadow-purple-600/20 dark:shadow-white/20 hover:bg-purple-700 dark:hover:bg-white/90" : "bg-black/5 dark:bg-white/5 text-neutral-400 dark:text-white/40"}`}
+                className={`w-full rounded-full py-3.5 font-geist text-sm font-bold flex items-center justify-center gap-2 transition-all ${bTitle.trim() && bStreams.length ? "bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-xl shadow-purple-600/20" : "glassy text-neutral-400 dark:text-white/40 opacity-50"}`}
               >
                 <Plus size={16} /> {busy ? "Publishing…" : "Publish banner"}
               </motion.button>
@@ -311,7 +311,7 @@ export default function Builder() {
                   whileTap={{ scale: 0.96 }}
                   disabled={!nText.trim() || nStreams.length === 0 || nBusy}
                   onClick={() => void addAnnouncement(false)}
-                  className={`w-full rounded-full py-3 font-geist text-sm font-bold flex items-center justify-center transition-all ${nText.trim() && nStreams.length ? "bg-black/10 dark:bg-white/10 text-neutral-900 dark:text-white hover:bg-black/20 dark:hover:bg-white/20" : "bg-black/5 dark:bg-white/5 text-neutral-400 dark:text-white/40"}`}
+                  className={`w-full rounded-full py-3 font-geist text-sm font-bold flex items-center justify-center transition-all ${nText.trim() && nStreams.length ? "glassy hover:bg-black/5 dark:hover:bg-white/10 text-neutral-900 dark:text-white" : "glassy text-neutral-400 dark:text-white/40 opacity-50"}`}
                 >
                   Save Draft
                 </motion.button>
@@ -319,7 +319,7 @@ export default function Builder() {
                   whileTap={{ scale: 0.96 }}
                   disabled={!nText.trim() || nStreams.length === 0 || nBusy}
                   onClick={() => void addAnnouncement(true)}
-                  className={`w-full rounded-full py-3 font-geist text-sm font-bold flex items-center justify-center gap-2 transition-all ${nText.trim() && nStreams.length ? "bg-purple-600 dark:bg-white text-white dark:text-black shadow-lg shadow-purple-600/20 dark:shadow-white/20 hover:bg-purple-700 dark:hover:bg-white/90" : "bg-black/5 dark:bg-white/5 text-neutral-400 dark:text-white/40"}`}
+                  className={`w-full rounded-full py-3 font-geist text-sm font-bold flex items-center justify-center gap-2 transition-all ${nText.trim() && nStreams.length ? "bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-xl shadow-purple-600/20" : "glassy text-neutral-400 dark:text-white/40 opacity-50"}`}
                 >
                   <Megaphone size={16} /> {nBusy ? "Posting…" : "Publish Now"}
                 </motion.button>
@@ -343,7 +343,7 @@ export default function Builder() {
             whileTap={{ scale: 0.96 }}
             disabled={!cHtml.trim() || busy}
             onClick={() => void saveCustomHtml(id)}
-            className={`w-full rounded-full py-3 font-geist text-sm font-bold flex items-center justify-center transition-all ${cHtml.trim() ? "bg-purple-600 dark:bg-white text-white dark:text-black shadow-lg shadow-purple-600/20 dark:shadow-white/20 hover:bg-purple-700 dark:hover:bg-white/90" : "bg-black/5 dark:bg-white/5 text-neutral-400 dark:text-white/40"}`}
+            className={`w-full rounded-full py-3 font-geist text-sm font-bold flex items-center justify-center transition-all ${cHtml.trim() ? "bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-xl shadow-purple-600/20" : "glassy text-neutral-400 dark:text-white/40 opacity-50"}`}
           >
             Save HTML Block
           </motion.button>
@@ -358,18 +358,18 @@ export default function Builder() {
       
       {/* Page Title */}
       <div>
-        <h1 className="font-sora text-headline-xl">App Builder</h1>
-        <p className="font-hanken text-body-md text-on-surface/60 mt-1">Drag and drop the home screen layout.</p>
+        <h1 className="font-sora text-3xl font-black tracking-tight text-neutral-900 dark:text-white">App Builder</h1>
+        <p className="font-hanken text-body-md text-neutral-500 dark:text-white/60 mt-1">Drag and drop the home screen layout.</p>
       </div>
 
       <div className="flex flex-col lg:grid lg:grid-cols-[1fr_400px] gap-8 items-start w-full">
         
         {/* Mobile Sticky Tabs */}
-        <div className="lg:hidden flex justify-center w-full sticky top-16 z-40 mb-6">
-          <div className="flex p-1 mx-auto w-full max-w-sm bg-black/5 dark:bg-white/5 backdrop-blur-md border border-black/10 dark:border-white/10 rounded-full relative z-50 pointer-events-auto">
+        <div className="lg:hidden flex justify-center w-full sticky top-24 z-40 mb-6 pointer-events-none">
+          <div className="flex p-1 mx-auto w-[calc(100%-1rem)] sm:w-full max-w-sm glassy rounded-full relative z-50 pointer-events-auto">
             {(["editor", "preview"] as const).map((t) => (
-              <button key={t} onClick={() => { vibrate(10); setMobileTab(t); }} className="relative flex flex-1 items-center justify-center gap-1.5 rounded-full py-2.5 font-geist text-sm font-bold transition-all group">
-                {mobileTab === t && <motion.span layoutId="mobileTab" className="absolute inset-0 rounded-full bg-black/10 dark:bg-white/15 shadow-lg" />}
+              <button key={t} onClick={() => { vibrate(10); setMobileTab(t); }} className="relative flex flex-1 items-center justify-center gap-1.5 rounded-full py-2.5 font-geist text-sm font-bold transition-all group z-10">
+                {mobileTab === t && <motion.span layoutId="mobileTabBuilder" className="absolute inset-0 rounded-full bg-white dark:bg-white/15 shadow-md border border-black/5 dark:border-white/10 -z-10" />}
                 <span className={`relative z-10 capitalize ${mobileTab === t ? "text-neutral-900 dark:text-white" : "bg-transparent text-neutral-500 dark:text-white/50 group-hover:text-neutral-900 dark:group-hover:text-white"}`}>{t}</span>
               </button>
             ))}
@@ -448,7 +448,7 @@ export default function Builder() {
           </Reorder.Group>
           
           <div className="mt-6 pt-6 border-t border-black/5 dark:border-white/10">
-            <button onClick={addCustomBlock} className="w-full rounded-2xl border-2 border-dashed border-black/10 dark:border-white/10 hover:border-purple-500 dark:hover:border-purple-400 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 transition-all p-4 flex flex-col items-center justify-center gap-2 text-neutral-900 dark:text-white/50 hover:text-purple-600 dark:hover:text-purple-400 cursor-pointer">
+            <button onClick={addCustomBlock} className="w-full rounded-2xl border-2 border-dashed border-black/10 dark:border-white/10 hover:border-purple-500 dark:hover:border-purple-400 glassy hover:bg-black/5 dark:hover:bg-white/10 transition-all p-4 flex flex-col items-center justify-center gap-2 text-neutral-900 dark:text-white/50 hover:text-purple-600 dark:hover:text-purple-400 cursor-pointer">
               <Code size={20} />
               <span className="font-sora font-semibold text-sm">Add Custom HTML Block</span>
             </button>
@@ -470,13 +470,13 @@ export default function Builder() {
               {blocks.filter(id => !hidden.includes(id)).map((id) => (
                 <motion.div key={id} layout transition={{ type: "spring", stiffness: 380, damping: 30 }} className="mb-4 px-6 relative">
                   {id === "notice" && (
-                    <div className="bg-black/5 dark:bg-white/5 backdrop-blur-md flex items-start gap-3 rounded-2xl border-l-4 border-purple-600 dark:border-purple-400 px-4 py-3.5 shadow-sm">
+                    <div className="glassy flex items-start gap-3 rounded-2xl border-l-4 border-purple-600 dark:border-purple-400 px-4 py-3.5 shadow-sm">
                       <Megaphone size={16} className="mt-0.5 shrink-0 text-purple-600 dark:text-purple-400" />
                       <p className="font-hanken text-[12px] leading-snug text-neutral-900 dark:text-white">{addingNew && expandedBlock === "notice" ? (nText || "Type to preview...") : (anns[0]?.text || "Your notice appears here")}</p>
                     </div>
                   )}
                   {id === "focus" && (
-                    <div className="glassy rounded-2xl p-5 bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5">
+                    <div className="glassy rounded-2xl p-5 border border-black/5 dark:border-white/5">
                       <p className="font-sora font-semibold text-sm mb-3 text-neutral-900 dark:text-white">Today&apos;s Focus</p>
                       <div className="flex items-center gap-4">
                         <div className="w-12 h-12 rounded-full border-[3px] border-purple-500/70 shrink-0" />
@@ -501,7 +501,7 @@ export default function Builder() {
                   {id === "subjects" && (
                     <div className="grid grid-cols-2 gap-3">
                       {["Physics", "Chemistry", "Math", "Biology"].map((s) => (
-                        <div key={s} className="glassy rounded-2xl p-4 text-center bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5">
+                        <div key={s} className="glassy rounded-2xl p-4 text-center border border-black/5 dark:border-white/5">
                           <p className="font-geist text-xs font-bold text-neutral-900 dark:text-white">{s}</p>
                         </div>
                       ))}
@@ -510,7 +510,7 @@ export default function Builder() {
                   {isCustom(id) && (
                     <div 
                       className="rounded-2xl overflow-hidden" 
-                      dangerouslySetInnerHTML={{ __html: (expandedBlock === id ? cHtml : config.customBlocks?.[id]) || "<div class='text-center p-4 bg-black/5 dark:bg-white/5 rounded-xl border border-black/10 dark:border-white/10 text-neutral-500 dark:text-white/50 text-sm'>Empty Custom Block</div>" }} 
+                      dangerouslySetInnerHTML={{ __html: (expandedBlock === id ? cHtml : config.customBlocks?.[id]) || "<div class='text-center p-4 glassy rounded-xl border border-black/10 dark:border-white/10 text-neutral-500 dark:text-white/50 text-sm'>Empty Custom Block</div>" }} 
                     />
                   )}
                 </motion.div>

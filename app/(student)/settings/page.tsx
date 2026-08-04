@@ -139,31 +139,42 @@ export default function Settings() {
   return (
     <div className="flex flex-col min-h-[calc(100vh-2rem)] w-full relative pb-20">
       
-      {/* Floating Glass Nav Bar (Island Style) */}
-      <header className="sticky top-4 lg:top-6 mt-4 lg:mt-6 z-50 flex items-center justify-between max-w-5xl w-full bg-white/5 backdrop-blur-md border border-white/10 rounded-full px-4 py-3 shadow-2xl mb-8">
-        {/* Left Group: Back Button & Title strictly centered */}
-        <div className="flex items-center gap-3">
-          <button 
-            onClick={() => { vibrate(10); router.push("/home"); }} 
-            className="w-10 h-10 flex items-center justify-center rounded-full bg-white/10 dark:bg-white/5 backdrop-blur-md border border-white/20 text-black dark:text-white shadow-lg shrink-0 hover:bg-white/20 transition-colors"
-          >
-            <ChevronLeft size={20} />
-          </button>
-          <h1 className="text-xl md:text-2xl font-bold leading-none m-0 p-0 text-neutral-900 dark:text-white font-sora tracking-tight">Settings</h1>
-        </div>
+      {/* Mobile Floating Back Button */}
+      <button 
+        onClick={() => { vibrate(10); router.push("/home"); }} 
+        className="lg:hidden fixed top-[env(safe-area-inset-top,1rem)] mt-2 left-4 z-50 w-10 h-10 flex items-center justify-center rounded-full glassy text-black dark:text-white pointer-events-auto hover:brightness-110 transition-colors"
+      >
+        <ChevronLeft size={20} />
+      </button>
 
-        {/* Right Group: Admin Button */}
-        {isAdmin && (
-          <div className="flex items-center">
+      <div className="w-full max-w-5xl flex flex-col h-full pt-[calc(env(safe-area-inset-top,1rem)+4rem)] lg:pt-8 mb-8">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div className="flex items-center gap-4">
             <button 
-              onClick={() => { vibrate(10); router.push("/admin"); }}
-              className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-black dark:text-white border border-black/10 dark:border-white/20 rounded-full px-5 py-2 text-sm font-medium backdrop-blur-md transition-all shrink-0"
+              onClick={() => { vibrate(10); router.push("/home"); }} 
+              className="hidden lg:flex w-10 h-10 items-center justify-center rounded-full glassy text-black dark:text-white pointer-events-auto shrink-0 hover:brightness-110 transition-colors"
             >
-              🚀 Admin
+              <ChevronLeft size={20} />
             </button>
+            <div>
+              <p className="font-geist text-sm font-bold uppercase tracking-widest text-purple-600 dark:text-purple-400 mb-1">
+                Preferences
+              </p>
+              <h1 className="text-4xl md:text-5xl font-black text-neutral-900 dark:text-white tracking-tight">Settings</h1>
+            </div>
           </div>
-        )}
-      </header>
+          {isAdmin && (
+            <div className="flex flex-col sm:flex-row items-center gap-3">
+              <button 
+                onClick={() => { vibrate(10); router.push("/admin"); }}
+                className="flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-full font-geist font-bold shadow-lg shadow-purple-500/20 hover:shadow-xl transition-all w-full sm:w-max shrink-0"
+              >
+                🚀 Admin OS
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* God Mode Toast Overlay */}
       <AnimatePresence>
@@ -189,7 +200,7 @@ export default function Settings() {
         {/* Profile Card */}
         <motion.div 
           layoutId="profile-card"
-          className="bg-white/5 dark:bg-white/5 backdrop-blur-md border border-white/10 rounded-[24px] p-5 flex flex-col md:col-span-2 relative overflow-hidden"
+          className="glassy rounded-[24px] p-5 flex flex-col md:col-span-2 relative overflow-hidden"
         >
           <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/10 blur-[80px] rounded-full pointer-events-none" />
           
@@ -241,19 +252,19 @@ export default function Settings() {
 
         {/* Tracking Stats Row */}
         <div className="md:col-span-2 grid grid-cols-3 gap-4">
-          <div className="bg-white/5 dark:bg-white/5 backdrop-blur-md border border-white/10 rounded-[20px] p-4 flex flex-col items-center justify-center text-center shadow-sm">
+          <div className="glassy rounded-[20px] p-4 flex flex-col items-center justify-center text-center shadow-sm">
             <Flame size={20} className="text-orange-500 mb-2" />
             <p className="font-sora font-bold text-lg md:text-xl text-black dark:text-white">
               {config.features.streak ? `${profile.streak}d` : "—"}
             </p>
             <p className="font-geist text-[10px] uppercase font-bold tracking-widest text-neutral-500 dark:text-neutral-400 mt-1">Streak</p>
           </div>
-          <div className="bg-white/5 dark:bg-white/5 backdrop-blur-md border border-white/10 rounded-[20px] p-4 flex flex-col items-center justify-center text-center shadow-sm">
+          <div className="glassy rounded-[20px] p-4 flex flex-col items-center justify-center text-center shadow-sm">
             <Download size={20} className="text-blue-500 mb-2" />
             <p className="font-sora font-bold text-lg md:text-xl text-black dark:text-white">{profile.downloads.length}</p>
             <p className="font-geist text-[10px] uppercase font-bold tracking-widest text-neutral-500 dark:text-neutral-400 mt-1">Saved PDFs</p>
           </div>
-          <div className="bg-white/5 dark:bg-white/5 backdrop-blur-md border border-white/10 rounded-[20px] p-4 flex flex-col items-center justify-center text-center shadow-sm">
+          <div className="glassy rounded-[20px] p-4 flex flex-col items-center justify-center text-center shadow-sm">
             <Shield size={20} className="text-purple-500 mb-2" />
             <p className="font-sora font-bold text-lg md:text-xl text-black dark:text-white">{profile.attempted.length}</p>
             <p className="font-geist text-[10px] uppercase font-bold tracking-widest text-neutral-500 dark:text-neutral-400 mt-1">Tests Done</p>
@@ -261,7 +272,7 @@ export default function Settings() {
         </div>
 
         {/* Theme Toggle Card */}
-        <div className="bg-white/5 dark:bg-white/5 backdrop-blur-md border border-white/10 rounded-[24px] p-5 flex flex-col justify-center">
+        <div className="glassy rounded-[24px] p-5 flex flex-col justify-center">
           <div className="flex items-center justify-between mb-3">
             {isDark ? <Moon size={22} className="text-purple-400" /> : <Sun size={22} className="text-yellow-500" />}
             <motion.button
@@ -279,7 +290,7 @@ export default function Settings() {
         </div>
 
         {/* Class / Standard Card */}
-        <div className="bg-white/5 dark:bg-white/5 backdrop-blur-md border border-white/10 rounded-[24px] p-5 flex flex-col justify-center">
+        <div className="glassy rounded-[24px] p-5 flex flex-col justify-center">
           <div className="flex items-center gap-3 mb-3">
             <GraduationCap size={22} className="text-blue-500" />
           </div>
@@ -294,7 +305,7 @@ export default function Settings() {
         </div>
 
         {/* Stream Card */}
-        <div className="bg-white/5 dark:bg-white/5 backdrop-blur-md border border-white/10 rounded-[24px] p-5 flex flex-col md:col-span-2">
+        <div className="glassy rounded-[24px] p-5 flex flex-col md:col-span-2">
           <h3 className="font-sora font-semibold text-black dark:text-white mb-1">Stream</h3>
           <p className="font-geist text-xs text-red-500 dark:text-red-400 font-bold mb-4">Switching wipes today's AI plan.</p>
           
@@ -327,7 +338,7 @@ export default function Settings() {
         </div>
 
         {/* AI Preferences */}
-        <div className="bg-white/5 dark:bg-white/5 backdrop-blur-md border border-white/10 rounded-[24px] p-5 flex flex-col justify-center">
+        <div className="glassy rounded-[24px] p-5 flex flex-col justify-center">
           <div className="flex items-center gap-3 mb-4">
             <Cpu size={22} className="text-purple-500" />
             <h3 className="font-sora font-semibold text-black dark:text-white">AI Preferences</h3>
@@ -343,7 +354,7 @@ export default function Settings() {
         </div>
 
         {/* Notifications — now persisted, not local useState */}
-        <div className="bg-white/5 dark:bg-white/5 backdrop-blur-md border border-white/10 rounded-[24px] p-5 flex flex-col justify-center">
+        <div className="glassy rounded-[24px] p-5 flex flex-col justify-center">
           <div className="flex items-center gap-3 mb-4">
             <Bell size={22} className="text-orange-500" />
             <h3 className="font-sora font-semibold text-black dark:text-white">Notifications</h3>
@@ -376,7 +387,7 @@ export default function Settings() {
         {/* Saved chapters — the "Clear Downloads" button had no onClick, and
             nothing in the app ever cached PDF bytes, so "stored locally" was
             describing something that wasn't happening. */}
-        <div className="bg-white/5 dark:bg-white/5 backdrop-blur-md border border-white/10 rounded-[24px] p-5 flex flex-col justify-between">
+        <div className="glassy rounded-[24px] p-5 flex flex-col justify-between">
           <div>
             <div className="flex items-center gap-3 mb-2">
               <FileText size={22} className="text-blue-400" />
@@ -424,7 +435,7 @@ export default function Settings() {
 
         {/* Study Analytics — "45h" and "120" were hardcoded literals, so every
             student on the platform saw the same fake stats. Real values now. */}
-        <div className="bg-white/5 dark:bg-white/5 backdrop-blur-md border border-white/10 rounded-[24px] p-5 flex flex-col justify-between">
+        <div className="glassy rounded-[24px] p-5 flex flex-col justify-between">
           <div>
             <div className="flex items-center gap-3 mb-2">
               <BarChart3 size={22} className="text-green-500" />
@@ -455,7 +466,7 @@ export default function Settings() {
         {/* Appearance & language — the reduced-effects switch drives
             html[data-perf="low"] in globals.css, which drops backdrop-filter on
             phones that can't afford a dozen simultaneous blur layers. */}
-        <div className="bg-white/5 dark:bg-white/5 backdrop-blur-md border border-white/10 rounded-[24px] p-5 flex flex-col justify-center md:col-span-2">
+        <div className="glassy rounded-[24px] p-5 flex flex-col justify-center md:col-span-2">
           <div className="flex items-center gap-3 mb-4">
             <Gauge size={22} className="text-cyan-500" />
             <h3 className="font-sora font-semibold text-black dark:text-white">Performance &amp; Language</h3>
