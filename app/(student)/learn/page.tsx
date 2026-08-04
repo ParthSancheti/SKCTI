@@ -9,6 +9,7 @@ import {
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useMemo, useState } from "react";
 import ChapterCard from "@/components/ChapterCard";
+import GlassCard from "@/components/GlassCard";
 import { ChapterSkeleton } from "@/components/SkeletonLoader";
 import { col, snapTo } from "@/lib/db";
 import { useStore, vibrate } from "@/lib/store";
@@ -314,7 +315,7 @@ function LearnInner() {
 
 function VideoTile({ v, onOpen }: { v: VideoDoc; onOpen: () => void }) {
   return (
-    <motion.button whileTap={{ scale: 0.96 }} onClick={() => { vibrate(10); onOpen(); }} className="bg-white/70 backdrop-blur-xl dark:backdrop-blur-none dark:bg-[#1a1c23] rounded-[1.25rem] shadow-lg border border-black/10 dark:border-white/5 overflow-hidden transition-all hover:brightness-105 dark:hover:brightness-110 text-left flex flex-col">
+    <motion.button whileTap={{ scale: 0.96 }} onClick={() => { vibrate(10); onOpen(); }} className="glassy rounded-[1.25rem] shadow-lg border border-black/10 dark:border-white/5 overflow-hidden transition-all hover:brightness-105 dark:hover:brightness-110 text-left flex flex-col">
       <div className="relative aspect-video w-full bg-black/10 dark:bg-black/30">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={youtubeThumb(v.youtubeId)} alt={v.title} className="h-full w-full object-cover" />

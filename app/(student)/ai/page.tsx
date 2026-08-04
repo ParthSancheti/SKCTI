@@ -189,12 +189,12 @@ export default function AiLab() {
           >
             <div className="flex items-center justify-between mb-8">
               <span className="font-sora font-semibold text-xl text-black dark:text-white">Chat History</span>
-              <button onClick={() => { vibrate(10); setIsMobileHistoryOpen(false); }} className="w-10 h-10 flex items-center justify-center rounded-full bg-white/10 dark:bg-white/5 border border-white/10 text-black dark:text-white">
+              <button onClick={() => { vibrate(10); setIsMobileHistoryOpen(false); }} className="w-10 h-10 flex items-center justify-center rounded-full glassy border border-white/10 text-black dark:text-white">
                 <X size={20} />
               </button>
             </div>
             
-            <button onClick={startNewChat} className="flex items-center gap-3 bg-white/10 dark:bg-white/5 hover:bg-white/20 dark:hover:bg-white/10 transition-colors rounded-full px-5 py-3.5 mb-8 w-max">
+            <button onClick={startNewChat} className="flex items-center gap-3 glassy hover:bg-white/20 dark:hover:bg-white/10 transition-colors rounded-full px-5 py-3.5 mb-8 w-max">
               <Plus size={18} className="text-black dark:text-white" />
               <span className="font-geist font-medium text-sm text-black dark:text-white">New chat</span>
             </button>
@@ -236,7 +236,7 @@ export default function AiLab() {
               className="flex flex-col rounded-[2.5rem] bg-white/5 dark:bg-white/5 backdrop-blur-lg border border-white/10 p-4 h-[calc(100vh-3rem)] mt-0 shadow-2xl relative z-10 overflow-hidden"
             >
               <div className="flex items-center justify-between mb-8 w-max min-w-full">
-                <button onClick={startNewChat} className="flex items-center gap-3 bg-white/10 dark:bg-white/5 hover:bg-white/20 dark:hover:bg-white/10 transition-colors rounded-full px-5 py-3.5">
+                <button onClick={startNewChat} className="flex items-center gap-3 glassy hover:bg-white/20 dark:hover:bg-white/10 transition-colors rounded-full px-5 py-3.5">
                   <Plus size={18} className="text-black dark:text-white" />
                   <span className="font-geist font-medium text-sm text-black dark:text-white">New chat</span>
                 </button>
@@ -321,7 +321,7 @@ export default function AiLab() {
                               <div className="flex-1">
                                 <p className="font-hanken text-sm text-black dark:text-white leading-tight">{task.task_name}</p>
                                 <div className="flex items-center gap-2 mt-2">
-                                  <span className="font-geist text-[10px] uppercase font-bold tracking-wider px-2 py-1 rounded-full bg-white/10 dark:bg-white/5 text-black dark:text-white">
+                                  <span className="font-geist text-[10px] uppercase font-bold tracking-wider px-2 py-1 rounded-full glassy text-black dark:text-white">
                                     {task.duration_minutes} mins
                                   </span>
                                   <span className={`font-geist text-[10px] uppercase font-bold tracking-wider px-2 py-1 rounded-full ${

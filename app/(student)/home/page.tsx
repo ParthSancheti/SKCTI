@@ -146,7 +146,7 @@ export default function Home() {
         <div>
           <h2 className="font-sora text-headline-lg mb-4 text-neutral-900 dark:text-white">Your subjects</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {modules.filter(m => m.streams.includes(profile.stream)).map((m) => (
+            {(modules.filter(m => m.streams.includes(profile.stream)).length > 0 ? modules.filter(m => m.streams.includes(profile.stream)) : modules).map((m) => (
               <SubjectCard key={m.id} subject={m.name} imageUrl={m.imageUrl} count={chapters.filter((c) => c.subject === m.name).length} />
             ))}
           </div>

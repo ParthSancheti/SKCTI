@@ -171,7 +171,7 @@ export default function TodoApp() {
                     <div className="flex-1 min-w-0">
                       <p className="font-hanken text-base text-black dark:text-white font-medium truncate">{task.title}</p>
                       <div className="flex flex-wrap gap-2 mt-2">
-                        <span className="font-geist text-[10px] uppercase font-bold px-2.5 py-1 rounded-full bg-white/50 dark:bg-white/10 text-black dark:text-white border border-black/5 dark:border-white/5">
+                        <span className="font-geist text-[10px] uppercase font-bold px-2.5 py-1 rounded-full glassy text-black dark:text-white border border-black/5 dark:border-white/5">
                           {task.category || "General"}
                         </span>
                         <span className={`font-geist text-[10px] uppercase font-bold px-2.5 py-1 rounded-full border ${
@@ -182,7 +182,7 @@ export default function TodoApp() {
                           {task.urgency || "Medium"}
                         </span>
                         {task.dueDate && (
-                          <span className="font-geist text-[10px] uppercase font-bold px-2.5 py-1 rounded-full bg-black/5 dark:bg-white/5 text-black/60 dark:text-white/60 flex items-center gap-1 border border-black/5 dark:border-white/5">
+                          <span className="font-geist text-[10px] uppercase font-bold px-2.5 py-1 rounded-full glassy text-black/60 dark:text-white/60 flex items-center gap-1 border border-black/5 dark:border-white/5">
                             <Calendar size={10} /> {new Date(task.dueDate).toLocaleDateString()}
                           </span>
                         )}
@@ -201,7 +201,7 @@ export default function TodoApp() {
               ))}
             </AnimatePresence>
             {pendingTodos.length === 0 && (
-              <div className="text-center py-12 px-4 border border-dashed border-black/10 dark:border-white/10 rounded-3xl bg-black/5 dark:bg-white/5">
+              <div className="text-center py-12 px-4 border border-dashed border-black/10 dark:border-white/10 rounded-3xl glassy">
                 <p className="font-hanken text-black/40 dark:text-white/40">You're all caught up! Enjoy your free time or ask the AI for a new plan.</p>
               </div>
             )}
@@ -257,7 +257,7 @@ export default function TodoApp() {
                 <h2 className="font-sora text-2xl font-bold text-black dark:text-white">
                   {isEditing ? "Edit Task" : "New Task"}
                 </h2>
-                <button onClick={resetForm} className="w-10 h-10 rounded-full bg-black/5 dark:bg-white/5 flex items-center justify-center text-black dark:text-white hover:bg-black/10 dark:hover:bg-white/10 transition-colors">
+                <button onClick={resetForm} className="w-10 h-10 rounded-full glassy flex items-center justify-center text-black dark:text-white hover:bg-black/10 dark:hover:bg-white/10 transition-colors">
                   <X size={20} />
                 </button>
               </div>
@@ -269,7 +269,7 @@ export default function TodoApp() {
                     value={title}
                     onChange={e => setTitle(e.target.value)}
                     placeholder="e.g. Read Physics Chapter 4"
-                    className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 font-hanken text-black dark:text-white outline-none focus:border-purple-500 transition-colors"
+                    className="w-full glassy rounded-xl px-4 py-3 font-hanken text-black dark:text-white outline-none focus:border-purple-500 transition-colors"
                   />
                 </div>
 
@@ -279,7 +279,7 @@ export default function TodoApp() {
                     <select 
                       value={category}
                       onChange={e => setCategory(e.target.value)}
-                      className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 font-hanken text-black dark:text-white outline-none focus:border-purple-500 transition-colors appearance-none"
+                      className="w-full glassy rounded-xl px-4 py-3 font-hanken text-black dark:text-white outline-none focus:border-purple-500 transition-colors appearance-none"
                     >
                       {CATEGORIES.filter(c => c !== "All").map(c => <option key={c} value={c}>{c}</option>)}
                     </select>
@@ -289,7 +289,7 @@ export default function TodoApp() {
                     <select 
                       value={urgency}
                       onChange={e => setUrgency(e.target.value as any)}
-                      className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 font-hanken text-black dark:text-white outline-none focus:border-purple-500 transition-colors appearance-none"
+                      className="w-full glassy rounded-xl px-4 py-3 font-hanken text-black dark:text-white outline-none focus:border-purple-500 transition-colors appearance-none"
                     >
                       {URGENCIES.map(u => <option key={u} value={u}>{u}</option>)}
                     </select>
@@ -302,7 +302,7 @@ export default function TodoApp() {
                     type="date"
                     value={dueDate}
                     onChange={e => setDueDate(e.target.value)}
-                    className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 font-hanken text-black dark:text-white outline-none focus:border-purple-500 transition-colors"
+                    className="w-full glassy rounded-xl px-4 py-3 font-hanken text-black dark:text-white outline-none focus:border-purple-500 transition-colors"
                   />
                 </div>
               </div>

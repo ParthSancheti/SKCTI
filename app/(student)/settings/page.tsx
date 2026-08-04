@@ -100,7 +100,7 @@ export default function Settings() {
     >
       <div>
         <label className="font-geist text-[10px] uppercase font-bold text-neutral-400 dark:text-neutral-500 mb-1 block">Phone Number</label>
-        <div className="flex items-center gap-3 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-2xl p-3">
+        <div className="flex items-center gap-3 glassy rounded-2xl p-3">
           <Phone size={16} className="text-neutral-500" />
           <span className="font-geist font-bold text-sm">+91</span>
           <input
@@ -116,7 +116,7 @@ export default function Settings() {
       </div>
       <div>
         <label className="font-geist text-[10px] uppercase font-bold text-neutral-400 dark:text-neutral-500 mb-1 block">Email Address</label>
-        <div className="flex items-center gap-3 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-2xl p-3">
+        <div className="flex items-center gap-3 glassy rounded-2xl p-3">
           <Mail size={16} className="text-neutral-500" />
           <input
             type="email"
@@ -309,7 +309,7 @@ export default function Settings() {
           <h3 className="font-sora font-semibold text-black dark:text-white mb-1">Stream</h3>
           <p className="font-geist text-xs text-red-500 dark:text-red-400 font-bold mb-4">Switching wipes today's AI plan.</p>
           
-          <div className="bg-black/5 dark:bg-white/5 rounded-full p-1.5 flex border border-black/5 dark:border-white/5">
+          <div className="glassy rounded-full p-1.5 flex">
             {(["PCM", "PCB"] as Stream[]).map((s) => (
               <button
                 key={s}
@@ -450,7 +450,7 @@ export default function Settings() {
               { value: tasksDone, label: "Tasks Done" },
               { value: profile.attempted.length, label: "Tests Taken" },
             ].map(({ value, label }) => (
-              <div key={label} className="flex flex-col items-center justify-center rounded-input border border-black/10 bg-black/5 p-3 text-center dark:border-white/10 dark:bg-white/5">
+              <div key={label} className="flex flex-col items-center justify-center rounded-input glassy p-3 text-center">
                 <p className="font-sora text-sm font-bold tabular-nums text-black dark:text-white">{value}</p>
                 <p className="font-geist mt-1 text-[9px] font-bold uppercase tracking-widest text-neutral-500 dark:text-neutral-400">{label}</p>
               </div>
@@ -494,7 +494,7 @@ export default function Settings() {
           <label className="font-geist text-[10px] uppercase font-bold text-neutral-400 dark:text-neutral-500 mb-2 block">
             Language for notices &amp; AI replies
           </label>
-          <div className="flex rounded-full border border-black/5 bg-black/5 p-1.5 dark:border-white/5 dark:bg-white/5">
+          <div className="flex rounded-full glassy p-1.5">
             {([
               { code: "en" as const, label: "English" },
               { code: "hi" as const, label: "हिंदी" },

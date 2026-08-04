@@ -161,7 +161,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         )}
       </AnimatePresence>
 
-      <main className={`flex-1 min-w-0 overflow-y-auto relative lg:ml-[360px] lg:pr-8 p-4 pt-[calc(env(safe-area-inset-top,1rem)+6rem)] lg:pt-8 lg:py-8`}>{children}</main>
+      <main className={`flex-1 min-w-0 overflow-y-auto relative lg:ml-[360px] lg:pr-8 px-6 pb-4 lg:px-8 pt-[calc(env(safe-area-inset-top,1rem)+6rem)] lg:pt-8 lg:py-8`}>{children}</main>
 
       {/* Omni-Command Palette */}
       <AnimatePresence>

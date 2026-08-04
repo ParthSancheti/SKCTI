@@ -222,11 +222,11 @@ export default function Landing() {
       <div className="flex md:hidden h-[100dvh] pt-[env(safe-area-inset-top,0px)] pb-[env(safe-area-inset-bottom,0px)] flex-col relative overflow-hidden z-50">
         
         {/* Top Header */}
-        <div className="absolute top-0 inset-x-0 w-full flex items-center gap-3 px-6 pt-[env(safe-area-inset-top,2rem)] z-50">
+        <div className="absolute top-0 inset-x-0 w-full flex items-center gap-3 px-6 pt-[calc(env(safe-area-inset-top,2rem)+8px)] z-50">
           <div className="bg-white rounded-full p-2 shadow-md shrink-0">
             <img src="/src/logo.webp" className="w-8 h-8 rounded-full" alt="SKCTI Logo" />
           </div>
-          <h1 className="font-sora text-3xl font-black text-white drop-shadow-md tracking-tight">SKCTI</h1>
+          <h1 className="font-sora text-3xl font-black text-neutral-900 dark:text-white dark:drop-shadow-md tracking-tight">SKCTI</h1>
         </div>
         
         {/* Feature Swipe Carousel */}
@@ -240,7 +240,7 @@ export default function Landing() {
         >
             
             {/* Card 1 */}
-            <div className="min-w-full relative overflow-hidden flex flex-col justify-end p-8 pb-32">
+            <div className="min-w-full relative overflow-hidden flex flex-col justify-end p-8 pb-40">
               <img src="/src/welcome/image1.webp" className="absolute inset-0 w-full h-full object-cover dark:hidden" alt="Onboarding" width={1000} height={1000} decoding="async" fetchPriority="high" />
               <img src="/src/welcome/image1_dark.webp" className="absolute inset-0 w-full h-full object-cover hidden dark:block" alt="Onboarding" width={1000} height={1000} decoding="async" fetchPriority="high" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
@@ -251,7 +251,7 @@ export default function Landing() {
             </div>
             
             {/* Card 2 */}
-            <div className="min-w-full relative overflow-hidden flex flex-col justify-end p-8 pb-32">
+            <div className="min-w-full relative overflow-hidden flex flex-col justify-end p-8 pb-40">
               <img src="/src/welcome/image2.webp" width={1000} height={1000} className="absolute inset-0 w-full h-full object-cover dark:hidden" loading="lazy" decoding="async" alt="Structured Learning" />
               <img src="/src/welcome/image2_dark.webp" width={1000} height={1000} className="absolute inset-0 w-full h-full object-cover hidden dark:block" loading="lazy" decoding="async" alt="Structured Learning" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
@@ -262,7 +262,7 @@ export default function Landing() {
             </div>
             
             {/* Card 3 */}
-            <div className="min-w-full relative overflow-hidden flex flex-col justify-end p-8 pb-32">
+            <div className="min-w-full relative overflow-hidden flex flex-col justify-end p-8 pb-40">
               <img src="/src/welcome/image3.webp" width={1000} height={1000} className="absolute inset-0 w-full h-full object-cover dark:hidden" loading="lazy" decoding="async" alt="AI Doubt Solving" />
               <img src="/src/welcome/image3_dark.webp" width={1000} height={1000} className="absolute inset-0 w-full h-full object-cover hidden dark:block" loading="lazy" decoding="async" alt="AI Doubt Solving" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
@@ -275,7 +275,7 @@ export default function Landing() {
         </motion.div>
 
         {/* Pagination Dots (Hardware Accelerated) */}
-        <div className="absolute bottom-[calc(env(safe-area-inset-bottom,0px)+80px)] flex gap-2 justify-center w-full z-10">
+        <div className="absolute bottom-[calc(env(safe-area-inset-bottom,0px)+100px)] flex gap-2 justify-center w-full z-10">
           {[0, 1, 2].map((i) => (
             <div key={i} className="relative w-6 h-2 flex justify-center cursor-pointer" onClick={() => setActiveSlide(i)}>
               <div className="absolute w-2 h-2 bg-white/50 hover:bg-white/70 rounded-full" />
@@ -292,7 +292,7 @@ export default function Landing() {
 
         {/* Absolute Bottom Action Bar */}
         <div className="absolute bottom-[env(safe-area-inset-bottom,1.5rem)] w-full px-6 z-10">
-          <div className="flex justify-between items-center bg-white/5 dark:bg-white/5 backdrop-blur-lg border border-white/10 rounded-full py-4 pr-4 pl-8">
+          <div className="flex justify-between items-center bg-transparent dark:bg-white/5 dark:backdrop-blur-lg dark:border dark:border-white/10 rounded-full py-4 pr-4 pl-8">
             <button 
               onClick={() => router.push('/home')} 
               className="text-sm font-bold text-white/70 hover:text-white transition-colors"
@@ -301,7 +301,6 @@ export default function Landing() {
             </button>
             
             <motion.button 
-              layoutId="auth-container"
               onClick={() => setShowLogin(true)}
               className="flex items-center gap-2 rounded-full px-7 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold hover:scale-[1.02] shadow-xl active:scale-[0.97] transition-transform"
             >
@@ -327,7 +326,7 @@ export default function Landing() {
             </div>
             {/* Start CTA */}
             <div className="flex gap-4">
-              <motion.button layoutId="auth-container" onClick={() => setShowLogin(true)} className="rounded-full bg-gradient-to-r from-purple-600 to-blue-600 px-6 py-2.5 font-geist text-label-sm font-bold text-white hover:scale-[1.02] hover:shadow-xl active:scale-[0.97] transition-all">
+              <motion.button onClick={() => setShowLogin(true)} className="rounded-full bg-gradient-to-r from-purple-600 to-blue-600 px-6 py-2.5 font-geist text-label-sm font-bold text-white hover:scale-[1.02] hover:shadow-xl active:scale-[0.97] transition-all">
                 Open App
               </motion.button>
             </div>
@@ -554,21 +553,20 @@ export default function Landing() {
       <AnimatePresence>
         {showLogin && (
           <motion.div 
-            layoutId="auth-container"
             className="fixed inset-0 z-[100] flex flex-col md:flex-row bg-white/10 dark:bg-white/5 backdrop-blur-lg border-white/20"
           >
             {/* Top Header */}
-            <div className="absolute top-[env(safe-area-inset-top,1.5rem)] left-6 flex items-center gap-3 z-50">
+            <div className="absolute top-[calc(env(safe-area-inset-top,1.5rem)+1rem)] left-6 flex items-center gap-3 z-50">
               <div className="bg-white rounded-full p-2 shadow-sm shrink-0">
                 <img src="/src/logo.webp" className="w-10 h-10 rounded-full" alt="SKCTI Logo" />
               </div>
-              <span className="font-sora font-black text-2xl tracking-tight text-white drop-shadow-md">SKCTI</span>
+              <span className="font-sora font-black text-2xl tracking-tight text-neutral-900 dark:text-white dark:drop-shadow-md">SKCTI</span>
             </div>
             
             {/* Close Button */}
             <button 
               onClick={() => setShowLogin(false)}
-              className="absolute top-6 right-6 z-50 p-2 rounded-full bg-black/5 dark:bg-white/10 backdrop-blur-md hover:scale-110 transition-transform"
+              className="absolute top-[calc(env(safe-area-inset-top,1.5rem)+1rem)] right-6 z-50 p-2 rounded-full bg-black/5 dark:bg-white/10 backdrop-blur-md hover:scale-110 transition-transform"
             >
               <X size={24} className="text-neutral-900 dark:text-white" />
             </button>

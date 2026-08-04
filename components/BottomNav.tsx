@@ -97,7 +97,7 @@ function BottomNavInner() {
                   initial={{ opacity: 0, width: 0 }}
                   animate={{ opacity: 1, width: "auto" }}
                   transition={{ duration: 0.18, delay: 0.06 }}
-                  className="font-geist text-sm font-semibold whitespace-nowrap overflow-hidden"
+                  className="font-sora text-sm font-bold whitespace-nowrap overflow-hidden"
                 >
                   {label}
                 </motion.span>
