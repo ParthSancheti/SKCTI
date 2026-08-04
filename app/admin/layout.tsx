@@ -57,17 +57,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const sidebarInner = (
     <>
-      <div className="flex items-center justify-center gap-4 py-2 pb-8 border-b border-black/10 dark:border-white/10 mb-6">
+      <div className="flex items-center justify-center gap-4 pb-4 border-b border-black/10 dark:border-white/10 mb-3 shrink-0">
         <img src="/src/logo.webp" className="w-14 h-14 rounded-full bg-white p-1.5 shadow-lg" alt="SKCTI Logo" />
         <span className="font-sora font-black text-3xl tracking-tight text-neutral-900 dark:text-white">SKCTI OS</span>
       </div>
+      
+      <div className="flex-1 overflow-y-auto hide-scrollbar space-y-1 min-h-0 px-2 -mx-2">
       {LINKS.map(({ href, label, Icon, exact }) => {
         const active = exact ? pathname === href : pathname.startsWith(href);
         return (
           <Link key={href} href={href} onClick={() => { vibrate(10); setMobileMenuOpen(false); }}>
             <motion.div
               whileTap={{ scale: 0.95 }}
-              className={`flex items-center gap-3 px-5 py-4 rounded-full font-geist text-body-md font-semibold transition-all relative ${
+              className={`flex items-center gap-3 px-5 py-2.5 rounded-full font-geist text-sm font-semibold transition-all relative ${
                 active
                   ? "bg-black/10 dark:bg-white/20 text-neutral-900 dark:text-white shadow-md border border-black/10 dark:border-white/20"
                   : "text-neutral-600 dark:text-neutral-400 hover:bg-black/5 dark:hover:bg-white/5 hover:text-neutral-900 dark:hover:text-white"
@@ -79,8 +81,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </Link>
         );
       })}
+      </div>
 
-      <div className="pt-6 border-t border-black/10 dark:border-white/10 mt-auto">
+      <div className="pt-5 border-t border-black/10 dark:border-white/10 mt-auto shrink-0">
         <Link href="/home" className="block" onClick={() => { vibrate(10); setMobileMenuOpen(false); }}>
           <div className="w-full flex items-center gap-3 p-3 pl-4 bg-black/5 dark:bg-white/5 backdrop-blur-md border border-black/10 dark:border-white/10 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-all shadow-md cursor-pointer group">
             {fbUser?.photoURL ? (
@@ -124,7 +127,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </motion.button>
         </header>
 
-        <aside className="hidden lg:flex flex-col fixed left-6 top-6 bottom-6 w-[280px] rounded-[2.5rem] glassy shadow-2xl p-6 z-50">
+        <aside className="hidden lg:flex flex-col fixed left-6 top-6 bottom-6 w-[280px] rounded-[2.5rem] glassy shadow-2xl px-6 py-8 z-50">
           {sidebarInner}
         </aside>
 
@@ -143,7 +146,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               animate={{ opacity: 1, scale: 1, x: 0 }}
               exit={{ opacity: 0, scale: 0.95, x: -20 }}
               transition={{ type: "spring", stiffness: 400, damping: 30 }}
-              className="lg:hidden flex flex-col fixed left-4 top-4 bottom-4 w-[280px] rounded-[2.5rem] glassy shadow-2xl p-6 z-[60]"
+              className="lg:hidden flex flex-col fixed left-4 top-4 bottom-4 w-[280px] rounded-[2.5rem] glassy shadow-2xl px-6 py-8 z-[60]"
             >
               {sidebarInner}
             </motion.aside>

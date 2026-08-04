@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Book, Plus, Trash2, X, Save } from "lucide-react";
+import { Book, Plus, Trash2, X, Save, UploadCloud } from "lucide-react";
 import GlassCard from "@/components/GlassCard";
 import { createModule, deleteModule, logAudit, updateModule } from "@/lib/db";
+import { fbStorage } from "@/lib/firebase";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useStore, vibrate } from "@/lib/store";
 import type { ModuleDoc, Stream } from "@/lib/types";
 
@@ -19,6 +21,22 @@ export default function ModulesHub() {
   const [imageUrl, setImageUrl] = useState("");
   const [streams, setStreams] = useState<Stream[]>(["PCM", "PCB"]);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const storageRef = ref(fbStorage(), `modules/${Date.now()}_${file.name}`);
+      await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(storageRef);
+      setImageUrl(url);
+    } catch (err) {
+      alert("Image upload failed.");
+    }
+    setUploading(false);
+  };
 
   const resetForm = () => {
     setName("");
@@ -79,15 +97,40 @@ export default function ModulesHub() {
           </h1>
           <p className="font-geist text-neutral-600 dark:text-neutral-400 mt-1">Manage subjects and modules</p>
         </div>
-        {!adding && (
-          <motion.button
-            whileTap={{ scale: 0.95 }}
-            onClick={() => { vibrate(10); resetForm(); setAdding(true); }}
-            className="flex items-center gap-2 bg-neutral-900 dark:bg-white text-white dark:text-black px-5 py-3 rounded-full font-geist font-bold text-sm shadow-xl hover:shadow-2xl transition-all"
-          >
-            <Plus size={18} /> <span className="hidden md:inline">Add Module</span>
-          </motion.button>
-        )}
+        <div className="flex items-center gap-2">
+          {!adding && (
+            <>
+              <motion.button
+                whileTap={{ scale: 0.95 }}
+                onClick={async () => {
+                  vibrate(10);
+                  const defaults = [
+                    { name: "Physics", streams: ["PCM", "PCB"] as Stream[], imageUrl: "https://images.unsplash.com/photo-1636819488524-1f019c4e1c44?q=80&w=1000&auto=format&fit=crop" },
+                    { name: "Chemistry", streams: ["PCM", "PCB"] as Stream[], imageUrl: "https://images.unsplash.com/photo-1532094349884-543bc11b234d?q=80&w=1000&auto=format&fit=crop" },
+                    { name: "Math", streams: ["PCM"] as Stream[], imageUrl: "https://images.unsplash.com/photo-1509228468518-180dd4864904?q=80&w=1000&auto=format&fit=crop" },
+                    { name: "Biology", streams: ["PCB"] as Stream[], imageUrl: "/images/subjects/biology.jpg" }
+                  ];
+                  for (const d of defaults) {
+                    if (!modules.find(m => m.name === d.name)) {
+                      await createModule(d);
+                    }
+                  }
+                  alert("Default modules restored!");
+                }}
+                className="flex items-center gap-2 bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 text-neutral-900 dark:text-white px-5 py-3 rounded-full font-geist font-bold text-sm transition-all"
+              >
+                Restore Defaults
+              </motion.button>
+              <motion.button
+                whileTap={{ scale: 0.95 }}
+                onClick={() => { vibrate(10); resetForm(); setAdding(true); }}
+                className="flex items-center gap-2 bg-neutral-900 dark:bg-white text-white dark:text-black px-5 py-3 rounded-full font-geist font-bold text-sm shadow-xl hover:shadow-2xl transition-all"
+              >
+                <Plus size={18} /> <span className="hidden md:inline">Add Module</span>
+              </motion.button>
+            </>
+          )}
+        </div>
       </div>
 
       <AnimatePresence>
@@ -106,7 +149,13 @@ export default function ModulesHub() {
                 </div>
                 <div>
                   <p className="mb-2 font-geist text-xs font-bold uppercase tracking-widest text-neutral-500">Image URL <span className="text-neutral-400 font-normal">(Optional)</span></p>
-                  <input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} placeholder="https://..." className="w-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 font-geist text-sm outline-none focus:border-purple-500 transition-colors backdrop-blur-md text-neutral-900 dark:text-white" />
+                  <div className="flex items-center gap-2">
+                    <input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} placeholder="https://..." className="flex-1 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 font-geist text-sm outline-none focus:border-purple-500 transition-colors backdrop-blur-md text-neutral-900 dark:text-white min-w-0" />
+                    <label className="flex items-center justify-center bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/10 dark:border-white/10 rounded-xl px-4 py-3 cursor-pointer transition-colors text-neutral-900 dark:text-white shrink-0">
+                      <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={uploading} />
+                      {uploading ? <span className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" /> : <UploadCloud size={18} />}
+                    </label>
+                  </div>
                 </div>
               </div>
 

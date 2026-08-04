@@ -6,6 +6,7 @@ import {
   persistentMultipleTabManager,
   type Firestore,
 } from "firebase/firestore";
+import { getStorage, type FirebaseStorage } from "firebase/storage";
 
 const cfg = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -20,6 +21,7 @@ export const firebaseReady = !!cfg.apiKey && !!cfg.projectId;
 
 let app: FirebaseApp | null = null;
 let db: Firestore | null = null;
+let storage: FirebaseStorage | null = null;
 
 function getApp(): FirebaseApp {
   if (!app) app = getApps()[0] ?? initializeApp(cfg);
@@ -75,4 +77,9 @@ export const googleProvider = () => {
   const p = new GoogleAuthProvider();
   p.setCustomParameters({ prompt: "select_account" });
   return p;
+};
+
+export const fbStorage = (): FirebaseStorage => {
+  if (!storage) storage = getStorage(getApp());
+  return storage;
 };
