@@ -6,7 +6,7 @@ import { Activity, ArrowUpDown, Coins, Download, DownloadCloud, FileCheck, Flame
 import { useEffect, useMemo, useRef, useState } from "react";
 import GlassCard from "@/components/GlassCard";
 import { col, snapTo } from "@/lib/db";
-import { triggerHaptic, useStore } from "@/lib/store";
+import { triggerHaptic, vibrate, useStore } from "@/lib/store";
 import type { Stream, UserDoc } from "@/lib/types";
 
 export default function UserMatrix() {
