@@ -591,7 +591,7 @@ export default function Landing() {
                   hidden: { opacity: 0 },
                   visible: { opacity: 1, transition: { staggerChildren: 0.1, delayChildren: 0.2 } }
                 }}
-                className="w-full max-w-sm text-center"
+                className="w-full max-w-sm text-center py-16 md:py-24"
               >
                 <motion.div variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}>
                   <h2 className="font-sora text-3xl font-black text-neutral-900 dark:text-white mb-2 tracking-tight">Get Started</h2>

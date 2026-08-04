@@ -351,10 +351,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   };
 
   /* Apply the reduced-effects preference to the document so the CSS in
-     globals.css (html[data-perf="low"]) can drop backdrop-filter. */
+     globals.css (html[data-perf="low"]) can drop backdrop-filter.
+     Automatically enforce on native platforms as WebViews struggle heavily with blur. */
   useEffect(() => {
     if (typeof document === "undefined") return;
-    if (prefs.reducedEffects) document.documentElement.dataset.perf = "low";
+    if (prefs.reducedEffects || Capacitor.isNativePlatform()) document.documentElement.dataset.perf = "low";
     else delete document.documentElement.dataset.perf;
   }, [prefs.reducedEffects]);
 
