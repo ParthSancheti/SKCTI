@@ -12,7 +12,7 @@ const SUBJECT_ICONS: Record<string, ReactNode> = {
   Biology: <Dna size={20} />,
 };
 
-export default function SubjectCard({ subject, count }: { subject: string; count: number }) {
+export default function SubjectCard({ subject, count, imageUrl }: { subject: string; count: number; imageUrl?: string }) {
   const { navigate } = useHapticRouter();
   const Icon = SUBJECT_ICONS[subject] ?? <Atom size={20} />;
   
@@ -27,10 +27,12 @@ export default function SubjectCard({ subject, count }: { subject: string; count
         <div className="absolute inset-y-0 right-0 w-[60%] md:w-[65%] pointer-events-none z-0">
           <img 
             src={
-              subject === 'Chemistry' ? 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?q=80&w=1000&auto=format&fit=crop' :
-              subject === 'Math' ? 'https://images.unsplash.com/photo-1509228468518-180dd4864904?q=80&w=1000&auto=format&fit=crop' :
-              subject === 'Physics' ? 'https://images.unsplash.com/photo-1636819488524-1f019c4e1c44?q=80&w=1000&auto=format&fit=crop' :
-              `/images/subjects/${subject.toLowerCase()}.jpg`
+              imageUrl || (
+                subject === 'Chemistry' ? 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?q=80&w=1000&auto=format&fit=crop' :
+                subject === 'Math' ? 'https://images.unsplash.com/photo-1509228468518-180dd4864904?q=80&w=1000&auto=format&fit=crop' :
+                subject === 'Physics' ? 'https://images.unsplash.com/photo-1636819488524-1f019c4e1c44?q=80&w=1000&auto=format&fit=crop' :
+                `/images/subjects/${subject.toLowerCase()}.jpg`
+              )
             } 
             className="absolute inset-0 w-full h-full object-cover opacity-100 dark:opacity-80 dark:mix-blend-screen transition-transform duration-700 group-hover:scale-105" 
             style={{ maskImage: 'linear-gradient(to left, black 10%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to left, black 10%, transparent 100%)' }}

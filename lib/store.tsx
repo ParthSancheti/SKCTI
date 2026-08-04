@@ -38,6 +38,7 @@ interface Store {
   chatHistory: AiChatMsg[];
   config: AppConfig;
   configLoaded: boolean;
+  modules: import("./types").ModuleDoc[];
   isAdmin: boolean;
   isDark: boolean;
   themePref: ThemePref;
@@ -79,6 +80,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [profileLoaded, setProfileLoaded] = useState(false);
   const [todos, setTodos] = useState<TodoTask[]>([]);
   const [chatHistory, setChatHistory] = useState<AiChatMsg[]>([]);
+  const [modules, setModules] = useState<import("./types").ModuleDoc[]>([]);
   const [config, setConfig] = useState<AppConfig>(DEFAULT_CONFIG);
   const [configLoaded, setConfigLoaded] = useState(false);
   const [isDark, setIsDark] = useState(false);
@@ -201,6 +203,17 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     );
     return unsub;
   }, [fbUser]);
+
+  /* —— live modules —— */
+  useEffect(() => {
+    if (!firebaseReady) return;
+    const unsub = onSnapshot(col.modules(), (snap) => {
+      const arr: import("./types").ModuleDoc[] = [];
+      snap.forEach((d) => arr.push({ id: d.id, ...d.data() } as import("./types").ModuleDoc));
+      setModules(arr);
+    });
+    return unsub;
+  }, []);
 
   /* —— streak + presence, once per session after profile loads —— */
   useEffect(() => {
@@ -403,7 +416,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   return (
     <Ctx.Provider
       value={{
-        ready, fbUser, profile, profileLoaded, todos, chatHistory, config, configLoaded, isAdmin,
+        ready, fbUser, profile, profileLoaded, todos, chatHistory, config, configLoaded, modules, isAdmin,
         notifications, prefs, setNotification, setPref, clearDownloads, deleteAccount, adminRole, isOwner,
         isDark, themePref, toggleTheme, loginWithGoogle, logout, completeOnboarding,
         setStream, upgradeGrade, dismissUpgrade, addCoins, markTaskDone, markDownloaded, markAttempted, markViewed,

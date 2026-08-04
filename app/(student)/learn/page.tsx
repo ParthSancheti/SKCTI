@@ -13,7 +13,7 @@ import { ChapterSkeleton } from "@/components/SkeletonLoader";
 import { col, snapTo } from "@/lib/db";
 import { useStore, vibrate } from "@/lib/store";
 import type { ContentDoc, VideoDoc } from "@/lib/types";
-import { subjectsFor, youtubeEmbedUrl, youtubeThumb } from "@/lib/types";
+import { youtubeEmbedUrl, youtubeThumb } from "@/lib/types";
 import SubjectCard from "@/components/SubjectCard";
 import { useHapticRouter } from "@/components/HapticRouter";
 import { Browser } from "@capacitor/browser";
@@ -31,7 +31,7 @@ const SUBJECT_HUE: Record<string, string> = {
 
 
 function LearnInner() {
-  const { profile, config } = useStore();
+  const { profile, config, modules } = useStore();
   const params = useSearchParams();
   const [items, setItems] = useState<ContentDoc[] | null>(null);
   const [videos, setVideos] = useState<VideoDoc[] | null>(null);
@@ -110,7 +110,7 @@ function LearnInner() {
   }, [videos, q, searching]);
 
   if (!profile) return null;
-  const subjects = subjectsFor(profile.stream);
+  const subjects = modules.filter(m => m.streams.includes(profile.stream));
   const tabs: readonly (readonly ["notes" | "videos" | "saved", string])[] = [
     ["notes", "Notes"] as const,
     ...(config.features.videos ? [["videos", "Videos"] as const] : []),
@@ -182,8 +182,8 @@ function LearnInner() {
           {!subject ? (
             /* ————— level 1: subject cards ————— */
             <motion.div key="subjects" initial={{ opacity: 0, x: -24 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -24 }} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {subjects.map((s) => (
-                <SubjectCard key={s} subject={s} count={countFor(s)} />
+              {subjects.map((m) => (
+                <SubjectCard key={m.id} subject={m.name} imageUrl={m.imageUrl} count={countFor(m.name)} />
               ))}
             </motion.div>
           ) : (
@@ -304,7 +304,7 @@ function LearnInner() {
 
 function VideoTile({ v, onOpen }: { v: VideoDoc; onOpen: () => void }) {
   return (
-    <motion.button whileTap={{ scale: 0.96 }} onClick={() => { vibrate(10); onOpen(); }} className="glassy rounded-[2rem] hover:brightness-110 transition-all overflow-hidden text-left flex flex-col">
+    <motion.button whileTap={{ scale: 0.96 }} onClick={() => { vibrate(10); onOpen(); }} className="bg-white/70 backdrop-blur-xl dark:backdrop-blur-none dark:bg-[#1a1c23] rounded-[1.25rem] shadow-lg border border-black/10 dark:border-white/5 overflow-hidden transition-all hover:brightness-105 dark:hover:brightness-110 text-left flex flex-col">
       <div className="relative aspect-video w-full bg-black/10 dark:bg-black/30">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={youtubeThumb(v.youtubeId)} alt={v.title} className="h-full w-full object-cover" />

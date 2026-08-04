@@ -21,6 +21,7 @@ export const col = {
   inquiries: () => collection(fbDb(), "inquiries"),
   todos: (uid: string) => collection(fbDb(), "users", uid, "todos"),
   aiChats: (uid: string) => collection(fbDb(), "users", uid, "aiChats"),
+  modules: () => collection(fbDb(), "modules"),
 };
 
 export const configRef = () => doc(fbDb(), "config", "app");
@@ -93,3 +94,9 @@ export const createAiChat = (uid: string, d: Omit<AiChatDoc, "id">) =>
   addDoc(col.aiChats(uid), d);
 export const updateAiChat = (uid: string, id: string, patch: Partial<AiChatDoc>) =>
   updateDoc(doc(fbDb(), "users", uid, "aiChats", id), patch);
+
+export const createModule = (d: Omit<import("./types").ModuleDoc, "id" | "createdAt">) =>
+  addDoc(col.modules(), { ...d, createdAt: serverTimestamp() });
+export const updateModule = (id: string, patch: Partial<import("./types").ModuleDoc>) =>
+  updateDoc(doc(fbDb(), "modules", id), patch);
+export const deleteModule = (id: string) => deleteDoc(doc(fbDb(), "modules", id));

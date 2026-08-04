@@ -266,9 +266,13 @@ export const DEFAULT_CONFIG: AppConfig = {
   },
 };
 
-export const SUBJECTS_PCM = ["Physics", "Chemistry", "Math"];
-export const SUBJECTS_PCB = ["Physics", "Chemistry", "Biology"];
-export const subjectsFor = (s: Stream) => (s === "PCM" ? SUBJECTS_PCM : SUBJECTS_PCB);
+export interface ModuleDoc {
+  id: string;
+  name: string;
+  streams: Stream[];
+  imageUrl: string;
+  createdAt?: Timestamp;
+}
 
 export const todayKey = () => new Date().toISOString().slice(0, 10);
 

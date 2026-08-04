@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { Blocks, Gauge, Inbox, Settings, UploadCloud, Users, LogOut, Menu, X, ClipboardList, Search, Plus, Bell, Link2 } from "lucide-react";
+import { Blocks, Gauge, Inbox, Settings, UploadCloud, Users, LogOut, Menu, X, ClipboardList, Search, Plus, Bell, Link2, Book } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
@@ -13,6 +13,7 @@ const LINKS = [
   { href: "/admin/builder", label: "App Builder", Icon: Blocks },
   { href: "/admin/content", label: "Content Hub", Icon: UploadCloud },
   { href: "/admin/tests", label: "Test Hub", Icon: ClipboardList },
+  { href: "/admin/modules", label: "Modules", Icon: Book },
   { href: "/admin/users", label: "User Matrix", Icon: Users },
   { href: "/admin/leads", label: "Leads", Icon: Inbox },
   { href: "/admin/settings", label: "Settings", Icon: Settings },

@@ -19,7 +19,7 @@ import ComingSoon from "@/components/ComingSoon";
 import { col, snapTo, updateUser } from "@/lib/db";
 import { firePortal, useStore, vibrate } from "@/lib/store";
 import type { AnnouncementDoc, BannerDoc, ContentDoc, HomeBlockId, PlanTask } from "@/lib/types";
-import { subjectsFor, todayKey } from "@/lib/types";
+import { todayKey } from "@/lib/types";
 
 const SUBJECT_ICONS: Record<string, React.ReactNode> = {
   Physics: <Atom size={22} />,
@@ -30,7 +30,7 @@ const SUBJECT_ICONS: Record<string, React.ReactNode> = {
 
 export default function Home() {
   const store = useStore();
-  const { profile, config, isDark, toggleTheme, dismissUpgrade } = store;
+  const { profile, config, modules, isDark, toggleTheme, dismissUpgrade } = store;
   const router = useRouter();
   const completeTask = useCompleteTask();
 
@@ -146,8 +146,8 @@ export default function Home() {
         <div>
           <h2 className="font-sora text-headline-lg mb-4 text-neutral-900 dark:text-white">Your subjects</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {subjectsFor(profile.stream).map((s) => (
-              <SubjectCard key={s} subject={s} count={chapters.filter((c) => c.subject === s).length} />
+            {modules.filter(m => m.streams.includes(profile.stream)).map((m) => (
+              <SubjectCard key={m.id} subject={m.name} imageUrl={m.imageUrl} count={chapters.filter((c) => c.subject === m.name).length} />
             ))}
           </div>
         </div>

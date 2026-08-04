@@ -12,7 +12,7 @@ import type { TestDoc } from "@/lib/types";
 
 export default function TestHub() {
   const router = useRouter();
-  const { configLoaded, isAdmin, fbUser } = useStore();
+  const { configLoaded, isAdmin, fbUser, modules } = useStore();
   const [tests, setTests] = useState<TestDoc[]>([]);
   const me = fbUser?.email ?? "admin";
 
@@ -115,10 +115,9 @@ export default function TestHub() {
                 className="bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 rounded-full px-3 py-1.5 font-geist text-sm text-neutral-900 dark:text-white outline-none focus:border-purple-500 transition-colors"
               >
                 <option value="All" className="text-black">All Subjects</option>
-                <option value="Physics" className="text-black">Physics</option>
-                <option value="Chemistry" className="text-black">Chemistry</option>
-                <option value="Math" className="text-black">Math</option>
-                <option value="Biology" className="text-black">Biology</option>
+                {modules.map((m) => (
+                  <option key={m.id} value={m.name} className="text-black">{m.name}</option>
+                ))}
               </select>
             </div>
             {filterSubject !== "All" && (

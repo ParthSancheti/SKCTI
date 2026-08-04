@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { ChevronLeft, ClipboardList, Clock, Link2, Save, Target } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import GlassCard from "@/components/GlassCard";
 import PhonePreviewFrame, { LiveExamCard } from "@/components/PhonePreviewFrame";
@@ -11,7 +11,7 @@ import { createTest } from "@/lib/db";
 import { Stream } from "@/lib/types";
 
 const STREAMS: Stream[] = ["PCM", "PCB"];
-const SUBJECTS = ["Physics", "Chemistry", "Math", "Biology"];
+
 
 function Chip({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
   return (
@@ -31,7 +31,8 @@ function Chip({ label, active, onClick }: { label: string; active: boolean; onCl
 
 export default function AddTestStudio() {
   const router = useRouter();
-  const { fbUser } = useStore();
+  const { fbUser, modules } = useStore();
+  const searchParams = useSearchParams();
   
   const [url, setUrl] = useState("");
   const [title, setTitle] = useState("");
@@ -176,7 +177,7 @@ export default function AddTestStudio() {
             </h2>
             <div>
               <p className="mb-2 font-geist text-xs font-bold uppercase tracking-widest text-neutral-500">Subject <span className="text-red-500">*</span></p>
-              <div className="flex flex-wrap gap-2">{SUBJECTS.map((s) => <Chip key={s} label={s} active={subject === s} onClick={() => setSubject(s)} />)}</div>
+              <div className="flex flex-wrap gap-2">{modules.map((m) => <Chip key={m.id} label={m.name} active={subject === m.name} onClick={() => setSubject(m.name)} />)}</div>
             </div>
             <div>
               <p className="mb-2 font-geist text-xs font-bold uppercase tracking-widest text-neutral-500">Stream <span className="text-red-500">*</span></p>
