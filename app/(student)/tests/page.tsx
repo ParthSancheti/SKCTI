@@ -94,9 +94,9 @@ export default function Tests() {
                   onClick={async () => { 
                     vibrate(10); 
                     try {
-                      await Browser.open({ url: t.formUrl });
+                      await Browser.open({ url: t.formUrl, windowName: "_system" });
                     } catch {
-                      window.open(t.formUrl, "_blank");
+                      window.open(t.formUrl, "_system");
                     }
                   }}
                   className="btn-glass px-5 py-2.5 rounded-full text-sm"

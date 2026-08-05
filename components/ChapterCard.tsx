@@ -25,7 +25,7 @@ export default function ChapterCard({ chapter, onOpen }: { chapter: ContentDoc; 
     e.stopPropagation();
     vibrate(10);
     if (chapter.youtubeUrl) {
-      await Browser.open({ url: chapter.youtubeUrl });
+      await Browser.open({ url: chapter.youtubeUrl, windowName: "_system" });
     }
   };
 
@@ -34,9 +34,9 @@ export default function ChapterCard({ chapter, onOpen }: { chapter: ContentDoc; 
     vibrate(10);
     if (chapter.testLink) {
       try {
-        await Browser.open({ url: chapter.testLink });
+        await Browser.open({ url: chapter.testLink, windowName: "_system" });
       } catch (err) {
-        window.open(chapter.testLink, "_blank");
+        window.open(chapter.testLink, "_system");
       }
     }
   };

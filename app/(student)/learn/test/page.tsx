@@ -110,7 +110,7 @@ export default function TestViewerPage() {
                 <CheckCircle2 size={16} /> Mark Done +{content.rewardCoins ?? 25}
               </button>
             )}
-            <button onClick={() => Browser.open({ url: content.testLink! })} className="flex items-center justify-center w-10 h-10 rounded-full bg-black/5 dark:bg-white/10 hover:brightness-110 transition-all text-black dark:text-white" title="Open in browser">
+            <button onClick={() => Browser.open({ url: content.testLink!, windowName: "_system" })} className="flex items-center justify-center w-10 h-10 rounded-full bg-black/5 dark:bg-white/10 hover:brightness-110 transition-all text-black dark:text-white" title="Open in browser">
               <ExternalLink size={18} />
             </button>
           </div>

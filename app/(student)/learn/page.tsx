@@ -167,7 +167,7 @@ function LearnInner() {
           {config.features.videos && shownVideos.length > 0 && (
             <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
               {shownVideos.map((v) => (
-                <VideoTile key={v.id} v={v} onOpen={async () => await Browser.open({ url: `https://youtube.com/watch?v=${v.youtubeId}` })} />
+                <VideoTile key={v.id} v={v} onOpen={async () => await Browser.open({ url: `https://youtube.com/watch?v=${v.youtubeId}`, windowName: "_system" })} />
               ))}
             </div>
           )}
@@ -281,7 +281,7 @@ function LearnInner() {
                   <h3 className="font-sora text-headline-lg font-black tracking-tight text-black dark:text-white mb-4">Lectures</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {(videos ?? []).filter((v) => v.subject === subject).map((v) => (
-                      <VideoTile key={v.id} v={v} onOpen={async () => await Browser.open({ url: `https://youtube.com/watch?v=${v.youtubeId}` })} />
+                      <VideoTile key={v.id} v={v} onOpen={async () => await Browser.open({ url: `https://youtube.com/watch?v=${v.youtubeId}`, windowName: "_system" })} />
                     ))}
                   </div>
                 </div>
@@ -299,7 +299,7 @@ function LearnInner() {
               <p className="mt-1 font-geist text-label-sm text-black dark:text-neutral-400">Lectures published from the admin panel appear here instantly.</p>
             </div>
           )}
-          {shownVideos.map((v) => <VideoTile key={v.id} v={v} onOpen={async () => await Browser.open({ url: `https://youtube.com/watch?v=${v.youtubeId}` })} />)}
+          {shownVideos.map((v) => <VideoTile key={v.id} v={v} onOpen={async () => await Browser.open({ url: `https://youtube.com/watch?v=${v.youtubeId}`, windowName: "_system" })} />)}
         </div>
       ) : (
         /* ————— saved ————— */
