@@ -129,7 +129,7 @@ export default function Settings() {
       </div>
       <button 
         onClick={saveProfile} 
-        className="w-full py-4 mt-2 rounded-2xl bg-gradient-to-r from-purple-600 to-blue-600 text-white font-geist font-bold shadow-lg hover:shadow-xl transition-all"
+        className="w-full btn-primary py-4 mt-2 rounded-2xl"
       >
         Save Changes
       </button>
@@ -167,7 +167,7 @@ export default function Settings() {
             <div className="flex flex-col sm:flex-row items-center gap-3">
               <button 
                 onClick={() => { vibrate(10); router.push("/admin"); }}
-                className="flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-full font-geist font-bold shadow-lg shadow-purple-500/20 hover:shadow-xl transition-all w-full sm:w-max shrink-0"
+                className="btn-primary px-6 py-3 rounded-full w-full sm:w-max shrink-0"
               >
                 🚀 Admin OS
               </button>

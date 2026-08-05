@@ -194,7 +194,7 @@ export default function AiLab() {
               </button>
             </div>
             
-            <button onClick={startNewChat} className="flex items-center gap-3 glassy hover:bg-white/20 dark:hover:bg-white/10 transition-colors rounded-full px-5 py-3.5 mb-8 w-max">
+            <button onClick={startNewChat} className="btn-glass px-5 py-3.5 mb-8 w-max">
               <Plus size={18} className="text-black dark:text-white" />
               <span className="font-geist font-medium text-sm text-black dark:text-white">New chat</span>
             </button>
@@ -236,7 +236,7 @@ export default function AiLab() {
               className="flex flex-col rounded-[2.5rem] bg-white/5 dark:bg-white/5 backdrop-blur-lg border border-white/10 p-4 h-[calc(100vh-3rem)] mt-0 shadow-2xl relative z-10 overflow-hidden"
             >
               <div className="flex items-center justify-between mb-8 w-max min-w-full">
-                <button onClick={startNewChat} className="flex items-center gap-3 glassy hover:bg-white/20 dark:hover:bg-white/10 transition-colors rounded-full px-5 py-3.5">
+                <button onClick={startNewChat} className="btn-glass px-5 py-3.5">
                   <Plus size={18} className="text-black dark:text-white" />
                   <span className="font-geist font-medium text-sm text-black dark:text-white">New chat</span>
                 </button>
@@ -403,8 +403,7 @@ export default function AiLab() {
             whileTap={{ scale: 0.9 }} 
             onClick={() => void send(input)} 
             disabled={busy || (!input.trim() && !image)} 
-            aria-label="Send" 
-            className="w-11 h-11 rounded-full bg-gradient-to-r from-purple-600 to-blue-600 text-white flex items-center justify-center shrink-0 shadow-lg disabled:opacity-30 transition-opacity"
+            className="btn-primary w-11 h-11 rounded-full p-0 flex items-center justify-center shrink-0 disabled:opacity-30 transition-opacity"
           >
             <ArrowUp size={20} strokeWidth={2.5} />
           </motion.button>

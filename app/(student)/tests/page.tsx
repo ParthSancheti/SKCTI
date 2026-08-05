@@ -42,10 +42,8 @@ export default function Tests() {
         </div>
         <div className="flex items-center gap-2">
           {(["All", "Chapter", "Mock"] as const).map((t) => (
-            <button key={t} onClick={() => { vibrate(10); setTab(t); }} className={`px-5 py-2 rounded-full font-geist text-label-sm font-semibold transition-all ${
-              tab === t 
-                ? "bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg" 
-                : "glassy hover:brightness-110 text-black dark:text-white"
+            <button key={t} onClick={() => { vibrate(10); setTab(t); }} className={`px-5 py-2 rounded-full font-geist text-label-sm ${
+              tab === t ? "btn-primary" : "btn-glass"
             }`}>
               {t}
             </button>
@@ -86,7 +84,7 @@ export default function Tests() {
                 {!done && (
                   <button
                     onClick={() => { vibrate(20); void markAttempted(t.id, t.rewardCoins ?? 25); }}
-                    className="glassy-strong px-4 py-2.5 rounded-full font-geist text-sm font-semibold flex items-center gap-2 hover:bg-purple-500/10 active:scale-95 transition-all text-purple-600 dark:text-purple-400 border border-purple-500/20"
+                    className="btn-secondary px-4 py-2.5 rounded-full text-sm"
                   >
                     <CheckCircle2 size={16} />
                     Done +{t.rewardCoins ?? 25}
@@ -101,7 +99,7 @@ export default function Tests() {
                       window.open(t.formUrl, "_blank");
                     }
                   }}
-                  className="glassy hover:brightness-110 px-5 py-2.5 rounded-full font-geist text-sm font-semibold flex items-center gap-2 active:scale-95 transition-all text-black dark:text-white"
+                  className="btn-glass px-5 py-2.5 rounded-full text-sm"
                 >
                   <PlayCircle size={16} />
                   Start Test
