@@ -42,7 +42,7 @@ interface Store {
   isAdmin: boolean;
   isDark: boolean;
   themePref: ThemePref;
-  toggleTheme: () => void;
+  toggleTheme: (e?: React.MouseEvent | React.TouchEvent | any) => void;
   loginWithGoogle: () => Promise<void>;
   logout: () => Promise<void>;
   completeOnboarding: (d: { phone: string; grade: Grade; stream: Stream }) => Promise<void>;
@@ -252,18 +252,42 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setIsDark(theme === "dark" || (theme === "system" && systemTheme === "dark"));
   }, [theme, systemTheme]);
 
-  const toggleTheme = () => {
+  const toggleTheme = (e?: React.MouseEvent | React.TouchEvent | any) => {
     hVibrate(15);
-    const overlay = document.getElementById("theme-overlay");
-    if (overlay) {
-      overlay.classList.remove("theme-overlay-run");
-      void overlay.offsetWidth;
-      overlay.classList.add("theme-overlay-run");
-      window.setTimeout(() => overlay.classList.remove("theme-overlay-run"), 650);
+    const nextTheme = isDark ? "light" : "dark";
+
+    if (!document.startViewTransition) {
+      setTheme(nextTheme);
+      return;
     }
-    window.setTimeout(() => {
-      setTheme(isDark ? "light" : "dark");
-    }, 250);
+
+    const x = e ? ('touches' in e ? e.touches[0].clientX : e.clientX) : window.innerWidth / 2;
+    const y = e ? ('touches' in e ? e.touches[0].clientY : e.clientY) : window.innerHeight / 2;
+    const endRadius = Math.hypot(
+      Math.max(x, window.innerWidth - x),
+      Math.max(y, window.innerHeight - y)
+    );
+
+    const transition = document.startViewTransition(() => {
+      setTheme(nextTheme);
+    });
+
+    transition.ready.then(() => {
+      const clipPath = [
+        `circle(0px at ${x}px ${y}px)`,
+        `circle(${endRadius}px at ${x}px ${y}px)`
+      ];
+      document.documentElement.animate(
+        {
+          clipPath: isDark ? [...clipPath].reverse() : clipPath,
+        },
+        {
+          duration: 500,
+          easing: "ease-in-out",
+          pseudoElement: isDark ? "::view-transition-old(root)" : "::view-transition-new(root)",
+        }
+      );
+    });
   };
 
   /* —— auth actions —— */

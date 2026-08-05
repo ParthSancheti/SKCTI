@@ -189,7 +189,7 @@ function LearnInner() {
             </motion.div>
           ) : (
             /* ————— level 2: topic-wise ————— */
-            <motion.div key={subject} initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 24 }} className="space-y-4 pt-16 lg:pt-4 relative">
+            <motion.div key={subject} initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 24 }} className="space-y-4 pt-8 lg:pt-0 relative">
               <button 
                 onClick={(e) => { vibrate(10); navigate("/learn", e); }} 
                 className="lg:hidden fixed top-[env(safe-area-inset-top,1rem)] mt-2 left-4 z-50 w-10 h-10 flex items-center justify-center rounded-full glassy text-black dark:text-white pointer-events-auto hover:brightness-110 transition-colors"

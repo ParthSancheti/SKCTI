@@ -577,3 +577,5 @@ img[data-fixed] { display: block; }
   }
   .portal-circle, .portal-emoji { transition-duration: 0.01ms !important; }
 }
+: : v i e w - t r a n s i t i o n - o l d ( r o o t ) , : : v i e w - t r a n s i t i o n - n e w ( r o o t ) { a n i m a t i o n : n o n e ; m i x - b l e n d - m o d e : n o r m a l ; }  
+ 

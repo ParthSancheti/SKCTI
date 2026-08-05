@@ -29,9 +29,21 @@ export default function Rank() {
 
   return (
     <div className="space-y-8 pb-24">
-      <div className="mx-6 mt-6 mb-8 flex flex-col">
-        <h1 className="font-sora text-3xl font-extrabold tracking-tight text-neutral-900 dark:text-white mb-1">Rank Board</h1>
-        <p className="font-geist text-body-lg text-neutral-600 dark:text-neutral-400">Live · earn coins from tasks & tests to climb</p>
+      <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4 px-4 lg:px-0 mt-6">
+        <div className="flex items-center gap-4">
+          <button 
+            onClick={() => { vibrate(10); window.history.back(); }} 
+            className="hidden lg:flex w-10 h-10 items-center justify-center rounded-full glassy text-black dark:text-white pointer-events-auto shrink-0 hover:brightness-110 transition-colors"
+          >
+            <ChevronLeft size={20} />
+          </button>
+          <div>
+            <h1 className="text-4xl md:text-5xl font-black text-neutral-900 dark:text-white mb-2 font-sora tracking-tight">
+              Rank Board
+            </h1>
+            <p className="font-geist text-body-lg text-neutral-600 dark:text-neutral-400">Live · earn coins from tasks & tests to climb</p>
+          </div>
+        </div>
       </div>
 
       {rows === null && <div className="space-y-3">{[0, 1, 2, 3].map((i) => <RowSkeleton key={i} />)}</div>}

@@ -92,7 +92,7 @@ export default function TodoApp() {
   };
 
   return (
-    <div className="flex h-[100dvh] lg:h-auto min-h-[calc(100vh-4rem)] w-full gap-6 relative py-0">
+    <div className="flex h-[100dvh] lg:h-auto min-h-[calc(100vh-4rem)] w-full gap-6 relative py-0 px-4 lg:px-0">
 
       <button 
         onClick={() => { vibrate(10); router.push("/home"); }} 
@@ -119,17 +119,18 @@ export default function TodoApp() {
               <p className="font-geist text-body-lg text-neutral-600 dark:text-neutral-400">Organize your study plan and dominate your goals.</p>
             </div>
           </div>
-          <div className="flex flex-col sm:flex-row items-center gap-3">
+          <div className="flex flex-row items-center gap-2 sm:gap-3 w-full sm:w-auto mt-4 md:mt-0">
             <button 
               onClick={() => { vibrate(10); router.push("/ai"); }}
-              className="btn-secondary px-6 py-3 rounded-full w-full sm:w-max shrink-0 font-geist"
+              className="btn-secondary px-3 sm:px-6 py-3 rounded-full flex-1 shrink-0 font-geist"
             >
               <Sparkles size={18} />
-              AI Generate
+              <span className="hidden sm:inline">AI Generate</span>
+              <span className="sm:hidden">AI Plan</span>
             </button>
             <button 
               onClick={() => setIsAdding(true)}
-              className="btn-primary px-6 py-3 rounded-full w-full sm:w-max shrink-0 font-geist"
+              className="btn-primary px-3 sm:px-6 py-3 rounded-full flex-1 shrink-0 font-geist"
             >
               <Plus size={18} />
               Add Task
