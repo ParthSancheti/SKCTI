@@ -197,16 +197,22 @@ function LearnInner() {
                 <ChevronLeft size={20} />
               </button>
 
-              <div className="flex items-center gap-4 mb-4">
-                <button 
-                  onClick={(e) => { vibrate(10); navigate("/learn", e); }} 
-                  className="hidden lg:flex w-10 h-10 items-center justify-center rounded-full glassy text-black dark:text-white hover:brightness-110 transition-all"
-                >
-                  <ChevronLeft size={20} />
-                </button>
-                <div>
-                  <h1 className="text-4xl md:text-5xl font-black text-neutral-900 dark:text-white tracking-tight">{subject}</h1>
-                  <p className="font-geist text-sm font-bold uppercase tracking-widest text-purple-600 dark:text-purple-400 mt-1">{subjectItems.length} topics</p>
+              <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+                <div className="flex items-center gap-4">
+                  <button 
+                    onClick={(e) => { vibrate(10); navigate("/learn", e); }} 
+                    className="hidden lg:flex w-10 h-10 items-center justify-center rounded-full glassy text-black dark:text-white pointer-events-auto shrink-0 hover:brightness-110 transition-colors"
+                  >
+                    <ChevronLeft size={20} />
+                  </button>
+                  <div>
+                    <h1 className="text-4xl md:text-5xl font-black text-neutral-900 dark:text-white mb-2 font-sora tracking-tight">
+                      {subject}
+                    </h1>
+                    <p className="font-geist text-body-lg text-neutral-600 dark:text-neutral-400">
+                      {subjectItems.length} topics available in this module.
+                    </p>
+                  </div>
                 </div>
               </div>
 

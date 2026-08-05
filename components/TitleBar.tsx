@@ -88,7 +88,7 @@ export default function TitleBar() {
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.9, y: -6 }}
                     transition={{ type: "spring", stiffness: 420, damping: 28 }}
-                    className="fixed right-4 top-[calc(env(safe-area-inset-top,0px)+4rem)] w-56 glassy border border-white/10 rounded-3xl shadow-2xl p-2 origin-top-right z-50"
+                    className="fixed right-4 top-[calc(env(safe-area-inset-top,0px)+4rem)] w-56 bg-[var(--layer-primary)] backdrop-blur-3xl border border-black/10 dark:border-white/10 rounded-3xl shadow-2xl p-2 origin-top-right z-50"
                   >
                   {[
                     { icon: "🌓", label: isDark ? "Light mode" : "Dark mode", act: () => toggleTheme() },

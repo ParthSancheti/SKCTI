@@ -122,14 +122,14 @@ export default function TodoApp() {
           <div className="flex flex-col sm:flex-row items-center gap-3">
             <button 
               onClick={() => { vibrate(10); router.push("/ai"); }}
-              className="flex items-center justify-center gap-2 bg-purple-600/10 text-purple-600 dark:text-purple-400 border border-purple-500/20 px-6 py-3 rounded-full font-geist font-bold hover:bg-purple-600/20 transition-all w-full sm:w-max shrink-0"
+              className="btn-secondary px-6 py-3 rounded-full w-full sm:w-max shrink-0 font-geist"
             >
               <Sparkles size={18} />
               AI Generate
             </button>
             <button 
               onClick={() => setIsAdding(true)}
-              className="flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-full font-geist font-bold shadow-lg shadow-purple-500/20 hover:shadow-xl transition-all w-full sm:w-max shrink-0"
+              className="btn-primary px-6 py-3 rounded-full w-full sm:w-max shrink-0 font-geist"
             >
               <Plus size={18} />
               Add Task
@@ -316,7 +316,7 @@ export default function TodoApp() {
                 <button 
                   onClick={handleSave}
                   disabled={!title.trim()}
-                  className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white font-geist font-bold text-lg py-4 rounded-xl shadow-lg disabled:opacity-50 transition-opacity"
+                  className="w-full btn-primary font-geist text-lg py-4 rounded-xl disabled:opacity-50"
                 >
                   Save Task
                 </button>
