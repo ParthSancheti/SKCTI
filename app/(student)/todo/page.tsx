@@ -11,7 +11,6 @@ import { fbDb } from "@/lib/firebase";
 import type { TodoTask } from "@/lib/types";
 import GlassCard from "@/components/GlassCard";
 
-const CATEGORIES = ["All", "Physics", "Chemistry", "Math", "Biology", "General"];
 const URGENCIES = ["High", "Medium", "Low"];
 
 export default function TodoApp() {
@@ -33,6 +32,12 @@ export default function TodoApp() {
   const filteredTodos = todos.filter(t => filterCat === "All" || t.category === filterCat);
   const pendingTodos = filteredTodos.filter(t => t.status === "todo");
   const completedTodos = filteredTodos.filter(t => t.status === "done");
+
+  const categories = ["All", "Physics", "Chemistry"];
+  if (profile?.stream === "PCM") categories.push("Math");
+  else if (profile?.stream === "PCB") categories.push("Biology");
+  else categories.push("Math", "Biology");
+  categories.push("General");
 
   const resetForm = () => {
     setTitle("");
@@ -134,7 +139,7 @@ export default function TodoApp() {
 
         {/* Category Filters */}
         <div className="flex gap-2 overflow-x-auto hide-scrollbar pb-4 mb-4">
-          {CATEGORIES.map(cat => (
+          {categories.map(cat => (
             <button
               key={cat}
               onClick={() => setFilterCat(cat)}
@@ -169,7 +174,7 @@ export default function TodoApp() {
                       <Circle size={24} />
                     </button>
                     <div className="flex-1 min-w-0">
-                      <p className="font-hanken text-base text-black dark:text-white font-medium truncate">{task.title}</p>
+                      <p className="font-hanken text-base text-black dark:text-white font-medium break-words leading-tight">{task.title}</p>
                       <div className="flex flex-wrap gap-2 mt-2">
                         <span className="font-geist text-[10px] uppercase font-bold px-2.5 py-1 rounded-full glassy text-black dark:text-white border border-black/5 dark:border-white/5">
                           {task.category || "General"}
@@ -281,7 +286,7 @@ export default function TodoApp() {
                       onChange={e => setCategory(e.target.value)}
                       className="w-full glassy rounded-xl px-4 py-3 font-hanken text-black dark:text-white outline-none focus:border-purple-500 transition-colors appearance-none"
                     >
-                      {CATEGORIES.filter(c => c !== "All").map(c => <option key={c} value={c}>{c}</option>)}
+                      {categories.filter(c => c !== "All").map(c => <option key={c} value={c}>{c}</option>)}
                     </select>
                   </div>
                   <div>

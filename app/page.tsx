@@ -140,7 +140,11 @@ export default function Landing() {
 
   useEffect(() => {
     // Instantly reveal landing page for first-time visitors to avoid blank screen
-    if (!document.cookie.includes("skcti_session=true")) {
+    // In Capacitor, cookies might not persist, so check localStorage for Firebase auth token too
+    const hasCookie = document.cookie.includes("skcti_session=true");
+    const hasLocalStore = typeof localStorage !== 'undefined' && Object.keys(localStorage).some(k => k.startsWith('firebase:authUser:'));
+    
+    if (!hasCookie && !hasLocalStore) {
       setShowSplash(false);
     }
   }, []);
