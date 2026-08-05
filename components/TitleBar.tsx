@@ -40,7 +40,7 @@ export default function TitleBar() {
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ type: "spring", stiffness: 400, damping: 30 }}
-        className="sticky top-[env(safe-area-inset-top,0px)] lg:top-6 mt-[env(safe-area-inset-top,0px)] lg:mt-6 z-40 mx-2 lg:mx-0 mb-4 px-3 py-1.5 glassy rounded-full flex items-center justify-between shadow-sm"
+        className="sticky top-[calc(env(safe-area-inset-top,1.5rem)+0.5rem)] lg:top-6 mt-[calc(env(safe-area-inset-top,1.5rem)+0.5rem)] lg:mt-6 z-40 mx-2 lg:mx-0 mb-4 px-3 py-1.5 glassy rounded-full flex items-center justify-between shadow-sm"
       >
         <div className="flex items-center gap-2 w-full">
           {/* PC Left Side */}

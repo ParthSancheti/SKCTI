@@ -136,8 +136,22 @@ export default function Settings() {
     </motion.div>
   );
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: { opacity: 1, transition: { staggerChildren: 0.1 } }
+  };
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+  };
+
   return (
-    <div className="flex flex-col min-h-[calc(100vh-2rem)] w-full relative pb-20">
+    <motion.div 
+      variants={containerVariants} 
+      initial="hidden" 
+      animate="show" 
+      className="flex flex-col min-h-[calc(100vh-2rem)] w-full relative pb-20"
+    >
       
       {/* Mobile Floating Back Button */}
       <button 
@@ -250,8 +264,7 @@ export default function Settings() {
           </AnimatePresence>
         </motion.div>
 
-        {/* Tracking Stats Row */}
-        <div className="md:col-span-2 grid grid-cols-3 gap-4">
+        <motion.div variants={itemVariants} className="md:col-span-2 grid grid-cols-3 gap-4">
           <div className="glassy rounded-[20px] p-4 flex flex-col items-center justify-center text-center shadow-sm">
             <Flame size={20} className="text-orange-500 mb-2" />
             <p className="font-sora font-bold text-lg md:text-xl text-black dark:text-white">
@@ -272,7 +285,7 @@ export default function Settings() {
         </div>
 
         {/* Theme Toggle Card */}
-        <div className="glassy rounded-[24px] p-5 flex flex-col justify-center">
+        <motion.div variants={itemVariants} className="glassy rounded-[24px] p-5 flex flex-col justify-center">
           <div className="flex items-center justify-between mb-3">
             {isDark ? <Moon size={22} className="text-purple-400" /> : <Sun size={22} className="text-yellow-500" />}
             <motion.button
@@ -290,7 +303,7 @@ export default function Settings() {
         </div>
 
         {/* Class / Standard Card */}
-        <div className="glassy rounded-[24px] p-5 flex flex-col justify-center">
+        <motion.div variants={itemVariants} className="glassy rounded-[24px] p-5 flex flex-col justify-center">
           <div className="flex items-center gap-3 mb-3">
             <GraduationCap size={22} className="text-blue-500" />
           </div>
@@ -305,7 +318,7 @@ export default function Settings() {
         </div>
 
         {/* Stream Card */}
-        <div className="glassy rounded-[24px] p-5 flex flex-col md:col-span-2">
+        <motion.div variants={itemVariants} className="glassy rounded-[24px] p-5 flex flex-col md:col-span-2">
           <h3 className="font-sora font-semibold text-black dark:text-white mb-1">Stream</h3>
           <p className="font-geist text-xs text-red-500 dark:text-red-400 font-bold mb-4">Switching wipes today's AI plan.</p>
           
@@ -338,7 +351,7 @@ export default function Settings() {
         </div>
 
         {/* AI Preferences */}
-        <div className="glassy rounded-[24px] p-5 flex flex-col justify-center">
+        <motion.div variants={itemVariants} className="glassy rounded-[24px] p-5 flex flex-col justify-center">
           <div className="flex items-center gap-3 mb-4">
             <Cpu size={22} className="text-purple-500" />
             <h3 className="font-sora font-semibold text-black dark:text-white">AI Preferences</h3>
@@ -354,7 +367,7 @@ export default function Settings() {
         </div>
 
         {/* Notifications — now persisted, not local useState */}
-        <div className="glassy rounded-[24px] p-5 flex flex-col justify-center">
+        <motion.div variants={itemVariants} className="glassy rounded-[24px] p-5 flex flex-col justify-center">
           <div className="flex items-center gap-3 mb-4">
             <Bell size={22} className="text-orange-500" />
             <h3 className="font-sora font-semibold text-black dark:text-white">Notifications</h3>
@@ -384,10 +397,8 @@ export default function Settings() {
           </div>
         </div>
 
-        {/* Saved chapters — the "Clear Downloads" button had no onClick, and
-            nothing in the app ever cached PDF bytes, so "stored locally" was
-            describing something that wasn't happening. */}
-        <div className="glassy rounded-[24px] p-5 flex flex-col justify-between">
+        {/* Saved chapters */}
+        <motion.div variants={itemVariants} className="glassy rounded-[24px] p-5 flex flex-col justify-between">
           <div>
             <div className="flex items-center gap-3 mb-2">
               <FileText size={22} className="text-blue-400" />
@@ -433,9 +444,8 @@ export default function Settings() {
           </AnimatePresence>
         </div>
 
-        {/* Study Analytics — "45h" and "120" were hardcoded literals, so every
-            student on the platform saw the same fake stats. Real values now. */}
-        <div className="glassy rounded-[24px] p-5 flex flex-col justify-between">
+        {/* Study Analytics */}
+        <motion.div variants={itemVariants} className="glassy rounded-[24px] p-5 flex flex-col justify-between">
           <div>
             <div className="flex items-center gap-3 mb-2">
               <BarChart3 size={22} className="text-green-500" />
@@ -463,10 +473,8 @@ export default function Settings() {
           )}
         </div>
 
-        {/* Appearance & language — the reduced-effects switch drives
-            html[data-perf="low"] in globals.css, which drops backdrop-filter on
-            phones that can't afford a dozen simultaneous blur layers. */}
-        <div className="glassy rounded-[24px] p-5 flex flex-col justify-center md:col-span-2">
+        {/* Appearance & language */}
+        <motion.div variants={itemVariants} className="glassy rounded-[24px] p-5 flex flex-col justify-center md:col-span-2">
           <div className="flex items-center gap-3 mb-4">
             <Gauge size={22} className="text-cyan-500" />
             <h3 className="font-sora font-semibold text-black dark:text-white">Performance &amp; Language</h3>
@@ -515,7 +523,8 @@ export default function Settings() {
         </div>
 
         {/* Sign Out Card */}
-        <button
+        <motion.button
+          variants={itemVariants}
           onClick={() => { vibrate(15); void logout().then(() => router.replace("/")); }}
           className="bg-red-500/10 dark:bg-red-500/10 backdrop-blur-md border border-red-500/20 rounded-[24px] p-5 flex items-center justify-center gap-3 md:col-span-2 hover:bg-red-500/20 transition-colors group"
         >
@@ -523,9 +532,8 @@ export default function Settings() {
           <span className="font-sora font-bold text-red-500">Sign Out</span>
         </button>
 
-        {/* Danger zone — there was previously no way for a student (a minor)
-            to remove their own data from the platform. */}
-        <div className="md:col-span-2 rounded-[24px] border border-red-500/20 bg-red-500/[0.06] p-5">
+        {/* Danger zone */}
+        <motion.div variants={itemVariants} className="md:col-span-2 rounded-[24px] border border-red-500/20 bg-red-500/[0.06] p-5">
           <div className="flex items-center gap-3 mb-2">
             <Trash2 size={20} className="text-red-500" />
             <h3 className="font-sora font-semibold text-red-500">Delete account</h3>
@@ -622,6 +630,6 @@ export default function Settings() {
         )}
       </AnimatePresence>
 
-    </div>
+    </motion.div>
   );
 }
