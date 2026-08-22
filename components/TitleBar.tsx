@@ -1,0 +1,136 @@
+"use client";
+
+import { Flame, LogOut } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
+import { CoinPill } from "@/components/CoinSystem";
+import ComingSoon from "@/components/ComingSoon";
+import { useStore, vibrate, firePortal } from "@/lib/store";
+import { useHapticRouter } from "@/components/HapticRouter";
+import { getExamLabel } from "@/lib/examConfig";
+
+export default function TitleBar() {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const { navigate } = useHapticRouter();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [comingSoonOpen, setComingSoonOpen] = useState(false);
+  const [comingSoonTitle, setComingSoonTitle] = useState("");
+  
+  const store = useStore();
+  const { profile, config, isDark, toggleTheme, logout } = store;
+
+  // Directive 4: Immersive Subject View & Gemini UI Clone
+  if (pathname === "/ai" || (pathname === "/learn" && searchParams.get("subject"))) {
+    return null;
+  }
+
+
+
+  if (!profile) return null;
+  const firstName = profile.name.split(" ")[0];
+
+  let title = "Welcome";
+  if (pathname.startsWith("/learn")) title = "Learn OS";
+  else if (pathname.startsWith("/tests")) title = "Test Arena";
+  else if (pathname.startsWith("/rank")) title = "Global Rank";
+  else if (pathname.startsWith("/ai")) title = "AI Assistant";
+
+  return (
+    <>
+      <motion.header 
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ type: "spring", stiffness: 400, damping: 30 }}
+        className="sticky mt-[calc(env(safe-area-inset-top,3rem)+1.5rem)] top-[calc(env(safe-area-inset-top,3rem)+1.5rem)] lg:mt-6 lg:top-6 z-50 mx-1 lg:mx-0 mb-4 px-3 py-2.5 glassy rounded-full flex items-center justify-between shadow-md"
+      >
+        <div className="flex items-center gap-2 w-full">
+          {/* PC Left Side */}
+          <div className="flex-1 min-w-0 hidden lg:block">
+            <h1 className="font-sora text-xl font-extrabold tracking-tight text-on-surface truncate">{title}</h1>
+          </div>
+          
+          {/* Mobile Left Side */}
+          <div className="flex-1 min-w-0 flex lg:hidden items-center gap-2">
+             <img src="/src/logo.webp" className="w-10 h-10 rounded-full bg-white p-1 shadow-lg shrink-0" alt="SKCTI Logo" />
+             <span className="font-sora font-extrabold text-xl tracking-tight text-on-surface pl-2">SKCTI</span>
+          </div>
+
+          {config.features.streak && (
+            <div className="glassy rounded-full px-3 py-1.5 flex items-center gap-1.5 cursor-pointer" onClick={() => { vibrate(50); setComingSoonTitle("Streak Rewards"); setComingSoonOpen(true); }}>
+              <Flame size={15} className="text-purple-600 dark:text-purple-400" />
+              <span className="font-geist text-label-md tabular-nums text-on-surface">{profile.streak}</span>
+            </div>
+          )}
+          
+          <div onClick={() => { vibrate(50); setComingSoonTitle("Coin Shop"); setComingSoonOpen(true); }} className="cursor-pointer">
+            <CoinPill />
+          </div>
+
+          <div className="relative pl-2">
+            <motion.button
+              whileTap={{ scale: 0.92 }}
+              onClick={(e) => { vibrate(50); firePortal(e.clientX, e.clientY); setMenuOpen(!menuOpen); }}
+              className="w-12 h-12 rounded-full overflow-hidden glassy flex items-center justify-center border border-white/10"
+              aria-label="Profile menu"
+            >
+              {profile.photo ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={profile.photo} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+              ) : (
+                <span className="font-sora font-bold text-purple-600 dark:text-purple-400">{firstName.charAt(0)}</span>
+              )}
+            </motion.button>
+            <AnimatePresence>
+              {menuOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => { vibrate(10); setMenuOpen(false); }} />
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.85, y: -8 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.9, y: -6 }}
+                    transition={{ type: "spring", stiffness: 420, damping: 28 }}
+                    className="fixed right-4 top-[calc(env(safe-area-inset-top,3rem)+4rem)] w-56 bg-[var(--layer-primary)] backdrop-blur-3xl border border-outline-variant rounded-3xl shadow-2xl p-2 origin-top-right z-50"
+                  >
+                  {[
+                    { icon: "🌓", label: isDark ? "Light mode" : "Dark mode", act: (e: React.MouseEvent) => toggleTheme(e) },
+                    ...(config.features.streak ? [{ icon: "🔥", label: `${profile.streak}-day streak`, act: () => { setComingSoonTitle("Streak Rewards"); setComingSoonOpen(true); } }] : []),
+                    ...(config.features.coins ? [{ icon: "🪙", label: `${profile.coins} coins`, act: () => { setComingSoonTitle("Coin Shop"); setComingSoonOpen(true); } }] : []),
+                    { icon: "🎓", label: getExamLabel((profile as any).exam, profile.stream, (profile as any).variant), act: (e: React.MouseEvent) => navigate("/settings", e) },
+                    { icon: "⚙️", label: "Settings", act: (e: React.MouseEvent) => navigate("/settings", e) },
+                  ].map(({ icon, label, act }) => (
+                    <button
+                      key={label}
+                      onClick={(e) => { vibrate(50); firePortal(e.clientX, e.clientY); setMenuOpen(false); act(e); }}
+                      className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 font-geist text-label-md text-left transition-all text-on-surface"
+                    >
+                      <span className="text-lg leading-none">{icon}</span> {label}
+                    </button>
+                  ))}
+                  
+                  <div className="my-2 border-t border-white/10" />
+                  
+                  <button
+                    onClick={() => { 
+                      vibrate(50); 
+                      setMenuOpen(false); 
+                      void logout().then(() => {
+                        window.location.href = "/";
+                      });
+                    }}
+                    className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-red-50 dark:hover:bg-error-container font-geist text-label-md text-left transition-all text-error"
+                  >
+                    <LogOut size={18} /> Sign Out
+                  </button>
+                  </motion.div>
+                </>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
+      </motion.header>
+      <ComingSoon open={comingSoonOpen} onClose={() => setComingSoonOpen(false)} title={comingSoonTitle} />
+    </>
+  );
+}

@@ -1,0 +1,354 @@
+"use client";
+
+import { AnimatePresence, motion } from "framer-motion";
+import { onSnapshot, query, where } from "firebase/firestore";
+import {
+  Atom, Bookmark, Calculator, ChevronDown, ChevronLeft, ChevronRight, Dna, Filter, FlaskConical,
+  PlayCircle, Search, X,
+} from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useMemo, useState } from "react";
+import ChapterCard from "@/components/ChapterCard";
+import GlassCard from "@/components/GlassCard";
+import { ChapterSkeleton } from "@/components/SkeletonLoader";
+import { col, snapTo } from "@/lib/db";
+import { getCohortId } from "@/lib/examConfig";
+import { useStore, vibrate } from "@/lib/store";
+import type { ContentDoc, VideoDoc } from "@/lib/types";
+import { youtubeEmbedUrl, youtubeThumb } from "@/lib/types";
+import SubjectCard from "@/components/SubjectCard";
+import { useHapticRouter } from "@/components/HapticRouter";
+import { Browser } from "@capacitor/browser";
+
+const SUBJECT_ICON: Record<string, typeof Atom> = {
+  Physics: Atom, Chemistry: FlaskConical, Math: Calculator, Biology: Dna,
+};
+const SUBJECT_HUE: Record<string, string> = {
+  Physics: "from-orange-500/25 to-red-600/10",
+  Chemistry: "from-amber-400/25 to-orange-600/10",
+  Math: "from-red-500/25 to-rose-700/10",
+  Biology: "from-lime-500/25 to-emerald-700/10",
+};
+
+
+
+function LearnInner() {
+  const { profile, config, modules } = useStore();
+  const params = useSearchParams();
+  const [items, setItems] = useState<ContentDoc[] | null>(null);
+  const [videos, setVideos] = useState<VideoDoc[] | null>(null);
+  const [q, setQ] = useState("");
+  const [open, setOpen] = useState<ContentDoc | null>(null);
+  const [mode, setMode] = useState<"all" | "notes" | "videos" | "saved">("all");
+  const [subject, setSubject] = useState<string | null>(params.get("subject"));
+  const [typeFilter, setTypeFilter] = useState<string | null>(null);
+  
+  // Local Subject Search & Filter
+  const [subjectSearch, setSubjectSearch] = useState("");
+  const [subjectFilter, setSubjectFilter] = useState<"All" | "High" | "Medium" | "Low">("All");
+
+  const { navigate } = useHapticRouter();
+
+  useEffect(() => {
+    setSubject(params.get("subject"));
+  }, [params.get("subject")]);
+
+  useEffect(() => {
+    if (!profile) return;
+    const qq = query(col.content(), where("published", "==", true), where("streams", "array-contains", getCohortId((profile as any).exam, profile.stream, (profile as any).variant)));
+    return onSnapshot(qq, (s) => {
+      const docs = s.docs.map((d) => snapTo<ContentDoc>(d));
+      docs.sort((a, b) => (b.createdAt?.toMillis() ?? 0) - (a.createdAt?.toMillis() ?? 0));
+      setItems(docs);
+    }, () => setItems([]));
+  }, [profile?.stream]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (!profile || !config.features.videos) return;
+    const qq = query(col.videos(), where("published", "==", true), where("streams", "array-contains", getCohortId((profile as any).exam, profile.stream, (profile as any).variant)));
+    return onSnapshot(qq, (s) => {
+      const docs = s.docs.map((d) => snapTo<VideoDoc>(d));
+      docs.sort((a, b) => (b.createdAt?.toMillis() ?? 0) - (a.createdAt?.toMillis() ?? 0));
+      setVideos(docs);
+    }, () => setVideos([]));
+  }, [profile?.stream, config.features.videos]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const searching = q.trim().length > 0;
+
+  const searchResults = useMemo(() => {
+    if (!searching) return [];
+    const t = q.trim().toLowerCase();
+    return (items ?? []).filter((i) => `${i.title} ${i.subject} ${i.type}`.toLowerCase().includes(t));
+  }, [items, q, searching]);
+
+  const subjectItems = useMemo(() => {
+    let list = (items ?? []).filter((i) => i.subject === subject);
+    if (typeFilter) list = list.filter((i) => i.type === typeFilter);
+    if (subjectFilter !== "All") list = list.filter((i) => i.weightage === subjectFilter);
+    if (subjectSearch.trim()) {
+      const qs = subjectSearch.trim().toLowerCase();
+      list = list.filter((i) => i.title.toLowerCase().includes(qs));
+    }
+    return list;
+  }, [items, subject, typeFilter, subjectFilter, subjectSearch]);
+
+  const subjectTypes = useMemo(
+    () => Array.from(new Set((items ?? []).filter((i) => i.subject === subject).map((i) => i.type))),
+    [items, subject]
+  );
+
+  const savedItems = useMemo(
+    () => (items ?? []).filter((i) => profile?.downloads.includes(i.id)),
+    [items, profile?.downloads]
+  );
+
+  const shownVideos = useMemo(() => {
+    let list = videos ?? [];
+    if (searching) {
+      const t = q.trim().toLowerCase();
+      list = list.filter((v) => `${v.title} ${v.subject}`.toLowerCase().includes(t));
+    }
+    return list;
+  }, [videos, q, searching]);
+
+  if (!profile) return null;
+  const subjects = modules.filter(m => m.streams.includes(profile.stream));
+  const tabs: readonly (readonly ["all" | "notes" | "videos" | "saved", string])[] = [
+    ["all", "All"] as const,
+    ["notes", "Notes"] as const,
+    ...(config.features.videos ? [["videos", "Videos"] as const] : []),
+    ["saved", "Saved"] as const,
+  ];
+
+  const countFor = (s: string) => (items ?? []).filter((i) => i.subject === s).length;
+  const videoCountFor = (s: string) => (videos ?? []).filter((v) => v.subject === s).length;
+
+  return (
+    <div className="space-y-6 pb-24">
+      {!subject && (
+        <div className="mt-2 mb-8 flex flex-col gap-4 pt-8 lg:pt-0">
+          <div>
+            <h1 className="font-sora text-4xl font-extrabold tracking-tight text-on-surface mb-1">Learn OS</h1>
+          <p className="font-geist text-body-lg text-on-surface-variant">
+            {profile.stream} · {profile.grade} — {subjects.length} modules active
+          </p>
+        </div>
+        
+        {/* Level 1: Subject Cards (always top-level primary navigation) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+          {subjects.map((m) => {
+            const completedCount = profile.attempted ? (items ?? []).filter(c => c.subject === m.name && profile.attempted!.includes(c.id)).length : 0;
+            return <SubjectCard key={m.id} subject={m.name} imageUrl={m.imageUrl} count={countFor(m.name)} completedCount={completedCount} />
+          })}
+        </div>
+
+        {/* Massive Search Bar (liquid glass) */}
+        <div className="w-full flex items-center gap-3 glassy rounded-full px-5 py-3 transition-all focus-within:!border-purple-500/50 mb-8">
+          <Search size={20} className="shrink-0 text-[#9d72ff]" />
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search chapters, topics..."
+            className="w-full bg-transparent font-hanken text-base outline-none text-on-surface placeholder:text-neutral-500 dark:placeholder:text-neutral-500" />
+          {q && <button onClick={() => setQ("")} className="shrink-0 text-on-surface"><X size={18} /></button>}
+        </div>
+      </div>
+      )}
+
+      {!searching && !subject && (
+        <div className="flex flex-row flex-nowrap overflow-x-auto hide-scrollbar gap-2 pb-4 px-1">
+          {tabs.map(([m, label]) => (
+            <button key={m} onClick={() => { vibrate(10); setMode(m); }}
+              className={`flex items-center gap-2 rounded-full px-4 py-2 font-geist text-sm transition-all shadow-md shrink-0 border ${
+                mode === m
+                  ? "bg-purple-600/20 dark:bg-[#9d72ff]/20 border-purple-500/50 text-purple-700 dark:text-white font-semibold backdrop-blur-md"
+                  : "glassy border-white/10 text-on-surface hover:bg-white/10 font-medium"
+              }`}>
+              {m === "saved" && <Bookmark size={14} />}
+              {m === "videos" && <PlayCircle size={14} />}
+              {label}
+            </button>
+          ))}
+          {/* Spacer to prevent last item cutoff */}
+          <div className="w-2 shrink-0"></div>
+        </div>
+      )}
+
+      {/* ————— global search results ————— */}
+      {searching ? (
+        <div className="space-y-4">
+          <p className="font-geist text-label-sm text-on-surface-variant">{searchResults.length + shownVideos.length} results</p>
+          {searchResults.map((c) => <ChapterCard key={c.id} chapter={c} onOpen={() => setOpen(c)} />)}
+          {config.features.videos && shownVideos.length > 0 && (
+            <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
+              {shownVideos.map((v) => (
+                <VideoTile key={v.id} v={v} onOpen={async () => await Browser.open({ url: `https://youtube.com/watch?v=${v.youtubeId}`, windowName: "_system" })} />
+              ))}
+            </div>
+          )}
+          {searchResults.length + shownVideos.length === 0 && (
+            <div className="glassy rounded-glass p-10 text-center">
+              <p className="font-sora font-semibold text-on-surface">No matches</p>
+              <p className="mt-1 font-hanken text-body-md text-on-surface-variant">Try a chapter name like &quot;Thermodynamics&quot;.</p>
+            </div>
+          )}
+        </div>
+      ) : !subject ? (
+        <AnimatePresence mode="wait">
+          {mode === "all" ? (
+            <motion.div key="all" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-6">
+              <div className="space-y-4">
+                {(items ?? []).slice(0, 10).map((c) => <ChapterCard key={c.id} chapter={c} onOpen={() => setOpen(c)} />)}
+              </div>
+              {config.features.videos && (videos ?? []).length > 0 && (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {(videos ?? []).slice(0, 6).map((v) => <VideoTile key={v.id} v={v} onOpen={async () => await Browser.open({ url: `https://youtube.com/watch?v=${v.youtubeId}`, windowName: "_system" })} />)}
+                </div>
+              )}
+            </motion.div>
+          ) : mode === "notes" ? (
+            <motion.div key="notes" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4">
+              {(items ?? []).map((c) => <ChapterCard key={c.id} chapter={c} onOpen={() => setOpen(c)} />)}
+            </motion.div>
+          ) : mode === "videos" ? (
+            <motion.div key="videos" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {(videos ?? []).map((v) => <VideoTile key={v.id} v={v} onOpen={async () => await Browser.open({ url: `https://youtube.com/watch?v=${v.youtubeId}`, windowName: "_system" })} />)}
+            </motion.div>
+          ) : (
+            <motion.div key="saved" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4">
+              {savedItems.length === 0 ? (
+                <div className="glassy rounded-glass p-10 text-center">
+                  <Bookmark size={28} className="mx-auto text-black/30 dark:text-white/30" />
+                  <p className="mt-3 font-sora font-semibold text-on-surface">No saved notes yet</p>
+                  <p className="mt-1 font-hanken text-body-md text-on-surface-variant">Tap Save on any note and it lives here for instant access.</p>
+                </div>
+              ) : (
+                savedItems.map((c) => <ChapterCard key={c.id} chapter={c} onOpen={() => setOpen(c)} />)
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      ) : (
+            /* ————— level 2: topic-wise ————— */
+            <motion.div key={subject} initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 24 }} className="space-y-4 pt-[calc(env(safe-area-inset-top,3rem)+2rem)] lg:pt-2 relative px-3 lg:px-0">
+              <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+                <div className="flex items-center gap-4">
+                  <button 
+                    onClick={(e) => { vibrate(10); navigate("/learn", e); }} 
+                    className="flex w-10 h-10 items-center justify-center rounded-full glassy text-on-surface pointer-events-auto shrink-0 hover:brightness-110 transition-colors"
+                  >
+                    <ChevronLeft size={20} />
+                  </button>
+                  <div>
+                    <h1 className="text-4xl md:text-5xl font-black text-on-surface mb-2 font-sora tracking-tight">
+                      {subject}
+                    </h1>
+                    <p className="font-geist text-body-lg text-on-surface-variant">
+                      {subjectItems.length} topics available in this module.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Local Subject Search & Filter Row */}
+              <div className="flex items-center gap-3">
+                <div className="flex-1 flex items-center gap-3 glassy rounded-full px-4 py-3 transition-all focus-within:brightness-110">
+                  <Search size={18} className="shrink-0 text-on-surface-variant" />
+                  <input 
+                    value={subjectSearch} 
+                    onChange={(e) => setSubjectSearch(e.target.value)} 
+                    placeholder="Search in this subject..."
+                    className="w-full bg-transparent font-geist text-sm outline-none text-on-surface placeholder:text-black/50 dark:placeholder:text-white/50" 
+                  />
+                  {subjectSearch && <button onClick={() => setSubjectSearch("")} className="shrink-0 text-on-surface"><X size={16} /></button>}
+                </div>
+                <div className="relative">
+                  <select 
+                    value={subjectFilter}
+                    onChange={(e) => {
+                      vibrate(10);
+                      setSubjectFilter(e.target.value as any);
+                    }}
+                    className={`appearance-none glassy rounded-full pl-10 pr-8 py-3 font-geist text-sm font-semibold outline-none transition-all cursor-pointer ${
+                      subjectFilter !== "All" ? "text-purple-600 dark:text-purple-400" : "text-on-surface"
+                    }`}
+                  >
+                    <option value="All" className="text-black bg-white dark:bg-neutral-900 dark:text-white">All Weights</option>
+                    <option value="High" className="text-black bg-white dark:bg-neutral-900 dark:text-white">High</option>
+                    <option value="Medium" className="text-black bg-white dark:bg-neutral-900 dark:text-white">Medium</option>
+                    <option value="Low" className="text-black bg-white dark:bg-neutral-900 dark:text-white">Low</option>
+                  </select>
+                  <Filter size={16} className={`absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none ${subjectFilter !== "All" ? "text-purple-600 dark:text-purple-400" : "text-black/70 dark:text-white/70"}`} />
+                  <ChevronDown size={16} className={`absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none ${subjectFilter !== "All" ? "text-purple-600 dark:text-purple-400" : "text-black/70 dark:text-white/70"}`} />
+                </div>
+              </div>
+              {subjectTypes.length > 1 && (
+                <div className="hide-scrollbar flex gap-2 overflow-x-auto pb-4 px-1">
+                  {["All", ...subjectTypes].map((t) => {
+                    const active = t === "All" ? !typeFilter : typeFilter === t;
+                    return (
+                      <button key={t} onClick={() => { vibrate(10); setTypeFilter(t === "All" ? null : t); }}
+                        className={`shrink-0 rounded-full px-5 py-2 font-geist text-sm shadow-md font-semibold transition-all border ${
+                          active 
+                            ? "bg-purple-600/20 dark:bg-[#9d72ff]/20 border-purple-500/50 text-purple-700 dark:text-white backdrop-blur-md" 
+                            : "glassy border-white/10 hover:bg-white/10 text-on-surface"
+                        }`}>
+                        {t}
+                      </button>
+                    );
+                  })}
+                  <div className="w-2 shrink-0"></div>
+                </div>
+              )}
+              <div className="space-y-4">
+                {items === null && [0, 1, 2].map((i) => <ChapterSkeleton key={i} />)}
+                {items !== null && subjectItems.length === 0 && (
+                  <div className="glassy-strong rounded-[2rem] p-10 text-center">
+                    <p className="font-sora font-semibold text-on-surface">Nothing in {subject} yet</p>
+                    <p className="mt-1 font-geist text-label-sm text-black dark:text-neutral-400">Notes published from the admin panel appear here instantly.</p>
+                  </div>
+                )}
+                {subjectItems.map((c) => <ChapterCard key={c.id} chapter={c} onOpen={() => setOpen(c)} />)}
+              </div>
+
+              {config.features.videos && videoCountFor(subject) > 0 && (
+                <div className="pt-4">
+                  <h3 className="font-sora text-headline-lg font-black tracking-tight text-on-surface mb-4">Lectures</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {(videos ?? []).filter((v) => v.subject === subject).map((v) => (
+                      <VideoTile key={v.id} v={v} onOpen={async () => await Browser.open({ url: `https://youtube.com/watch?v=${v.youtubeId}`, windowName: "_system" })} />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+            </motion.div>
+      )}
+    </div>
+  );
+}
+
+function VideoTile({ v, onOpen }: { v: VideoDoc; onOpen: () => void }) {
+  return (
+    <motion.button whileTap={{ scale: 0.96 }} onClick={() => { vibrate(10); onOpen(); }} className="glassy rounded-[1.25rem] shadow-lg border border-outline-variant overflow-hidden transition-all hover:brightness-105 dark:hover:brightness-110 text-left flex flex-col">
+      <div className="relative aspect-video w-full bg-black/10 dark:bg-black/30">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={youtubeThumb(v.youtubeId)} alt={v.title} className="h-full w-full object-cover" />
+        <span className="absolute inset-0 grid place-items-center bg-black/20 hover:bg-black/10 transition-colors">
+          <PlayCircle size={38} className="text-white drop-shadow-xl" />
+        </span>
+      </div>
+      <div className="p-4 flex-1">
+        <p className="font-geist text-[10px] font-bold uppercase tracking-widest text-purple-500">{v.subject}</p>
+        <p className="mt-1 line-clamp-2 font-sora text-sm font-semibold leading-snug text-on-surface">{v.title}</p>
+      </div>
+    </motion.button>
+  );
+}
+
+export default function Learn() {
+  return (
+    <Suspense fallback={null}>
+      <LearnInner />
+    </Suspense>
+  );
+}
+
+

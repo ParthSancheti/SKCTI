@@ -1,0 +1,340 @@
+"use client";
+
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronLeft, Plus, Trash2, Calendar, CheckCircle2, Circle, Edit2, X, Sparkles } from "lucide-react";
+import { useStore, vibrate } from "@/lib/store";
+import { useRouter } from "next/navigation";
+import { col } from "@/lib/db";
+import { addDoc, deleteDoc, doc, updateDoc } from "firebase/firestore";
+import { fbDb } from "@/lib/firebase";
+import type { TodoTask } from "@/lib/types";
+import GlassCard from "@/components/GlassCard";
+
+const URGENCIES = ["High", "Medium", "Low"];
+
+export default function TodoApp() {
+  const { profile, todos } = useStore();
+  const router = useRouter();
+  
+  const [filterCat, setFilterCat] = useState("All");
+  const [isAdding, setIsAdding] = useState(false);
+  const [isEditing, setIsEditing] = useState<string | null>(null);
+  
+  // Form State
+  const [title, setTitle] = useState("");
+  const [category, setCategory] = useState("General");
+  const [urgency, setUrgency] = useState<"High"|"Medium"|"Low">("Medium");
+  const [dueDate, setDueDate] = useState("");
+
+  if (!profile) return null;
+
+  const filteredTodos = todos.filter(t => filterCat === "All" || t.category === filterCat);
+  const pendingTodos = filteredTodos.filter(t => t.status === "todo");
+  const completedTodos = filteredTodos.filter(t => t.status === "done");
+
+  const categories = ["All", "Physics", "Chemistry"];
+  if (profile?.stream === "PCM") categories.push("Math");
+  else if (profile?.stream === "PCB") categories.push("Biology");
+  else categories.push("Math", "Biology");
+  categories.push("General");
+
+  const resetForm = () => {
+    setTitle("");
+    setCategory("General");
+    setUrgency("Medium");
+    setDueDate("");
+    setIsAdding(false);
+    setIsEditing(null);
+  };
+
+  const handleSave = async () => {
+    if (!title.trim()) return;
+    vibrate(10);
+    
+    if (isEditing) {
+      await updateDoc(doc(fbDb(), "users", profile.uid, "todos", isEditing), {
+        title, category, urgency, dueDate
+      });
+    } else {
+      await addDoc(col.todos(profile.uid), {
+        title,
+        category,
+        urgency,
+        dueDate,
+        durationMinutes: 30, // Default AI duration
+        status: "todo",
+        createdAt: Date.now()
+      });
+    }
+    resetForm();
+  };
+
+  const toggleStatus = async (task: TodoTask) => {
+    vibrate(10);
+    await updateDoc(doc(fbDb(), "users", profile.uid, "todos", task.id), {
+      status: task.status === "todo" ? "done" : "todo"
+    });
+  };
+
+  const deleteTask = async (taskId: string) => {
+    vibrate(20);
+    await deleteDoc(doc(fbDb(), "users", profile.uid, "todos", taskId));
+  };
+
+  const openEdit = (task: TodoTask) => {
+    setTitle(task.title);
+    setCategory(task.category || "General");
+    setUrgency(task.urgency || "Medium");
+    setDueDate(task.dueDate || "");
+    setIsEditing(task.id);
+    setIsAdding(true);
+  };
+
+  return (
+    <div className="flex h-[100dvh] lg:h-auto min-h-[calc(100vh-4rem)] w-full gap-6 relative py-0 px-0 lg:px-0">
+      <div className="w-full max-w-4xl flex flex-col h-full px-4 lg:px-0 pt-[calc(env(safe-area-inset-top,3rem)+2rem)] lg:pt-6">
+        
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={() => { vibrate(10); router.push("/home"); }} 
+              className="flex w-10 h-10 items-center justify-center rounded-full glassy text-on-surface pointer-events-auto shrink-0 hover:brightness-110 transition-colors"
+            >
+              <ChevronLeft size={20} />
+            </button>
+            <div>
+              <h1 className="text-4xl md:text-5xl font-black text-on-surface mb-2 font-sora tracking-tight">
+                Focus Mode
+              </h1>
+              <p className="font-geist text-body-lg text-on-surface-variant">Organize your study plan and dominate your goals.</p>
+            </div>
+          </div>
+          <div className="flex flex-row items-center gap-2 sm:gap-3 w-full sm:w-auto mt-4 md:mt-0">
+            <button 
+              onClick={() => { vibrate(10); router.push("/ai"); }}
+              className="btn-secondary px-3 sm:px-6 py-3 rounded-full flex-1 shrink-0 font-geist"
+            >
+              <Sparkles size={18} />
+              <span className="hidden sm:inline">AI Generate</span>
+              <span className="sm:hidden">AI Plan</span>
+            </button>
+            <button 
+              onClick={() => setIsAdding(true)}
+              className="btn-primary px-3 sm:px-6 py-3 rounded-full flex-1 shrink-0 font-geist"
+            >
+              <Plus size={18} />
+              Add Task
+            </button>
+          </div>
+        </div>
+
+        {/* Category Filters */}
+        <div className="flex gap-2 overflow-x-auto hide-scrollbar pb-4 mb-4">
+          {categories.map(cat => (
+            <button
+              key={cat}
+              onClick={() => setFilterCat(cat)}
+              className={`px-5 py-2.5 rounded-full font-geist text-sm font-bold whitespace-nowrap transition-all border ${
+                filterCat === cat 
+                  ? "bg-purple-600 text-white border-purple-500" 
+                  : "glassy text-on-surface border-transparent hover:brightness-110"
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+
+        {/* Main List Area */}
+        <div className="flex-1 overflow-y-auto hide-scrollbar flex flex-col gap-6 pb-24">
+          
+          {/* Pending Tasks */}
+          <div className="space-y-3">
+            <h2 className="font-sora text-sm font-bold text-black/40 dark:text-white/40 uppercase tracking-widest px-2">Pending ({pendingTodos.length})</h2>
+            <AnimatePresence>
+              {pendingTodos.map(task => (
+                <GlassCard
+                  key={task.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  className="group p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4 hover:shadow-md hover:brightness-105 transition-all"
+                >
+                  <div className="flex items-center gap-4 w-full sm:w-auto flex-1 min-w-0">
+                    <button onClick={() => toggleStatus(task)} className="text-neutral-400 hover:text-purple-500 transition-colors shrink-0">
+                      <Circle size={24} />
+                    </button>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-hanken text-base text-on-surface font-medium break-words leading-tight">{task.title}</p>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        <span className="font-geist text-[10px] uppercase font-bold px-2.5 py-1 rounded-full glassy text-on-surface border border-outline-variant">
+                          {task.category || "General"}
+                        </span>
+                        <span className={`font-geist text-[10px] uppercase font-bold px-2.5 py-1 rounded-full border ${
+                          task.urgency === "High" ? "bg-error-container text-on-error-container border-red-500/20" :
+                          task.urgency === "Medium" ? "bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/20" :
+                          "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20"
+                        }`}>
+                          {task.urgency || "Medium"}
+                        </span>
+                        {task.dueDate && (
+                          <span className="font-geist text-[10px] uppercase font-bold px-2.5 py-1 rounded-full glassy text-on-surface-variant flex items-center gap-1 border border-outline-variant">
+                            <Calendar size={10} /> {new Date(task.dueDate).toLocaleDateString()}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-end w-full sm:w-auto gap-2 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity mt-2 sm:mt-0 border-t border-outline-variant sm:border-t-0 pt-2 sm:pt-0">
+                    <button onClick={() => openEdit(task)} className="p-2 text-black/40 dark:text-white/40 hover:text-blue-500 transition-colors flex items-center gap-2">
+                      <Edit2 size={16} /> <span className="sm:hidden font-geist text-xs font-bold uppercase">Edit</span>
+                    </button>
+                    <button onClick={() => deleteTask(task.id)} className="p-2 text-black/40 dark:text-white/40 hover:text-error transition-colors flex items-center gap-2">
+                      <Trash2 size={16} /> <span className="sm:hidden font-geist text-xs font-bold uppercase">Delete</span>
+                    </button>
+                  </div>
+                </GlassCard>
+              ))}
+            </AnimatePresence>
+            {pendingTodos.length === 0 && (
+              <div className="text-center py-12 px-4 border border-dashed border-outline-variant rounded-3xl glassy">
+                <p className="font-hanken text-black/40 dark:text-white/40">You're all caught up! Enjoy your free time or ask the AI for a new plan.</p>
+              </div>
+            )}
+          </div>
+
+          {/* Completed Tasks */}
+          {completedTodos.length > 0 && (
+            <div className="space-y-3 mt-8">
+              <h2 className="font-sora text-sm font-bold text-black/40 dark:text-white/40 uppercase tracking-widest px-2">Completed ({completedTodos.length})</h2>
+              <AnimatePresence>
+                {completedTodos.map(task => (
+                  <GlassCard
+                    key={task.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    className="group p-4 flex items-center gap-4 opacity-60 hover:opacity-100 hover:brightness-105 transition-all"
+                  >
+                    <button onClick={() => toggleStatus(task)} className="text-green-500 hover:text-neutral-400 transition-colors shrink-0">
+                      <CheckCircle2 size={24} />
+                    </button>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-hanken text-base text-on-surface font-medium line-through truncate">{task.title}</p>
+                    </div>
+                    <button onClick={() => deleteTask(task.id)} className="p-2 text-black/40 dark:text-white/40 hover:text-error transition-colors opacity-100 sm:opacity-0 group-hover:opacity-100">
+                      <Trash2 size={18} />
+                    </button>
+                  </GlassCard>
+                ))}
+              </AnimatePresence>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Add / Edit Modal Overlay */}
+      <AnimatePresence>
+        {isAdding && (
+          <motion.div 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-black/40 dark:bg-black/60 backdrop-blur-md flex items-center justify-center p-4"
+          >
+            <GlassCard 
+              strong
+              initial={{ scale: 0.95, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 20 }}
+              className="rounded-[2.5rem] w-full max-h-[90vh] overflow-y-auto hide-scrollbar max-w-lg p-6 lg:p-8 flex flex-col shadow-2xl border border-white/20"
+            >
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="font-sora text-2xl font-bold text-on-surface">
+                  {isEditing ? "Edit Task" : "New Task"}
+                </h2>
+                <button onClick={resetForm} className="w-10 h-10 rounded-full glassy flex items-center justify-center text-on-surface hover:bg-black/10 dark:hover:bg-white/10 transition-colors">
+                  <X size={20} />
+                </button>
+              </div>
+
+              <div className="space-y-5">
+                <div>
+                  <label className="font-geist text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-2 block">Task Title</label>
+                  <input 
+                    value={title}
+                    onChange={e => setTitle(e.target.value)}
+                    placeholder="e.g. Read Physics Chapter 4"
+                    className="w-full glassy rounded-xl px-4 py-3 font-hanken text-on-surface outline-none focus:border-purple-500 transition-colors"
+                  />
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <label className="font-geist text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-2 block">Category</label>
+                    <div className="flex gap-2 overflow-x-auto hide-scrollbar pb-1">
+                      {categories.filter(c => c !== "All").map(c => (
+                        <button
+                          key={c}
+                          onClick={() => setCategory(c)}
+                          className={`px-4 py-2.5 rounded-xl font-geist text-sm font-semibold whitespace-nowrap transition-all border ${
+                            category === c 
+                              ? "bg-purple-600 text-white border-purple-500 shadow-md" 
+                              : "glassy text-on-surface border-transparent hover:brightness-110"
+                          }`}
+                        >
+                          {c}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="font-geist text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-2 block">Priority</label>
+                    <div className="flex gap-2">
+                      {URGENCIES.map(u => (
+                        <button
+                          key={u}
+                          onClick={() => setUrgency(u as any)}
+                          className={`flex-1 px-3 py-2.5 rounded-xl font-geist text-sm font-semibold whitespace-nowrap transition-all border ${
+                            urgency === u 
+                              ? "bg-purple-600 text-white border-purple-500 shadow-md" 
+                              : "glassy text-on-surface border-transparent hover:brightness-110"
+                          }`}
+                        >
+                          {u}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="font-geist text-xs font-bold text-on-surface-variant uppercase tracking-widest mb-2 block">Due Date (Optional)</label>
+                  <input 
+                    type="date"
+                    value={dueDate}
+                    onChange={e => setDueDate(e.target.value)}
+                    className="w-full glassy rounded-xl px-4 py-3 font-hanken text-on-surface outline-none focus:border-purple-500 transition-colors"
+                  />
+                </div>
+              </div>
+
+              <div className="mt-auto pt-8">
+                <button 
+                  onClick={handleSave}
+                  disabled={!title.trim()}
+                  className="w-full btn-primary font-geist text-lg py-4 rounded-xl disabled:opacity-50"
+                >
+                  Save Task
+                </button>
+              </div>
+            </GlassCard>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+    </div>
+  );
+}

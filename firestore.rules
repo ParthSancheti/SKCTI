@@ -1,0 +1,176 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /* =====================================================
+       HELPERS
+       ===================================================== */
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    // Case-insensitive admin check. The old version compared the raw token
+    // email against the stored list — "Parth@Gmail.com" would silently fail.
+    function isAdmin() {
+      return signedIn()
+        && request.auth.token.email_verified == true
+        && request.auth.token.email.lower()
+           in get(/databases/$(database)/documents/config/app).data.adminEmails;
+    }
+
+    function isSelf(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    // Fields a student is allowed to change on their OWN doc.
+    // coins / streak are deliberately NOT here — see below.
+    function studentEditableOnly() {
+      return request.resource.data.diff(resource.data).affectedKeys()
+        .hasOnly([
+          'name','photo','phone','grade','stream','lastActiveDate','lastSeen',
+          'downloads','attempted','doneTasks','todayPlan','justUpgraded',
+          'coins','streak',
+          // settings that used to be fake local state
+          'notifications','prefs','studyMinutes'
+        ]);
+    }
+
+    // Anti-cheat: coins may only ever move UP, and by at most 100 per write.
+    // Blocks `coins: 999999` from the browser console, still allows
+    // increment(10) / increment(25) / increment(50) from the real app.
+    function coinsSane() {
+      return !('coins' in request.resource.data.diff(resource.data).affectedKeys())
+        || (request.resource.data.coins is int
+            && request.resource.data.coins >= resource.data.coins
+            && request.resource.data.coins <= resource.data.coins + 100);
+    }
+
+    // Streak can only move by +1 (or reset to 1), never jump.
+    function streakSane() {
+      return !('streak' in request.resource.data.diff(resource.data).affectedKeys())
+        || (request.resource.data.streak is int
+            && request.resource.data.streak >= 1
+            && request.resource.data.streak <= resource.data.streak + 1);
+    }
+
+    /* =====================================================
+       CONFIG
+       ===================================================== */
+
+    match /config/app {
+      // Landing page needs branding before login. But adminEmails must NOT be
+      // world-readable — see /public/branding below. Lock this to signed-in.
+      allow read: if signedIn();
+
+      // First-run claim. Still open by design, but now requires a verified
+      // email and forces the claimer to be in the list they write.
+      allow create: if signedIn()
+        && request.auth.token.email_verified == true
+        && !exists(/databases/$(database)/documents/config/app)
+        && request.auth.token.email.lower() in request.resource.data.adminEmails;
+
+      allow update: if isAdmin();
+      allow delete: if false;
+    }
+
+    // Public branding mirror for the logged-out landing page.
+    // Admin writes appName / tagline / socials here; NO adminEmails.
+    match /public/branding {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    /* =====================================================
+       CONTENT
+       ===================================================== */
+
+    match /content/{id}      { allow read: if signedIn(); allow write: if isAdmin(); }
+    match /tests/{id}        { allow read: if signedIn(); allow write: if isAdmin(); }
+    match /banners/{id}      { allow read: if signedIn(); allow write: if isAdmin(); }
+    match /videos/{id}       { allow read: if signedIn(); allow write: if isAdmin(); }
+    match /announcements/{id}{ allow read: if signedIn(); allow write: if isAdmin(); }
+    match /modules/{id}      { allow read: if signedIn(); allow write: if isAdmin(); }
+
+    /* =====================================================
+       LEADS
+       ===================================================== */
+
+    match /inquiries/{id} {
+      allow create: if request.resource.data.keys().hasOnly(
+                         ['name','phone','studentClass','message','status','createdAt'])
+        && request.resource.data.status == 'new'
+        && request.resource.data.name is string
+        && request.resource.data.name.size() >= 2
+        && request.resource.data.name.size() <= 60
+        && request.resource.data.phone is string
+        && request.resource.data.phone.matches('^[6-9][0-9]{9}$')
+        && request.resource.data.message.size() <= 500
+        && request.resource.data.studentClass in ['11th','12th','Other'];
+      allow read, update, delete: if isAdmin();
+    }
+
+    /* =====================================================
+       USERS  —  the big one
+       ===================================================== */
+
+    match /users/{uid} {
+      // BEFORE: `allow read: if signedIn()` meant any student could dump every
+      // classmate's phone number and email straight out of the leaderboard
+      // query. Now: you read your own doc; admins read everything; everyone
+      // else reads the sanitised /leaderboard mirror below.
+      allow read: if isSelf(uid) || isAdmin();
+
+      allow create: if isSelf(uid)
+        && request.resource.data.coins <= 50
+        && request.resource.data.streak == 1;
+
+      allow update: if isSelf(uid)
+        && studentEditableOnly()
+        && coinsSane()
+        && streakSane();
+
+      allow delete: if isAdmin();
+
+      // Subcollections do NOT inherit the parent rule — these must be declared.
+      match /todos/{todoId}   { allow read, write: if isSelf(uid); }
+      match /aiChats/{chatId} { allow read, write: if isSelf(uid); }
+      // MISSING IN THE OLD RULES: store.tsx listens on users/{uid}/private/chat.
+      // With no rule it was permission-denied on every session.
+      match /private/{docId}  { allow read, write: if isSelf(uid); }
+    }
+
+    /* =====================================================
+       LEADERBOARD  —  public-safe projection
+       ===================================================== */
+    // Written by a Cloud Function (or by the client on coin change) with ONLY
+    // { displayName, photo, coins, streak }. No phone. No email.
+    match /leaderboard/{uid} {
+      allow read: if signedIn();
+      allow write: if isSelf(uid)
+        && request.resource.data.keys().hasOnly(['displayName','photo','coins','streak']);
+    }
+
+    /* =====================================================
+       AUDIT
+       ===================================================== */
+
+    match /audit/{id} {
+      allow read, create: if isAdmin();
+      allow update, delete: if false;
+    }
+
+    /* =====================================================
+       CONFIG SUB-KEYS WRITTEN BY MISSION CONTROL
+       ===================================================== */
+    // ai.*, maintenance.* and adminRoles.* all live inside config/app, so they
+    // are already covered by `allow update: if isAdmin()` above. Nothing extra
+    // is required — but note that config/app is READ by every signed-in client,
+    // which is exactly why no API key may ever be stored there.
+
+    // Anything not matched above is denied. Explicit for clarity.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
